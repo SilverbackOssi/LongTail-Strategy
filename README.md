@@ -89,5 +89,8 @@ move buy stop in response, replace sell stop in delay.
 - 
 
 ## Session report rules
+Post-daily session logging. 11:30pm
 
-how i log my activities within each trading day
+- Log the total number of progression cycles. (account for running progressions if any)
+- log total  trading time.
+- Log percentage profit or loss of the day.
