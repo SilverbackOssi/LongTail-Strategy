@@ -1,0 +1,12 @@
+
+def build_sequence(reward_multiplier):
+  '''
+  Computes the progression sequence to be followed by the EA
+  Args:
+  returns: an array of 50 integers
+  '''
+  get account balance
+  progression_sequence = []
+
+  return progression_sequence 
+#Ensure lot sizes(progression sequence) are accurate and relative to account balance
