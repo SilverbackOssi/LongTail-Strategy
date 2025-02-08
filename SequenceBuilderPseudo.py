@@ -22,10 +22,14 @@ def build_sequence(reward_multiplier: int):
     progression_sequence.append(current_stake)
   return progression_sequence 
 
-def build_lot_sequence(account_balance):
+def build_lot_sequence(account_balance, progression_sequence):
   '''
   Builds an array of lot size progression relative the users account balance
   '''
+  # the minimum stake depends on the pip value of the pair, and the account balance
+  # for now we'll build with XAU/USD in mind
+
+  # turn the account balance to a multiple of 1000. (divide by 1000)
   pass
  #Ensure lot sizes(progression sequence) are accurate and relative to account balance 
 
