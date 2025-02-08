@@ -11,14 +11,14 @@ def build_sequence(reward_multiplier: int):
   minimum_profit = minimum_stake * 2
   current_stake = minimum_stake
   progression_sequence = []
-  sequence_length = 50
+  sequence_length = 20
 
   for i in range(sequence_length):
     minimum_outcome = sum(progression_sequence) + minimum_profit
-    potential_outcome = current_stake * reward_multiplier
 
-    while potential_outcome < minimum_outcome:
+    while current_stake * reward_multiplier < minimum_outcome:
         current_stake += minimum_stake
+        
     progression_sequence.append(current_stake)
   return progression_sequence 
 
@@ -28,3 +28,7 @@ def build_lot_sequence(account_balance):
   '''
   pass
  #Ensure lot sizes(progression sequence) are accurate and relative to account balance 
+
+progression_sequence = build_sequence(3)
+print(progression_sequence)
+print(f'\n total= {sum(progression_sequence)}')
