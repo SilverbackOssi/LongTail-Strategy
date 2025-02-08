@@ -221,7 +221,7 @@ return an array with progression sequence.
 - delete all pending orders, if there are orders.
 - fatal error(error location, error message). removes *bot and reports event.*
 
-## Session report rules
+## Session report logging
 
 report to telegram daily.
 
