@@ -71,7 +71,7 @@ These events create unforeseen circumstances
 - Ensure lot sizes are pricked properly from the sequence. 🏁
 - Ensure take profit and stop loss is set on all positions.🏁
 
-## Progression manager
+## Requirements
 
 ### Daily sessions management(logic) ☑️
 ```
