@@ -26,4 +26,5 @@ def build_lot_sequence(account_balance):
   '''
   Builds an array of lot size progression relative the users account balance
   '''
+  pass
  #Ensure lot sizes(progression sequence) are accurate and relative to account balance 
