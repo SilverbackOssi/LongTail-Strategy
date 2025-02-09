@@ -211,7 +211,8 @@ def place continuation order(reference ticket)
 
 def Initialize progression sequence(reward multiplier)
 
-- Ensure lot sizes(progression sequence) are accurate and relative to account balance
+- Ensure lot sizes(lot progression sequence) are accurate
+- relative to account balance 🏁 (not yet, we use symbol minimum volume)
 
 return an array with progression sequence.
 
