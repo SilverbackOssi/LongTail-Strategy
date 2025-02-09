@@ -50,3 +50,4 @@ progression_sequence = build_sequence(3)
 print(progression_sequence)
 print(f'\n total= {sum(progression_sequence)}')
 build_lot_sequence(10000,progression_sequence=progression_sequence)
+
