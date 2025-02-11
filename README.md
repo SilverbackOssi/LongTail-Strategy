@@ -167,6 +167,7 @@ def place recovery order(reference ticket)
     
     if ticket is open:
         get ticket detail
+        check if stop loss present
         
         order lot = next term of the sequence, relative to the reference(currently open) ticket
     
@@ -193,7 +194,6 @@ def place continuation order(reference ticket)
     if EndSession: return
     
     if ticket is still open:
-    
         get ticket details
         
         get lot size as first term of the progression sequence
