@@ -175,8 +175,6 @@ def set exits(position ticket, grid_size, reward multiplier)
 ```
 def place recovery order(reference ticket)
 
-    
-    
     if ticket is open:
         get ticket detail
         check if stop loss present
@@ -233,9 +231,9 @@ return an array with progression sequence.
 
 ## Utility functions
 
-- Set take profit stop loss (position ticket, grid_size, reward multiplier), if none.
+- Rules enforcer utils
 - delete all pending orders, if there are orders.
-- fatal error(error location, error message). removes *bot and reports event.*
+- fatal error(error location, error message). removes bot and reports event.
 
 ## Session report logging
 
