@@ -199,6 +199,7 @@ def place continuation order(reference ticket)
 
         get lot size as first term of the progression sequence
         
+        check if order already exists
         place a stop order similar to the open position’s type
     
     else: fatal error
