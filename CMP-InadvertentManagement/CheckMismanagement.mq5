@@ -5,7 +5,7 @@ void check_mismanagement()
     // Check if there is more than one position
     if (PositionsTotal() > 1)
     {
-        Print(__FUNCTION__, " - Fatal error: More than one position open.");
+        Print(__FUNCTION__, " - Fatal error: More than one position open. Removing expert");
         ExpertRemove(); // Close the bot
         return;
     }
@@ -13,7 +13,7 @@ void check_mismanagement()
     // Check if there are more than two orders
     if (OrdersTotal() > 2)
     {
-        Print(__FUNCTION__, " - Fatal error: More than two orders open.");
+        Print(__FUNCTION__, " - Fatal error: More than two orders open. Removing expert");
         ExpertRemove(); // Close the bot
         return;
     }
