@@ -33,6 +33,60 @@ void OnStart()
   }
 //+------------------------------------------------------------------+
 
+void place_continuation_stop(ulong reference_ticket)
+{
+    
+    if (EndSession) return;
+
+    if (PositionSelectByTicket(reference_ticket))
+    {
+        // Get ticket details
+        ulong ticket = PositionGetInteger(POSITION_TICKET);
+        long ticket_type = PositionGetInteger(POSITION_TYPE);
+        double open_price = PositionGetDouble(POSITION_PRICE_OPEN);
+        double take_profit = PositionGetDouble(POSITION_TP);
+
+        // Check if there is a take profit set for the reference position
+        if (take_profit == 0)
+        {
+            Print(__FUNCTION__, " - Failed to place continuation stop order. No take profit set for reference ticket: ", reference_ticket);
+            return;
+        }
+
+        // Get lot size as the first term of the progression sequence
+        double lot_size = Sequence[0];
+        ENUM_ORDER_TYPE order_type = (ticket_type == POSITION_TYPE_BUY) ? ORDER_TYPE_BUY_STOP : ORDER_TYPE_SELL_STOP;
+        double order_price = (ticket_type == POSITION_TYPE_BUY) 
+                      ? take_profit+grid_spread 
+                      : take_profit;
+         
+        // Check if an order already exists at the calculated price
+        ulong exists = order_exists_at_price(_Symbol, order_type, order_price);
+        if (exists!=0)
+        {
+            Print(__FUNCTION__, " - Continuation stop order already exists at the calculated price for reference ticket: ",
+                  reference_ticket, ", order ticket: ", exists);
+            return;
+        }
+
+        // Place a stop order similar to the open position’s type
+        bool placed = trade.OrderOpen(_Symbol, order_type, lot_size, 0.0, order_price, 0, 0);
+        if (placed)
+        {
+            ulong order_ticket = trade.ResultOrder(); // Get the ticket number of the placed order
+            Print(__FUNCTION__, " - Continuation stop order placed, reference ticket: ", reference_ticket, ", order ticket: ", order_ticket);
+        }
+        else
+        {
+            Print(__FUNCTION__, " - Failed to place continuation stop order");
+        }
+
+    }
+    else
+    {
+        Print(__FUNCTION__, " - Reference position not open");
+    } // Fatal error
+}
 
 
 ulong order_exists_at_price(const string symbol, ENUM_ORDER_TYPE order_type, double order_price)
