@@ -20,10 +20,10 @@ void check_mismanagement()
 }
 
 
-void check_strategy_rules()
+void check_strategy_rules(){
 -> raises warning  
 check that sequence is corresponding to account balance
 call check_mismanagement
-All buy stops are to be placed 40points(grid spread) above the supposed price. Two consecutive buy stops will not be placed on the same price. ☑️
-check that buy stops are place grid_spread higher than stop losses, 
+check that buy stops are place grid_spread higher than stop losses, take profits, and sell stops
 check that all positions and orders have their volume from the defined sequence 
+}
