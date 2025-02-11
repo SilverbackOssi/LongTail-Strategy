@@ -161,8 +161,12 @@ if distance between two ticket is greater than internal_grid_size + grid_spread:
 ### Exit management(called)
 →Sets take profit and stop loss on an open position
 ```
-def set exit(position ticket, grid_size, reward multiplier)
-    if none
+def set exits(position ticket, grid_size, reward multiplier)
+    get ticket details
+
+    determine tp and sl
+
+    modify open position
 ```
 
 ### Recovery management(called) ☑️
