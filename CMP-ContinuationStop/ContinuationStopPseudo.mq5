@@ -57,4 +57,31 @@ void place_continuation_stop(ulong reference_ticket)
       } //fatal error
          
    }
-   
+   void place_continuation_stop(ulong reference_ticket)
+{
+    if (EndSession) return;
+
+    if (PositionSelectByTicket(reference_ticket))
+    {
+        // Get ticket details
+        ulong ticket = PositionGetInteger(POSITION_TICKET);
+        long ticket_type = PositionGetInteger(POSITION_TYPE);
+        double open_price = PositionGetDouble(POSITION_PRICE_OPEN);
+
+        // Get lot size as the first term of the progression sequence
+        double lot_size = Sequence[0];
+        long order_type = (ticket_type == POSITION_TYPE_BUY) ? ORDER_TYPE_BUY_STOP : ORDER_TYPE_SELL_STOP;
+        double order_price = open_price + (grid_size * reward_multiplier);
+
+        // Place a stop order similar to the open position’s type
+        bool placed = trade.OrderOpen(_Symbol, order_type, lot_size, order_price, 0, 0, 0, "Continuation Stop", 0);
+        if (!placed)
+        {
+            Print(__FUNCTION__, " - Failed to place continuation stop order");
+        }
+    }
+    else
+    {
+        Print(__FUNCTION__, " - Reference position not open");
+    } // Fatal error
+}
