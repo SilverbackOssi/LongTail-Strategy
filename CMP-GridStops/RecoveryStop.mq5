@@ -12,12 +12,47 @@ CTrade trade;
 //+------------------------------------------------------------------+
 //| Script program start function                                    |
 //+------------------------------------------------------------------+
-//bool EndSession = true;
+
 bool EndSession = false;
 int Sequence[]={1, 1, 2, 2, 3, 4, 5, 7, 9, 12, 16, 22, 29, 39, 52, 69, 92, 123,164, 218};
 double grid_size = 2.00;
 double grid_spread = 0.40;
 int reward_multiplier = 5;
+//double take_profit = open_price + (grid_size * reward_multiplier);
+
+
+void OnStart()
+  {
+//---
+   ulong ticket = 0;
+   if (PositionSelect(_Symbol)){
+      ticket = PositionGetInteger(POSITION_TICKET);
+      }
+   place_continuation_stop(ticket);   
+   
+  }
+//+------------------------------------------------------------------+
+
+
+
+ulong order_exists_at_price(const string symbol, ENUM_ORDER_TYPE order_type, double order_price)
+{
+    for (int i = OrdersTotal() - 1; i >= 0; --i)
+      {
+        ulong order_ticket = OrderGetTicket(i);
+        if (order_ticket!=0)
+            {
+            if (OrderGetString(ORDER_SYMBOL) == symbol 
+               && OrderGetInteger(ORDER_TYPE) == order_type 
+               && OrderGetDouble(ORDER_PRICE_OPEN) == order_price)
+               {
+                return order_ticket;
+               }
+            }
+      }
+    return 0;
+}
+
 /*
 ### Recovery management(called) ☑️
 
