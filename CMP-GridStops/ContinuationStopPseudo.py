@@ -2,7 +2,7 @@
 
 buy stop as continuation position: continuation buy stops are placed grid_spread higher than the long position’s take profit.
 
-sell stop as continuation order: continuation ****sell stops are placed on the take profit of a short position.
+sell stop as continuation order: continuation sell stops are placed on the take profit of a short position.
 '''
 
 EndSession = True
