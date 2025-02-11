@@ -144,7 +144,7 @@ if there are more that two orders:
 ```
 ### Delay management(called)☑️
 
-→sets up range delay
+→To set up range delay
 
 *When a range delay occurs, there will be two orders; the lagging continuation order and a recovery buy stop, initially. We want to replace the continuation order with a recovery sell stop.*
 
