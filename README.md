@@ -161,7 +161,7 @@ if distance between two ticket is greater than internal_grid_size + grid_spread:
 
 →places one order *(opposite of the reference ticket type)*
 ```
-def place continuation order(reference ticket)
+def place recovery order(reference ticket)
 
     get ticket detail
     
