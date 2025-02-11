@@ -195,7 +195,8 @@ def place continuation order(reference ticket)
     
     if ticket is still open:
         get ticket details
-        
+        check if take profit is set
+
         get lot size as first term of the progression sequence
         
         place a stop order similar to the open position’s type
