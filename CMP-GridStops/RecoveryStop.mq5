@@ -14,78 +14,103 @@ CTrade trade;
 //+------------------------------------------------------------------+
 
 bool EndSession = false;
-int Sequence[]={1, 1, 2, 2, 3, 4, 5, 7, 9, 12, 16, 22, 29, 39, 52, 69, 92, 123,164, 218};
-double grid_size = 2.00;
+double Sequence[]={0.01, 0.01, 0.02, 0.02, 0.03, 0.04, 0.05, 0.07, 0.09, 0.12, 0.16, 0.22, 0.29, 0.39, 0.52, 0.69, 0.92, 1.23, 1.64, 2.18};
+double grid_size = 5.00;
 double grid_spread = 0.40;
-int reward_multiplier = 5;
-//double take_profit = open_price + (grid_size * reward_multiplier);
+int reward_multiplier = 3;
+//double stop_loss = open_price + (grid_size * reward_multiplier);
 
 
 void OnStart()
   {
 //---
+   // Test on open position
    ulong ticket = 0;
    if (PositionSelect(_Symbol)){
       ticket = PositionGetInteger(POSITION_TICKET);
       }
-   place_continuation_stop(ticket);   
+   //Test on buy stop
+   for (int i = OrdersTotal() - 1; i >= 0; --i)
+   {
+      ticket = OrderGetTicket(i);
+   } 
    
+   place_recovery_stop(ticket);  
   }
 //+------------------------------------------------------------------+
 
-void place_continuation_stop(ulong reference_ticket)
+void place_recovery_stop(ulong reference_ticket)
 {
+    ENUM_ORDER_TYPE order_type=0;
+    double order_price=0;
+    double order_volume=0;
     
-    if (EndSession) return;
-
     if (PositionSelectByTicket(reference_ticket))
     {
         // Get ticket details
-        ulong ticket = PositionGetInteger(POSITION_TICKET);
         long ticket_type = PositionGetInteger(POSITION_TYPE);
         double open_price = PositionGetDouble(POSITION_PRICE_OPEN);
-        double take_profit = PositionGetDouble(POSITION_TP);
+        double stop_loss = PositionGetDouble(POSITION_SL);
+        double open_volume = PositionGetDouble(POSITION_VOLUME);
 
         // Check if there is a take profit set for the reference position
-        if (take_profit == 0)
+        if (stop_loss == 0)
         {
-            Print(__FUNCTION__, " - Failed to place continuation stop order. No take profit set for reference ticket: ", reference_ticket);
+            Print(__FUNCTION__, " - Failed to place recovery stop order. No stop loss set for reference ticket: ", reference_ticket);
             return;
         }
 
-        // Get lot size as the first term of the progression sequence
-        double lot_size = Sequence[0];
-        ENUM_ORDER_TYPE order_type = (ticket_type == POSITION_TYPE_BUY) ? ORDER_TYPE_BUY_STOP : ORDER_TYPE_SELL_STOP;
-        double order_price = (ticket_type == POSITION_TYPE_BUY) 
-                      ? take_profit+grid_spread 
-                      : take_profit;
-         
-        // Check if an order already exists at the calculated price
-        ulong exists = order_exists_at_price(_Symbol, order_type, order_price);
-        if (exists!=0)
-        {
-            Print(__FUNCTION__, " - Continuation stop order already exists at the calculated price for reference ticket: ",
-                  reference_ticket, ", order ticket: ", exists);
-            return;
-        }
-
-        // Place a stop order similar to the open position’s type
-        bool placed = trade.OrderOpen(_Symbol, order_type, lot_size, 0.0, order_price, 0, 0);
-        if (placed)
-        {
-            ulong order_ticket = trade.ResultOrder(); // Get the ticket number of the placed order
-            Print(__FUNCTION__, " - Continuation stop order placed, reference ticket: ", reference_ticket, ", order ticket: ", order_ticket);
-        }
-        else
-        {
-            Print(__FUNCTION__, " - Failed to place continuation stop order");
-        }
-
+        // Set order details
+        int open_volume_index = get_volume_index(open_volume,Sequence); 
+        order_volume = Sequence[open_volume_index+1];
+        order_type = (ticket_type == POSITION_TYPE_SELL) ? ORDER_TYPE_BUY_STOP : ORDER_TYPE_SELL_STOP;
+        order_price = (ticket_type == POSITION_TYPE_SELL) ? stop_loss+grid_spread : stop_loss;     
     }
-    else
+    else if (OrderSelect(reference_ticket)) //order must be a buy stop
+    {       
+        // Get ticket details
+        long ticket_type = OrderGetInteger(ORDER_TYPE);
+        double open_price = OrderGetDouble(ORDER_PRICE_OPEN);
+        double open_volume = OrderGetDouble(ORDER_VOLUME_CURRENT);
+        
+        // Check if the reference order is a recovery stop
+        if (ticket_type != ORDER_TYPE_BUY_STOP) //XXX should check for EA comment "recovery stop"
+        {
+            Print(__FUNCTION__, " - Failed to place recovery sell stop order. Reference order: ", reference_ticket, " is not a recovery buy stop");
+            return;
+        }
+        
+        // Set order details 
+        order_volume = open_volume;
+        order_type = ORDER_TYPE_SELL_STOP;
+        order_price = open_price - grid_size; 
+    }
+    else // Fatal error
     {
-        Print(__FUNCTION__, " - Reference position not open");
-    } // Fatal error
+      Print(__FUNCTION__, " - FATAL. Recovery order can only be placed on open position or buy stop");
+      return;
+    } 
+
+    // Check if an order already exists at the calculated price
+     ulong ticket_exists = order_exists_at_price(_Symbol, order_type, order_price);
+     if (ticket_exists!=0)
+     {
+         Print(__FUNCTION__, " - Recovery stop order already exists at the calculated price for reference ticket: ",
+               reference_ticket, ", order ticket: ", ticket_exists);
+         return;
+     }
+
+     // Place a stop order opposite to the open/pending position’s type
+     bool placed = trade.OrderOpen(_Symbol, order_type, order_volume, 0.0, order_price, 0, 0);
+     if (placed)
+     {
+         ulong order_ticket = trade.ResultOrder(); // Get the ticket number of the placed order
+         Print(__FUNCTION__, " - Recovery stop order placed, reference ticket: ", reference_ticket, ", order ticket: ", order_ticket);
+     }
+     else
+     {
+         Print(__FUNCTION__, " - Failed to place recovery stop order");// Potential invalid price, need to handle
+     }
 }
 
 
@@ -106,31 +131,14 @@ ulong order_exists_at_price(const string symbol, ENUM_ORDER_TYPE order_type, dou
       }
     return 0;
 }
-
-/*
-### Recovery management(called) ☑️
-
-→places one order *(opposite of the reference ticket type)*
-```
-def place continuation order(reference ticket)
-
-    get ticket detail
-    
-    if ticket is open:
-    
-        order lot = next term of the sequence, relative to the reference(currently open) ticket
-    
-    else if ticket is a buy stop:
-    
-        order lot = reference ticket lot
-    
-    else: fatal error(unforeseen), return
-    
-    place pending order of type opposite to the ticket type
-```
----
-
-**buy stop as recovery position:** recovery buy stops are placed grid_spread higher than the short position’s stop loss.
-
-**sell stop as recovery order:** recovery sell stops are placed on the stop loss of a long position or a buy stop (range delay)
-*/
+int get_volume_index(double volume,const double &sequence[])
+{
+   for (int i=0;i<ArraySize(sequence);i++)
+   {
+      if (volume==sequence[i])
+      {
+         return i;
+      }
+   }
+   return -1;
+}

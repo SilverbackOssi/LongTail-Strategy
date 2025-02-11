@@ -14,7 +14,7 @@ CTrade trade;
 //+------------------------------------------------------------------+
 //bool EndSession = true;
 bool EndSession = false;
-int Sequence[]={1, 1, 2, 2, 3, 4, 5, 7, 9, 12, 16, 22, 29, 39, 52, 69, 92, 123,164, 218};
+double Sequence[]={0.01, 0.01, 0.02, 0.02, 0.03, 0.04, 0.05, 0.07, 0.09, 0.12, 0.16, 0.22, 0.29, 0.39, 0.52, 0.69, 0.92, 1.23, 1.64, 2.18};
 double grid_size = 2.00;
 double grid_spread = 0.40;
 int reward_multiplier = 5;
@@ -56,7 +56,6 @@ void place_continuation_stop(ulong reference_ticket)
     if (PositionSelectByTicket(reference_ticket))
     {
         // Get ticket details
-        ulong ticket = PositionGetInteger(POSITION_TICKET);
         long ticket_type = PositionGetInteger(POSITION_TYPE);
         double open_price = PositionGetDouble(POSITION_PRICE_OPEN);
         double take_profit = PositionGetDouble(POSITION_TP);
@@ -69,23 +68,23 @@ void place_continuation_stop(ulong reference_ticket)
         }
 
         // Get lot size as the first term of the progression sequence
-        double lot_size = Sequence[0];
+        double order_volume = Sequence[0];
         ENUM_ORDER_TYPE order_type = (ticket_type == POSITION_TYPE_BUY) ? ORDER_TYPE_BUY_STOP : ORDER_TYPE_SELL_STOP;
         double order_price = (ticket_type == POSITION_TYPE_BUY) 
                       ? take_profit+grid_spread 
                       : take_profit;
          
         // Check if an order already exists at the calculated price
-        ulong exists = order_exists_at_price(_Symbol, order_type, order_price);
-        if (exists!=0)
+        ulong ticket_exists = order_exists_at_price(_Symbol, order_type, order_price);
+        if (ticket_exists!=0)
         {
             Print(__FUNCTION__, " - Continuation stop order already exists at the calculated price for reference ticket: ",
-                  reference_ticket, ", order ticket: ", exists);
+                  reference_ticket, ", order ticket: ", ticket_exists);
             return;
         }
 
         // Place a stop order similar to the open position’s type
-        bool placed = trade.OrderOpen(_Symbol, order_type, lot_size, 0.0, order_price, 0, 0);
+        bool placed = trade.OrderOpen(_Symbol, order_type, order_volume, 0.0, order_price, 0, 0);
         if (placed)
         {
             ulong order_ticket = trade.ResultOrder(); // Get the ticket number of the placed order

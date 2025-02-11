@@ -158,6 +158,13 @@ if distance between two ticket is greater than internal_grid_size + grid_spread:
 
         *call recovery on the buy stop(*place sell recovery order)
 
+### Exit management(called)
+→Sets take profit and stop loss on an open position
+```
+def set exit(position ticket, grid_size, reward multiplier)
+    if none
+```
+
 ### Recovery management(called) ☑️
 
 →places one order *(opposite of the reference ticket type)*
