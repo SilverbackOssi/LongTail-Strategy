@@ -158,7 +158,7 @@ if distance between two ticket is greater than internal_grid_size + grid_spread:
 
         *call recovery on the buy stop(*place sell recovery order)
 
-### Exit management(called)
+### Exit management(called)☑️☑️
 →Sets take profit and stop loss on an open position
 ```
 def set exits(position ticket, grid_size, reward multiplier)
@@ -169,7 +169,7 @@ def set exits(position ticket, grid_size, reward multiplier)
     modify open position
 ```
 
-### Recovery management(called) ☑️
+### Recovery management(called) ☑️☑️
 
 →places one order *(opposite of the reference ticket type)*
 ```
@@ -195,7 +195,7 @@ def place recovery order(reference ticket)
 
 **sell stop as recovery order:** recovery sell stops are placed on the stop loss of a long position or a buy stop (range delay)
 
-### Continuation management(called) ☑️
+### Continuation management(called) ☑️☑️
 
 →*places one order (continuation order) relative to open positions, during trading time*
 ```
@@ -220,7 +220,7 @@ def place continuation order(reference ticket)
 
 **sell stop as continuation order:** continuation sell stops are placed on the take profit of a short position.
 
-### Sequence initializer(called) ☑️
+### Sequence builder(called) ☑️☑️
 
 def Initialize progression sequence(reward multiplier)
 
