@@ -21,3 +21,9 @@ void check_mismanagement()
 
 
 void check_strategy_rules()
+Progression sequence is predefine by a function, initiated on start. ☑️
+Only one position can be open at a time. ☑️
+Only two pending order can be present at a time. ☑️
+All buy stops are to be placed 40points(grid spread) above the supposed price. Two consecutive buy stops will not be placed on the same price. ☑️
+fatal error = unforeseen event.
+For all positions and orders, their volume must be called from the progression sequence.
