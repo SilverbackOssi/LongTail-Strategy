@@ -33,8 +33,6 @@ void set_exits(ulong reference_ticket, double stop_size, int target_multiplier)
     {
         double open_price = PositionGetDouble(POSITION_PRICE_OPEN);
         long position_type = PositionGetInteger(POSITION_TYPE);
-        double current_tp = PositionGetDouble(POSITION_TP);
-        double current_sl = PositionGetDouble(POSITION_SL);
         
         double target = stop_size*target_multiplier;
         double risk = stop_size;
