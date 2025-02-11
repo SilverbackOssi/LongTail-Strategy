@@ -116,7 +116,7 @@ if there are no open positions:
 
     else: fatal error log current terminal status[no of open positions etc. for journal]
 ```
-### New position management(logic)☑️
+### New position management(CORE)☑️
 ```
 stored ticket = 0 (default)
 
