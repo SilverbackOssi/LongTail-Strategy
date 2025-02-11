@@ -163,10 +163,11 @@ if distance between two ticket is greater than internal_grid_size + grid_spread:
 ```
 def place recovery order(reference ticket)
 
-    get ticket detail
+    
     
     if ticket is open:
-    
+        get ticket detail
+        
         order lot = next term of the sequence, relative to the reference(currently open) ticket
     
     else if ticket is a buy stop:
