@@ -45,6 +45,7 @@ These events create unforeseen circumstances
     3. *Only two pending order can be present at a time.* ☑️
     4. *All buy stops are to be placed 40points(grid spread) above the supposed price. Two consecutive buy stops will not be placed on the same price.* ☑️
     5. *fatal error = unforeseen event.*
+    6. *For all positions and orders, their volume must be called from the progression sequence.*
 - **What is a progression cycle?**
     
     *All the trades it takes to hit TP once.*
