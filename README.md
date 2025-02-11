@@ -185,7 +185,7 @@ def place continuation order(reference ticket)
 
 ### Continuation management(called) ☑️
 
-→*places the one order (continuation order) relative to open positions, during trading time*
+→*places one order (continuation order) relative to open positions, during trading time*
 ```
 def place continuation order(reference ticket)
 
