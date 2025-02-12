@@ -1,4 +1,4 @@
-
+// ALL THE CODE THAT ENSURES STRATEGY GUIDELINES ARE ADHERED
 
 void check_mismanagement()
 {
@@ -26,4 +26,5 @@ check that sequence is corresponding to account balance
 call check_mismanagement
 check that buy stops are place grid_spread higher than stop losses, take profits, and sell stops
 check that all positions and orders have their volume from the defined sequence 
+check forgotten position
 }
