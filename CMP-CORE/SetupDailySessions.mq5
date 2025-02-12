@@ -15,7 +15,7 @@ CTrade trade;
 datetime session_start = StringToTime("08:30");
 datetime session_end = StringToTime("18:30");// test server time = real time +1
 bool is_end_session = false; // false if session is active
-bool use_daily_session = false;
+bool use_daily_session = false; // trade 24/7
 
 void OnStart()
   {
