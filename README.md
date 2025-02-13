@@ -91,19 +91,20 @@ else:
 ```
 ### New position management(logic)☑️
 ```
-stored ticket = 0 (default)
+saved ticket = 0 #default
 def check new position():
-if position is open, and stored ticket ≠ open positions ticket
-
-    call set exits
-    
-    delete all pending orders.
-    
-    call recovery.
-    
-    call continuation.
-    
-    update stored ticket to open ticket
+    if position is open
+        get open positons ticket
+        if saved ticket ≠ open positions ticket:
+            call set exits
+            
+            delete all pending orders.
+            
+            call recovery.
+            
+            call continuation.
+            
+            update stored ticket to open ticket
 ```
 ### Inadvertent event management(logic)☑️
 ```
