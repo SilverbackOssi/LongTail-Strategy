@@ -5,11 +5,11 @@ void OnTick()
   {
 //---
    
-    // call daily sessions
+    // call daily sessions ☑️
     if useEndSession and EndSession and theres nothing on the chart:
         return tick
-    // call new position
     // manage mismanagement
+    // call new position
     // manage delay
     
   }
