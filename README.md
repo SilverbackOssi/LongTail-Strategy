@@ -89,7 +89,7 @@ else:
         open a short position at market price
         
 ```
-### New position management(logic)☑️
+### New position management(logic)☑️☑️
 ```
 saved ticket = 0 #default
 def check new position():

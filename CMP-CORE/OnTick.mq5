@@ -9,7 +9,7 @@ void OnTick()
     if useEndSession and EndSession and theres nothing on the chart:
         return tick
     // manage mismanagement
-    // call new position
+    // call new position ☑️
     // manage delay
     
   }
