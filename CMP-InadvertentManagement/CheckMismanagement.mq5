@@ -20,11 +20,12 @@ void check_mismanagement()
 }
 
 
-void check_strategy_rules(){
--> raises warning  
-check that sequence is corresponding to account balance
-call check_mismanagement
-check that buy stops are place grid_spread higher than stop losses, take profits, and sell stops
-check that all positions and orders have their volume from the defined sequence 
-check forgotten position
+void check_strategy_rules()
+{
+    //-> raises warning  
+    check that sequence is corresponding to account balance
+    call check_mismanagement
+    check that buy stops are place grid_spread higher than stop losses, take profits, and sell stops
+    check that all positions and orders have their volume from the defined sequence 
+    check forgotten position
 }
