@@ -264,4 +264,5 @@ Post-daily_session logging. 11:30pm
 - [ ] Code for all activities to be logged; position open/close, order open/close, minagements and sessions, etc.
 - [ ] Handle failed buys, sells, etc
 - [ ] Include docstrings for all functionalities
-- Script to detect skippages between two 15m candles, price must fill, 1:2
+- Script to detect skippages between two 15m candles, price must fill, 1:2 - camera photo on 12 feb.2025
+- confirm short scalps strategy idea - screen shot on 13th feb.2025
