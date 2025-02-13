@@ -11,7 +11,7 @@ void OnStart()
 
 void check_new_position(ulong &last_saved)
 {
-    if (PositionSelect(_Symbol))
+    if (PositionSelect(_Symbol))PositionSelect(_Symbol)
     {
         get open positons ticket;
         ulong open_ticket = ;
