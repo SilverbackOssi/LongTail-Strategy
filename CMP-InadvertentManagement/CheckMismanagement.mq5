@@ -12,6 +12,7 @@ void check_strategy_rules()
     check that all positions and orders have their volume from the defined sequence 
     
     check forgotten position
+    // "XX rule has been handled by XX function"
 }
 
 void check_mismanagement()
