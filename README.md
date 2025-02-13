@@ -74,23 +74,20 @@ These events create unforeseen circumstances
 
 ## Requirements
 
-### Daily sessions management(logic) ☑️
+### Daily sessions management(logic) ☑️☑️
 ```
-if EndSession == False:
-
-    if Outside trading time:
-    
+if Outside trading time:
         EndSession = True
-
-else if Within trading time:
+        return 
+else:
 
     EndSession = False
 
-    if an order is on the chart: (a progression cycle was carried over from previous day)
-
+    if an order or a position is on the chart:
+        #a progression cycle was carried over from previous day)
         return
-
-    open a short position at market price, close enough to 7:30am
+    else:
+        open a short position at market price
 ```
 ### Zero position management(logic) ☑️
 
@@ -253,4 +250,4 @@ Post-daily_session logging. 11:30pm
 - [ ]  Include image description
 - [ ] Code all activities to be logged; position open/close, order open/close, minagements and sessions, etc.
 - [ ] Handle failed buys, sells, etc
--Script to detect skippages between two 15m candles, price must fill, 1:2
+- Script to detect skippages between two 15m candles, price must fill, 1:2
