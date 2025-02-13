@@ -247,6 +247,7 @@ Post-daily_session logging. 11:30pm
 - [ ]  observe live trading for more unaccounted events.
 - [ ]  test without continuation range, it might be unnecessary.
 - [ ]  Include image description
-- [ ] Code all activities to be logged; position open/close, order open/close, minagements and sessions, etc.
+- [ ] Code for all activities to be logged; position open/close, order open/close, minagements and sessions, etc.
 - [ ] Handle failed buys, sells, etc
+- [ ] Include docstrings for all functionalities
 - Script to detect skippages between two 15m candles, price must fill, 1:2
