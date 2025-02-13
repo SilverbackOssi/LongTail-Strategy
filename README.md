@@ -255,7 +255,7 @@ Post-daily_session logging. 11:30pm
 
 ### To-Do
 
-- [ ]  Confirm all functions take args and not reference global vars
+- [ ]  Confirm all functions take args and not reference global vars, and are passed by reference when updates are needed
 - [ ]  List all utillity funcs
 - [ ]  observe live trading for more unaccounted events.
 - [ ]  test without continuation range, it might be unnecessary.
