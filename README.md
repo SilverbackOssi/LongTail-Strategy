@@ -80,7 +80,6 @@ if Outside trading time:
         EndSession = True
         return 
 else:
-
     EndSession = False
 
     if an order or a position is on the chart:
