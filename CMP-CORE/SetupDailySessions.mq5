@@ -58,6 +58,7 @@ void update_daily_session(bool &end_session)
            if (placed)
            {
               Print("Started new cycle with short position opened at market price: ", price);
+              // Call set_exits()
            }
            else
            {
