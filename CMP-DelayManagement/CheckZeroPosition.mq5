@@ -2,7 +2,8 @@
 
 //manages all delay
 //reasons: outside trading time, a position just closed leaving a delay, fatal error(unforeseen)
-```
+void check_zero_position()
+{
 if there are no open positions:
 
     if two tickets, zero open position(delay): 
@@ -20,4 +21,4 @@ if there are no open positions:
         return (the entire tick)
 
     else: fatal error log current terminal status[no of open positions etc. for journal]
-```
+}
