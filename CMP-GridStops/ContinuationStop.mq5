@@ -84,11 +84,12 @@ void place_continuation_stop(ulong reference_ticket)
         }
 
         // Place a stop order similar to the open position’s type
-        bool placed = trade.OrderOpen(_Symbol, order_type, order_volume, 0.0, order_price, 0, 0);
+        string comment = "continuation " + EnumToString(order_type);
+        bool placed = trade.OrderOpen(_Symbol, order_type, order_volume, 0.0, order_price, 0, 0, ORDER_TIME_GTC, 0, comment);
         if (placed)
         {
             ulong order_ticket = trade.ResultOrder(); // Get the ticket number of the placed order
-            Print(__FUNCTION__, " - Continuation stop order placed, reference ticket: ", reference_ticket, ", order ticket: ", order_ticket);
+            Print(__FUNCTION__, " - Continuation stop order placed on reference ticket: ", reference_ticket, ", order ticket: ", order_ticket, ", comment: ", comment);
         }
         else
         {

@@ -64,61 +64,38 @@ These events create unforeseen circumstances
     - Replacement order: *during range delay a continuation order is to be removed and replaced by a recovery order.* ☑️
     - Carry over: *some market days are slow, those days we dont hit daily target. running progression cycles are held running unto the next day.* ☑️
 
+- **Risk management rules**
+    - Ensure progression sequence is accurate and relative to account balance. 🏁
+    - Ensure lot sizes are pricked properly from the sequence. 🏁
+    - Ensure take profit and stop loss is set on all positions.🏁
+
 ---
-
-## Risk management rules
-
-- Ensure progression sequence is accurate and relative to account balance. 🏁
-- Ensure lot sizes are pricked properly from the sequence. 🏁
-- Ensure take profit and stop loss is set on all positions.🏁
 
 ## Requirements
 
-### Daily sessions management(logic) ☑️☑️
+### Daily sessions management(CORE) ☑️☑️
 ```
 if Outside trading time:
-        EndSession = True
-        return 
+    EndSession = True
+    delete non recovery orders
+    return 
 else:
     EndSession = False
 
     if an order or a position is on the chart:
-        #a progression cycle was carried over from previous day)
+        #a progression cycle is still running
         return
     else:
         open a short position at market price
+        
 ```
-### Zero position management(logic) ☑️
-
-*manages all delay*
-
-reasons: outside trading time, a position just closed leaving a delay, fatal error(unforeseen)
-```
-if there are no open positions:
-
-    if two tickets, zero open position(delay): 
-
-        call delay management
-
-        return
-
-    if outside daily session: 
-
-        reset relevant params(currently none)
-
-        if pending ticket: delete, log what you deleted
-
-        return (the entire tick)
-
-    else: fatal error log current terminal status[no of open positions etc. for journal]
-```
-### New position management(CORE)☑️
+### New position management(logic)☑️
 ```
 stored ticket = 0 (default)
-
+def check new position():
 if position is open, and stored ticket ≠ open positions ticket
 
-    set take profit and stop loss
+    call set exits
     
     delete all pending orders.
     
@@ -132,28 +109,61 @@ if position is open, and stored ticket ≠ open positions ticket
 ```
 if there are more than one positions
 
-    call fatal error, close bot. log event.
+    raise fatal error, close bot. log event.
 
 if there are more that two orders:
 
-    call fatal error, close bot. log event.
+    raise fatal error, close bot. log event.
 ```
-### Delay management(called)☑️
+### Zero position management(logic) ☑️
+
+*manages all delay*
+
+reasons: outside trading time, a position just closed leaving a delay, fatal error(unforeseen)
+```
+if there are no open positions:
+
+    # reason : a position just closed within trading time leaving a delay
+    if there are two tickets: # theres a delay 
+
+        call range delay management
+
+        return
+    # reason: outside trading time
+    if use_daily_session and EndSession: 
+
+        # reset relevant params, currently none
+        if theres a ticket:
+            Delete any order whose comment does not contain 'recovery', log what you deleted
+        
+            call range delay management
+        
+        return
+    # reason: fatal error,unforeseen event
+    else: fatal error log current terminal status #number of open positions etc. for journaling
+```
+
+### Range delay management(logic)☑️
 
 →To set up range delay
 
 *When a range delay occurs, there will be two orders; the lagging continuation order and a recovery buy stop, initially. We want to replace the continuation order with a recovery sell stop.*
+```
+# this function is trusted to run all confirmations before executions
+def check range delay():
+    if last position was buy: return (not a range delay, its continuation delay)
 
-if last position was buy: return (not a range delay, its continuation delay)
+    if distance between two ticket is greater than internal_grid_size + grid_spread:(range delay is yet to be set up)
 
-if distance between two ticket is greater than internal_grid_size + grid_spread:(range delay is yet to be set up)
+        if current price greater than half the the distance(make sure its not a sell side continuation delay):
 
-    if current price greater than half the the distance(make sure its not a sell side continuation delay):
+            delete lagging sell stop
+            {should be continuation}
 
-        delete lagging sell stop
+            confirm recovery buy stop with grid size because of delay outside session!!!
 
-        *call recovery on the buy stop(*place sell recovery order)
-
+            *call recovery on the buy stop(*place sell recovery order)
+```
 ### Exit management(called)☑️☑️
 →Sets take profit and stop loss on an open position
 ```
@@ -217,14 +227,15 @@ def place continuation order(reference ticket)
 **sell stop as continuation order:** continuation sell stops are placed on the take profit of a short position.
 
 ### Sequence builder(called) ☑️☑️
-
+```
 def Initialize progression sequence(reward multiplier)
 
 - Ensure lot sizes(lot progression sequence) are accurate
 - relative to account balance 🏁 (not yet, we use symbol minimum volume)
 
 return an array with progression sequence.
-
+```
+---
 ## Utility functions
 
 - Rules enforcer utils

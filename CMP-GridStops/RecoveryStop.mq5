@@ -74,7 +74,7 @@ void place_recovery_stop(ulong reference_ticket)
         double open_volume = OrderGetDouble(ORDER_VOLUME_CURRENT);
         
         // Check if the reference order is a recovery stop
-        if (ticket_type != ORDER_TYPE_BUY_STOP) //XXX should check for EA comment "recovery stop"
+        if (ticket_type != ORDER_TYPE_BUY_STOP)
         {
             Print(__FUNCTION__, " - Failed to place recovery sell stop order. Reference order: ", reference_ticket, " is not a recovery buy stop");
             return;
@@ -101,11 +101,12 @@ void place_recovery_stop(ulong reference_ticket)
      }
 
      // Place a stop order opposite to the open/pending position’s type
-     bool placed = trade.OrderOpen(_Symbol, order_type, order_volume, 0.0, order_price, 0, 0);
+     string comment = "recovery " + EnumToString(order_type);
+     bool placed = trade.OrderOpen(_Symbol, order_type, order_volume, 0.0, order_price, 0, 0, ORDER_TIME_GTC, 0, comment);
      if (placed)
      {
          ulong order_ticket = trade.ResultOrder(); // Get the ticket number of the placed order
-         Print(__FUNCTION__, " - Recovery stop order placed, reference ticket: ", reference_ticket, ", order ticket: ", order_ticket);
+         Print(__FUNCTION__, " - Recovery stop order placed on reference ticket: ", reference_ticket, ", order ticket: ", order_ticket, ", comment: ", comment);
      }
      else
      {

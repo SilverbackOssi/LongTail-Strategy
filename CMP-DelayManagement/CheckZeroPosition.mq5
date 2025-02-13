@@ -1,24 +1,26 @@
-### Zero position management(logic) ☑️
 
 //manages all delay
-//reasons: outside trading time, a position just closed leaving a delay, fatal error(unforeseen)
+
 void check_zero_position()
 {
 if there are no open positions:
 
-    if two tickets, zero open position(delay): 
+    # reason : a position just closed within trading time leaving a delay
+    if there are two tickets: # theres a delay 
 
-        call delay management
+        call range delay management
 
         return
+    # reason: outside trading time
+    if use_daily_session and EndSession: 
 
-    if outside daily session: 
-
-        reset relevant params(currently none)
-
-        if pending ticket: delete, log what you deleted
-
-        return (the entire tick)
-
-    else: fatal error log current terminal status[no of open positions etc. for journal]
+        # reset relevant params, currently none
+        if theres a ticket:
+            Delete any order whose comment does not contain 'recovery', log what you deleted
+        
+            call range delay management
+        
+        return
+    # reason: fatal error,unforeseen event
+    else: fatal error log current terminal status #number of open positions etc. for journaling
 }
