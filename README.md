@@ -1,7 +1,7 @@
 # Documentation 
 LongTails is modified version of the Remora strategy, designed to capitalize on trends and last through ranges. Parent versions were based on a 1:1 reward system, but this is a 1:R; where R is greater that 1. For this study our focus is on 1:3.
 
-### Strength and weaknesses (why it works and why it doesn't)
+### Strength and weakness
 
 Like every other MarketCrusher, LongTails thrives in a trending market and dies in a ranging market. This model seems to outlive other models in ranging markets although we’re yet to discover the maximum range it survives.
 
@@ -11,7 +11,7 @@ Like every other MarketCrusher, LongTails thrives in a trending market and dies 
 
 ### **Scope**
 
-- Study was performed on XAU/USD pair, hence **grid_spread** = 40*points*
+- Study was performed on XAU/USD pair, hence **grid_spread**/**range_spread** = 40*points*
 - Potentially Volatility 75 and 75(1s)
 
 ### Entry rules
@@ -33,42 +33,49 @@ These events create unforeseen circumstances
 - Slippage
 - Spread
 
-### Caution
+### Assumptions
+- ***The grid is either progressing or in a range***
+---
 
-- ensure no continuation outside daily session. ☑️
+## Strategy definition
+- -
 
-# LongTails Progression
+# Strategy Guide
 
-- **General rules**
-    1. Progression sequence is predefine by a function, initiated on start. ☑️
-    2. *Only one position can be open at a time.* ☑️
-    3. *Only two pending order can be present at a time.* ☑️
-    4. *All buy stops are to be placed 40points(grid spread) above the supposed price. Two consecutive buy stops will not be placed on the same price.* ☑️
-    5. *fatal error = unforeseen event.*
-    6. *For all positions and orders, their volume must be called from the progression sequence.*
-- **What is a progression cycle?**
-    
-    *All the trades it takes to hit TP once.*
-    
-    *Each cycle is independent from predecessors, but references position type and volume only.*
-    
-- **Assumptions**
-    - ***The grid is either progressing or in a range***
+- **Core guides**
+    1. *Progression sequence is predefine by a function, initiated on start.*
+    2. *Only one position can be open at a time.* 
+    3. *Only two pending order can be present at a time.* 
+    4. *All buy stops are to be placed 40points(range_spread) above the supposed price. Two consecutive buy stops will not be placed on the same price.* 
+    5. *Fatal error error is raised when unforeseen event occurs.*
+
+- **Glossary**
+    - What is a progression cycle?
+        *All the trades it takes to hit TP once.*
+        *Each cycle is independent from predecessors, but references position type and volume only.*
+    - Continuation delay:  
+        *situation where buy stops are placed higher(fixed distance) than the take profit of a long position*
+        *price would hit take profit and not trigger a new position because of our range_spread, leaving us with no open position and two pending orders(tap and reverse response).*
+    - Range delay:  
+        *situation where buy stops are placed higher(fixed distance) than the stop loss of a short position*
+        *Price would be within a range and hit range ceiling but not trigger a buy stop because of our range_spread, therefore there’s no open position but two pending orders.*
+    - **These delays ensure that the grid is not fixed buy constantly moving; the grid moves upward in response to a range**
+
 - **Likely events within a progression cycle?**
-    - Range response: *The grid moves upward in response to a range i.e. the buy stop is placed grid_spread higher than the stop loss of the short position or take profit of a long position* ☑️
-    - Range delay:  *Price may be within a range and hit range ceiling but not trigger a buy stop because of our range response, therefore there’s no open position but two pending orders.*☑️
-    - Continuation delay:  *price may hit take profit and not trigger a new position because of our range response, leaving us with no open position and two pending orders(tap and reverse response).* ☑️
-    - Tap and reverse: *A pending order might be triggered by spread when a position is still open therefore leaving two active positions. Sometimes the older positions reverses and closes a loss, leaving us with two grudges to deal with a creating chaos in the system.* ☑️
-    - Misplaced orders: *An order may be left mis-priced as the grid progresses or ranges, due to slippage(all orders needs to be renewed as grid moves).* ☑️
-    - Forgotten order: *An order may be forgotten after a daily session ends, leading to unintended outcomes.*☑️
-    - Replacement order: *during range delay a continuation order is to be removed and replaced by a recovery order.* ☑️
-    - Carry over: *some market days are slow, those days we dont hit daily target. running progression cycles are held running unto the next day.* ☑️
+    - Extended range: *Price might stay within a worrisome range where our stop loss falls for an extended period incurring unnecessary losses* 
+    - Tap and reverse: *A pending order might be triggered by spread when a position is still open therefore leaving two active positions. Sometimes the older positions reverses and closes a loss, leaving us with two grudges to deal with a creating chaos in the system.* 
+    - Misplaced orders: *An order may be left mis-priced as the grid progresses or ranges, due to slippage(all orders needs to be renewed as grid moves).* 
+    - Replacement order: *during range delay a continuation order is to be removed and replaced by a recovery order.* 
+    - Carry over: *some market days are slow, those days we don't hit daily target. running progression cycles are held running unto the next day.* 
 
-- **Risk management rules**
+- **Risk management caution**
     - Ensure progression sequence is accurate and relative to account balance. 🏁
-    - Ensure lot sizes are pricked properly from the sequence. 🏁
-    - Ensure take profit and stop loss is set on all positions.🏁
+    - Ensure lot sizes are pricked properly from the sequence.
+    - Ensure take profit and stop loss is set on all positions.
 
+- **General Caution**
+    - ensure no continuation order outside daily session.
+    - ensure this is no Forgotten order. *An order may be forgotten after a daily session ends, leading to unintended outcomes.*
 ---
 
 ## Requirements
@@ -102,7 +109,7 @@ def check new position():
             
             call recovery.
             
-            call continuation.
+            call continuation if not endsession.
             
             update stored ticket to open ticket
 ```
@@ -242,6 +249,7 @@ return an array with progression sequence.
 - Rules enforcer utils
 - delete all pending orders, if there are orders.
 - fatal error(error location, error message). removes bot and reports event.
+- XXX
 
 ## Session report logging
 
@@ -264,5 +272,6 @@ Post-daily_session logging. 11:30pm
 - [ ] Code for all activities to be logged; position open/close, order open/close, minagements and sessions, etc.
 - [ ] Handle failed buys, sells, etc
 - [ ] Include docstrings for all functionalities
+- [ ] Include Strategy definition
 - Script to detect skippages between two 15m candles, price must fill, 1:2 - camera photo on 12 feb.2025
 - confirm short scalps strategy idea - screen shot on 13th feb.2025

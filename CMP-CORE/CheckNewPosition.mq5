@@ -37,7 +37,7 @@ void check_new_position(ulong &last_saved)
             
             // call recovery.
             
-            // call continuation.
+            // call continuation if not endsession.
             
             //update stored ticket to open ticket
             last_saved = open_ticket;

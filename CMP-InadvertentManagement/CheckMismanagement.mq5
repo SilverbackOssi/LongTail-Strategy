@@ -3,19 +3,13 @@
 void check_strategy_rules()
 {
     //-> raises warning  
-    check that sequence is corresponding to account balance
-    
-    call check_mismanagement
-    
-    check that buy stops are place grid_spread higher than stop losses, take profits, and sell stops
-    
-    check that all positions and orders have their volume from the defined sequence 
-    
-    check forgotten position
+    check_core_rules();
+    check_risk_rules();
+    // check forgotten position
     // "XX rule has been handled by XX function"
 }
 
-void check_mismanagement()
+void check_core_rules()
 {
     // Check if there is more than one position
     if (PositionsTotal() > 1)
@@ -32,4 +26,17 @@ void check_mismanagement()
         ExpertRemove(); // Close the bot
         return;
     }
+
+    // check if orders are misplaced and properly spread relative to open position
+
+    
+
+    // comment order has been replaced in the appropriate func.
+}
+
+void check_risk_rules()
+{
+    // check that sequence was init accurately
+    // check tp/sl is set
+    // check volume of open position from sequence
 }
