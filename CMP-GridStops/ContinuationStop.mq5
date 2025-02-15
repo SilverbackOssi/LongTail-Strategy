@@ -70,9 +70,7 @@ void place_continuation_stop(ulong reference_ticket)
         // Get lot size as the first term of the progression sequence
         double order_volume = Sequence[0];
         ENUM_ORDER_TYPE order_type = (ticket_type == POSITION_TYPE_BUY) ? ORDER_TYPE_BUY_STOP : ORDER_TYPE_SELL_STOP;
-        double order_price = (ticket_type == POSITION_TYPE_BUY) 
-                      ? take_profit+grid_spread 
-                      : take_profit;
+        double order_price = (ticket_type == POSITION_TYPE_BUY) ? take_profit+grid_spread : take_profit;
          
         // Check if an order already exists at the calculated price
         ulong ticket_exists = order_exists_at_price(_Symbol, order_type, order_price);

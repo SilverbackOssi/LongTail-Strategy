@@ -10,7 +10,7 @@ void OnTick()
         return tick
     // manage mismanagement
     // call new position ☑️
-    // manage delay
+    // manage delay ☑️
     
   }
 //+------------------------------------------------------------------+

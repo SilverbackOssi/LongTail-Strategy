@@ -12,11 +12,12 @@
 //+------------------------------------------------------------------+
 input int multiplier = 3;
 input int sequenceLength = 20;
+double min_volume = SymbolInfoDouble(_Symbol, SYMBOL_VOLUME_MIN);
 
 void OnStart()
   {
 //---
-   int sequence[];
+   double sequence[];
    build_sequence(multiplier, sequenceLength, sequence);
    
    Print(StringFormat("\n%dX sequence, length = %d",multiplier, sequenceLength ));
@@ -28,18 +29,18 @@ void OnStart()
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
-int build_sequence(int reward_multiplier, int sequence_length, int &progression_sequence[])
+int build_sequence(int reward_multiplier, int sequence_length, double &progression_sequence[])
   {
    // Initialize variables
-   int minimum_stake = 1;
-   int minimum_profit = minimum_stake * 2;
-   int current_stake = minimum_stake;
+   double minimum_stake = min_volume;
+   double minimum_profit = minimum_stake * 2;
+   double current_stake = minimum_stake;
 
 
    // Compute the progression sequence
    for(int i = 0; i < sequence_length; i++)
      {
-      int minimum_outcome = ArraySum(progression_sequence) + minimum_profit;
+      double minimum_outcome = ArraySum(progression_sequence) + minimum_profit;
       while(current_stake * reward_multiplier < minimum_outcome)
         {
          current_stake += minimum_stake;
@@ -53,9 +54,9 @@ int build_sequence(int reward_multiplier, int sequence_length, int &progression_
 //+------------------------------------------------------------------+
 
 // Helper function to sum the elements of an array
-int ArraySum(int &array[])
+double ArraySum(double &array[])
   {
-   int sum = 0;
+   double sum = 0;
    for(int i = 0; i < ArraySize(array); i++)
      {
       sum += array[i];

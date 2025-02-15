@@ -4,7 +4,7 @@ Ensure no continuation order placed outside daily session.
     - place_continuation function only responds when EndSession ==false (during trading session)
     - sessions management function deletes all orders except recovery orders outside daily session
 Ensure no order is left pending after a progression cycle outside daily session(forgotten position)
-    - XXX    
+    - post_session_clean_up() is called when there is no open position   
 
 Risk caution
 Ensure progression sequence is accurate and relative to account balance.
@@ -12,6 +12,7 @@ Ensure progression sequence is accurate and relative to account balance.
     - XXX
 Ensure lot sizes are pricked properly from the sequence. 
     - all function that send orders/positions pick their lot from the progression sequence
+    - recovery stop, continuation stop, daily session
 Ensure take profit and stop loss is set on all positions.
     - take profit and stop loss are set on every new open position
 
@@ -25,16 +26,16 @@ Extended range
 Carry over
     - progression cycles are handled (TP/SL is set and recovery is set) regardless of EndSession status
 Replacement order
-    - XXX
+    - check_range_delay() ensures lagging sell stops are replaced with recovery sell stops
 
 Core rules    
 One Position rule - maximum of one open position
-    - XXX
+    - check_core_rules()
 Two order rule - maximum of two pending orders
-    - XXX
+    - check_core_rules()
 Range spread rule
     - all functions that place buy stops spread them range_spread higher than the ideal price, allowing an order to close properly(Continuation delay) and a dynamic grid(Range delay).    
 Define sequence on initialization
-    - XXX
+    - build_sequence() builds the array based on the symbols minimum volume(for testing)
 Fatal error
     - unforeseen event are logged as fatal error

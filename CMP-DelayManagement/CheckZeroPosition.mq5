@@ -94,6 +94,7 @@ void check_range_delay()
         {
             // Delete the continuation sell stop order
             //delete_non_recovery_orders();
+            Print(__FUNCTION__, " - Replacing sell stop: ", sell_stop_ticket," with recovery sell stop");
 
             // Check if the buy stop ticket is valid
             if (buy_stop_ticket != 0) 
