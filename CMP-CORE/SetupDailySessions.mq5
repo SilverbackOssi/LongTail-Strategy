@@ -21,21 +21,23 @@ bool use_daily_session = false; // trade 24/7
 void OnStart()
   {
 //--- 
-   update_daily_session(is_end_session);
+    track_daily_session(is_end_session);
    
   }
 //+------------------------------------------------------------------+
 
 
-void update_daily_session(bool &end_session)
+void track_daily_session(bool &end_session)
 { 
      if (!is_within_trading_time(session_start, session_end)) // outside trading time
      {
          // End a daily session
          end_session = true;
          Print("Ending daily session: Outside trading time.");
-         // delete continuaiton orders
+         
+         // delete continuation orders
          delete_non_recovery_orders();
+         
          return;
      }
     else // within trading time

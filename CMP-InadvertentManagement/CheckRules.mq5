@@ -6,7 +6,7 @@ void check_strategy_rules()
     check_core_rules();
     check_risk_rules();
     // check forgotten position
-    // "XX rule has been handled by XX function"
+    // - outside trading session - progression cycle just closed - a recovery order is still pending
 }
 
 void check_core_rules()
