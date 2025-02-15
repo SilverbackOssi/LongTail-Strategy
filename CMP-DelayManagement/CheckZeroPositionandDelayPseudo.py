@@ -1,5 +1,32 @@
 
 '''
+//manages all delay
+
+void check_zero_position()
+{
+    // reason1: a position just closed within trading time leaving a delay
+    // reason2: outside trading time
+    // reason3: fatal error, unforeseen event, log status
+
+    if (PositionSelect(_Symbol)) return;
+
+    if (use_daily_session) post_session_clean_up();
+
+    check_range_delay();
+}
+
+void post_session_clean_up()
+{
+    if end_session == false or theres open position: return
+
+    if there is one orders:
+        get the pending order details
+        if price is far from the order(relative to grid_size + grid_spread * 2), delete the order, log
+
+}
+'''
+
+'''
 // !function is trusted to understand why theres are tickets on the chart
 
 // Goal: To set up range delay
@@ -10,7 +37,7 @@
 //  The last trade was sell and we're working on a buy stop;
 //  the buy stop should have been opened but it was delayed.
 
-def delay_update_grid():
+def check_range_delay():
     get no of tickets
     if theres an open position or no ticket: return //not a delay
 
