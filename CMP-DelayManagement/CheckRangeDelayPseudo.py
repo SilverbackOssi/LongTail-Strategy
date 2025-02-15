@@ -1,5 +1,5 @@
 
-
+'''
 // !function is trusted to understand why theres are tickets on the chart
 
 // Goal: To set up range delay
@@ -10,7 +10,7 @@
 //  The last trade was sell and we're working on a buy stop;
 //  the buy stop should have been opened but it was delayed.
 
-void delay_update_grid():
+def delay_update_grid():
     get no of tickets
     if theres an open position: return //not a delay
     or no ticket: return // not a delay
@@ -30,3 +30,4 @@ void delay_update_grid():
         call recovery on the buy stop //places a sell recovery order
     else call mismanagement
 
+'''

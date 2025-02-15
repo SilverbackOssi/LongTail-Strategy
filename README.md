@@ -265,13 +265,14 @@ Post-daily_session logging. 11:30pm
 ### To-Do
 
 - [ ]  Confirm all functions take args and not reference global vars, and are passed by reference when updates are needed
-- [ ]  List all utillity funcs
+- [ ]  List all utility func
 - [ ]  observe live trading for more unaccounted events.
 - [ ]  test without continuation range, it might be unnecessary.
 - [ ]  Include image description
-- [ ] Code for all activities to be logged; position open/close, order open/close, minagements and sessions, etc.
+- [ ] Code for all activities to be logged; position open/close, order open/close, managements and sessions, etc.
 - [ ] Handle failed buys, sells, etc
-- [ ] Include docstrings for all functionalities
+- [ ] Include docstring for all functionalities
 - [ ] Include Strategy definition
-- Script to detect skippages between two 15m candles, price must fill, 1:2 - camera photo on 12 feb.2025
+- [ ] Clean up README, separate pseudo code
+- Script to detect slippages between two 15m candles, price must fill, 1:2 - camera photo on 12 feb.2025
 - confirm short scalps strategy idea - screen shot on 13th feb.2025

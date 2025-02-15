@@ -22,3 +22,11 @@ if there are no open positions:
     # reason: fatal error,unforeseen event
     else: fatal error log current terminal status #number of open positions etc. for journaling
 }
+
+void post_session_clean_up()
+{
+    if theres open position: return
+    if there are more that one orders: return
+    // we're cleaning up one pending recovery order
+    // don't clean delay recovery buy stop
+}

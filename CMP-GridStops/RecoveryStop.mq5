@@ -66,15 +66,16 @@ void place_recovery_stop(ulong reference_ticket)
         order_type = (ticket_type == POSITION_TYPE_SELL) ? ORDER_TYPE_BUY_STOP : ORDER_TYPE_SELL_STOP;
         order_price = (ticket_type == POSITION_TYPE_SELL) ? stop_loss+grid_spread : stop_loss;     
     }
-    else if (OrderSelect(reference_ticket)) //order must be a buy stop
+    else if (OrderSelect(reference_ticket)) // order must be a recovery buy stop
     {       
         // Get ticket details
         long ticket_type = OrderGetInteger(ORDER_TYPE);
         double open_price = OrderGetDouble(ORDER_PRICE_OPEN);
         double open_volume = OrderGetDouble(ORDER_VOLUME_CURRENT);
+        string comment = OrderGetString(ORDER_COMMENT);
         
-        // Check if the reference order is a recovery stop
-        if (ticket_type != ORDER_TYPE_BUY_STOP)
+        // Check if the reference order is a recovery buy stop
+        if (ticket_type != ORDER_TYPE_BUY_STOP || (StringFind(comment, "recovery") == -1))
         {
             Print(__FUNCTION__, " - Failed to place recovery sell stop order. Reference order: ", reference_ticket, " is not a recovery buy stop");
             return;
