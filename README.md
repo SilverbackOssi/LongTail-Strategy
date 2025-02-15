@@ -101,7 +101,7 @@ else:
 saved ticket = 0 #default
 def check new position():
     if position is open
-        get open positons ticket
+        get open positions ticket
         if saved ticket ≠ open positions ticket:
             call set exits
             
@@ -152,26 +152,8 @@ if there are no open positions:
 ```
 
 ### Range delay management(logic)☑️
-
 →To set up range delay
 
-*When a range delay occurs, there will be two orders; the lagging continuation order and a recovery buy stop, initially. We want to replace the continuation order with a recovery sell stop.*
-```
-# this function is trusted to run all confirmations before executions
-def check range delay():
-    if last position was buy: return (not a range delay, its continuation delay)
-
-    if distance between two ticket is greater than internal_grid_size + grid_spread:(range delay is yet to be set up)
-
-        if current price greater than half the the distance(make sure its not a sell side continuation delay):
-
-            delete lagging sell stop
-            {should be continuation}
-
-            confirm recovery buy stop with grid size because of delay outside session!!!
-
-            *call recovery on the buy stop(*place sell recovery order)
-```
 ### Exit management(called)☑️☑️
 →Sets take profit and stop loss on an open position
 ```
@@ -274,5 +256,6 @@ Post-daily_session logging. 11:30pm
 - [ ] Include docstring for all functionalities
 - [ ] Include Strategy definition
 - [ ] Clean up README, separate pseudo code
+- [ ] Allow ea to manage multiple charts by confirming symbol before any operation
 - Script to detect slippages between two 15m candles, price must fill, 1:2 - camera photo on 12 feb.2025
 - confirm short scalps strategy idea - screen shot on 13th feb.2025

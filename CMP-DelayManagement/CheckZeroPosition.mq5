@@ -25,8 +25,10 @@ if there are no open positions:
 
 void post_session_clean_up()
 {
-    if theres open position: return
-    if there are more that one orders: return
-    // we're cleaning up one pending recovery order
-    // don't clean delay recovery buy stop
+    if end_session == false or theres open position: return
+
+    if there is one orders:
+        get the pending order details
+        if price is far from the order(relative to grid_size + grid_spread * 2), delete the order, log
+
 }

@@ -7,6 +7,7 @@ void check_strategy_rules()
     check_risk_rules();
     // check forgotten position
     // - outside trading session - progression cycle just closed - a recovery order is still pending
+    // consider unseen edge cases
 }
 
 void check_core_rules()

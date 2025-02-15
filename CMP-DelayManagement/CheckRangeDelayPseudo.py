@@ -12,10 +12,9 @@
 
 def delay_update_grid():
     get no of tickets
-    if theres an open position: return //not a delay
-    or no ticket: return // not a delay
+    if theres an open position or no ticket: return //not a delay
 
-    if last position was buy: return // confirm its not a buy side continuation delay
+    if last position was buy: return // to confirm its not a buy side continuation delay
     
     if no of ticket ==2 // continuation stop is present
         if distance between two ticket is <= than grid_size + grid_spread*2: return//range delay is already set

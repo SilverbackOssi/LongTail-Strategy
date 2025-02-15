@@ -15,21 +15,24 @@ void OnStart()
   {
 //--- 
     ulong last_saved_ticket = 0 ;//default
-    check_new_position(last_saved_ticket);
+    ENUM_POSITION_TYPE last_saved_type = -1;
+    check_new_position(last_saved_ticket, last_saved_type);
    
   }
 //+------------------------------------------------------------------+
 
 
-void check_new_position(ulong &last_saved)
+void check_new_position(ulong &last_saved, ENUM_POSITION_TYPE &last_type)
 {
+    // assumes there's one position open on the chart
     if (PositionSelect(_Symbol))
     {
-        //get open positons ticket
+        //get open positions ticket
         ulong open_ticket = PositionGetInteger(POSITION_TICKET);
         
         if (last_saved != open_ticket) // New position open on chart
         {
+            long ticket_type = PositionGetInteger(POSITION_TYPE);
             Print("New position opened, proceeding to manage.");
             // call set exits()
             
@@ -37,10 +40,11 @@ void check_new_position(ulong &last_saved)
             
             // call recovery.
             
-            // call continuation if not endsession.
+            // call continuation.
             
             //update stored ticket to open ticket
             last_saved = open_ticket;
+            last_type = (ENUM_POSITION_TYPE)ticket_type;
          }   
     }
 }
