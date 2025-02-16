@@ -51,7 +51,7 @@ void OnStart()
 void place_continuation_stop(ulong reference_ticket)
 {
     
-    if (EndSession) return;
+    if (is_end_session) return;
 
     if (PositionSelectByTicket(reference_ticket))
     {

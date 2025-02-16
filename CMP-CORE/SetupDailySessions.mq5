@@ -25,7 +25,11 @@ void OnStart()
    
   }
 //+------------------------------------------------------------------+
-
+bool is_empty_chart()
+{
+  if (!PositionSelect(_Symbol) && OrdersTotal()==0) return true;
+  return false;
+}
 
 void track_daily_session(bool &end_session)
 { 
