@@ -29,7 +29,7 @@ def build_lot_sequence(account_balance=10000):
   # for now we'll build with XAU/USD in mind
   # ====================================================================== +
   # Build the base lot sequence
-  # idealy, the first term of the lot sequence should be the lot 
+  # ideally, the first term of the lot sequence should be the lot 
   # that produces the first term of the progression sequence at grid size pips
   # but we would use assumptions for speed sake
   # for speed we develop with symbol minimal volume 0.01 (1/100) - XAU/USD our grid is 200 points(2usd)
@@ -39,10 +39,12 @@ def build_lot_sequence(account_balance=10000):
   print(progression_sequence)
   print(f'\n total= {sum(progression_sequence)}')
 
-  minimum_lot = 0.01
+  minimum_lot = 0.005
   sequence_factor = progression_sequence[0]/minimum_lot
   base_lot_sequence = [term/sequence_factor for term in progression_sequence if term > 0]
   print(base_lot_sequence)
+  print(sum(base_lot_sequence))
+  # print(sum([ 0.005, 0.005, 0.010, 0.010, 0.015, 0.020, 0.025, 0.035, 0.045, 0.065, 0.085, 0.110, 0.150, 0.200, 0.265, 0.355, 0.470, 0.630, 0.840, 1.120 ]))
 
 
 build_lot_sequence(10000)

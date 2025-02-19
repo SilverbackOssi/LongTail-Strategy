@@ -64,3 +64,17 @@ double ArraySum(double &array[])
    return sum;
   }
 //+------------------------------------------------------------------+
+
+void build_lot_sequence(const double &progression_sequence[], double &lot_sequence[])
+{
+  // optionally take account balance as param
+  // normalize double to 5
+  double sequence_factor = progression_sequence[0]/minimum_volume;
+
+  lot_sequence = {};
+  for (int i=0; i<ArraySize(progression_sequence); i++)
+  {
+    lot_sequence[i] = progression_sequence[i]/sequence_factor;
+  }
+  arrayprint(lot_sequence);
+}

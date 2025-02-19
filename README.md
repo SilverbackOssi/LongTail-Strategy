@@ -256,6 +256,6 @@ Post-daily_session logging. 11:30pm
 - [ ] Include docstring for all functionalities
 - [ ] Include Strategy definition
 - [ ] Clean up README, separate pseudo code
-- [ ] Allow ea to manage multiple charts by confirming symbol before any operation
+- [ ] Allow ea to manage multiple charts by confirming symbol before any operation- CheckRules,
 - Script to detect slippages between two 15m candles, price must fill, 1:2 - camera photo on 12 feb.2025
 - confirm short scalps strategy idea - screen shot on 13th feb.2025
