@@ -246,6 +246,7 @@ Post-daily_session logging. 11:30pm
 
 ### To-Do
 
+- [ ] re adjust sequence and how it is progressed. Re asses session time management.
 - [ ]  Confirm all functions take args and not reference global vars, and are passed by reference when updates are needed
 - [ ]  List all utility func
 - [ ]  observe live trading for more unaccounted events.
