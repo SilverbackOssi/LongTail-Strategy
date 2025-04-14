@@ -1,6 +1,6 @@
 # LongTail Trading Strategy
 
-A MetaTrader 5 Expert Advisor that implements the LongTail trading strategy, designed to capitalize on trends while surviving ranging markets.
+An Expert Advisor that implements the LongTail trading strategy, designed to capitalize on trends while surviving ranging markets.
 
 ## Overview
 
