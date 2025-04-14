@@ -1,7 +1,7 @@
 # To-Do
 
 ### Sequence
-- [x] re adjust sequence and how it is progressed. Re asses session time management.
+- [ ] re adjust sequence and how it is progressed. Re asses session time management.
 - [ ]  Confirm all functions take args and not reference global vars, and are passed by reference when updates are needed
 - [ ]  List all utility func
 - [ ]  observe live trading for more unaccounted events.
@@ -15,6 +15,3 @@
 - [ ] Allow ea to manage multiple charts by confirming symbol before any operation- CheckRules,
 - Script to detect slippages between two 15m candles, price must fill, 1:2 - camera photo on 12 feb.2025
 - confirm short scalps strategy idea - screen shot on 13th feb.2025
-
-H<sup>2</sup>0
-  H<sub>2</sub>0
