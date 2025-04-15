@@ -1,5 +1,5 @@
 
-This module holds all the core logic that defines the LongTailStrategy(LTS)...
+This Master module holds all the core logic that defines the LongTailStrategy(LTS)...
 
 START
     Init sequence
