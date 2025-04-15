@@ -58,14 +58,17 @@ Default session times (when daily sessions enabled):
 ```
 LongTail-Strategy/
 ├── Main/
-│   └── LongTailsScalperV1.mq5       # Main EA file
-├── Components/
-│   ├── CMP-CORE/                    # Core functionality
-│   ├── CMP-GridStops/               # Grid management
-│   ├── CMP-DelayManagement/         # Delay handling
-│   ├── CMP-SequenceBuilder/         # Position sizing
-│   └── CMP-InadvertentManagement/   # Error handling
-└── Documentation/                    # Strategy documentation
+│   └── LongTailsScalperV1.mq5       # Main EA entry point
+├── Modules/
+│   ├── ControlInterface/            # Core business logic
+│   │   ├── SequenceHandler/         # Progression sequence management
+│   │   ├── ProgressionCycleHandler/ # Trading cycle management  
+│   │   ├── GridStopsHandler/        # Stop orders management
+│   │   ├── GridShiftHandler/        # Grid movement logic
+│   │   └── ErrorCorrectionHandler/  # Error handling and rules
+│   └── AuditInterface/             # Logging and monitoring
+├── Abstract/                       # Documentation and planning
+└── Documentation.md               
 ```
 
 ## Installation
