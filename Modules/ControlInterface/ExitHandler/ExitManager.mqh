@@ -3,7 +3,7 @@
 //|                                      Copyright 2025, Anyim Ossi. |
 //|                                          anyimossi.dev@gmail.com |
 //+------------------------------------------------------------------+
-#include <Trade\Trade.mqh>
+#include  <Ossi\LongTails\Utils.mqh>
 
 //+------------------------------------------------------------------+
 
@@ -45,3 +45,4 @@ void set_exits(CTrade &trader, ulong reference_ticket, double stop_size, int tar
         Print(__FUNCTION__, " - Reference position not open or invalid ticket: ", reference_ticket);
     }
 }
+//+------------------------------------------------------------------+
