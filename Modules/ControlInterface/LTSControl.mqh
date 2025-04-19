@@ -32,11 +32,10 @@ public:// XXX: Dont encapsulate, allow full scope for this project
         // manage mismanagement ☑️
         check_strategy_rules();
 
-        // Track new position (a new position is the one the EA has not track before)
+        // Track new position (a new position is the one the EA has not tracked before)
         // On EA start, last_saved_ticket should be Zero and Type should be buy(Rule 1).
         if (IsNewPosition(last_saved_ticket)) 
-            HandleNewPosition();
-        
+            HandleNewPosition();   
 
         // Track Trading Session
         if (use_trading_session)

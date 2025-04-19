@@ -9,6 +9,9 @@
 
 void set_exits(CTrade &trader, ulong reference_ticket, double stop_size, int target_multiplier,const string ea_tag)
 {
+    //XXX:  1.Make sure it is same symbol.
+    //      2.Before moving any exits, ensure current price is not
+    //      close to symbols stop limits to avoid modification errors.
     if (PositionSelectByTicket(reference_ticket))
     {
         // Check if the position's comment matches the EA's comment
@@ -42,7 +45,7 @@ void set_exits(CTrade &trader, ulong reference_ticket, double stop_size, int tar
     }
     else
     {
-        Print(__FUNCTION__, " - Reference position not open or invalid ticket: ", reference_ticket);
+        Print(__FUNCTION__, " - TP/SL can only be placed on open positions. Invalid ticket: ", reference_ticket);
     }
 }
 //+------------------------------------------------------------------+

@@ -15,7 +15,7 @@ void OnStart()
   {
 
    TestExitManagement TestExit;
-   TestExit.SetOnRandomPosition();
+   TestExit.SetOnForiegnPosition();
    TestExit.SetOnEAPosition();
    //-----------------------------
    
@@ -27,9 +27,10 @@ class TestExitManagement{
    ulong ticket;
    
 public:
-   void SetOnRandomPosition()
+   void SetOnForiegnPosition()
       {
       // Test on open position
+      // EA does not act on positions or orders not placed by itself
       if (PositionSelect(_Symbol)){
          ticket = PositionGetInteger(POSITION_TICKET);   
          set_exits(trade, ticket,grid_size, reward_multiplier,EA_TAG);

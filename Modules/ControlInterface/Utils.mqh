@@ -1,9 +1,40 @@
 /*FUNCTION LIST
-- 
+NodeExistsAtPrice - Checks if an order exist at a particular price,
+                      Returns the ticket if it exists, or 0 if not.
+GetValueIndex - Checks an array of float values for a value,
+                Returns the index of the value if found, or -1 if not.
+ArraySum - Returns the sum all the values of an array of float values.
+
 */
 #include <Trade\Trade.mqh>
 //+------------------------------------------------------------------+
-
+//+------------------------------------------------------------------+
+ulong NodeExistsAtPrice(double order_price)
+{
+    for (int i = OrdersTotal() - 1; i >= 0; --i)
+      {
+        ulong order_ticket = OrderGetTicket(i);
+        if (order_ticket!=0)
+            {
+            if (OrderGetString(ORDER_SYMBOL) == _Symbol  
+               && OrderGetDouble(ORDER_PRICE_OPEN) == order_price)
+               {
+                return order_ticket;
+               }
+            }
+      }
+    return 0;
+}
+//+------------------------------------------------------------------+
+int GetValueIndex(double value,const double &arr[])
+{
+   for (int i=0; i<ArraySize(arr); i++)
+   {
+      if (value==arr[i]) return i;
+   }
+   return -1;
+}
+//+------------------------------------------------------------------+
 double ArraySum(const double &array[])
   {
    double sum = 0;
