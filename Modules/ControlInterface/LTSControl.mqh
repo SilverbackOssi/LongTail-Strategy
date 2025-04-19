@@ -42,7 +42,7 @@ public:// XXX: Dont encapsulate, allow full scope for this project
         if (use_trading_session)
         {
             UpdateSesionStatus(session_status, SESSION_RUNNING, SESSION_OVER, session_start, session_end);
-            if (session_status == SESSION_OVER) { HandlePostSession();}
+            if (session_status == SESSION_OVER) { EndSession();}
             else StartSession(sequence, EA_TAG);
         }
     

@@ -13,7 +13,7 @@ void UpdateSesionStatus(int &session_state, const int &session_on, const int &se
   else session_state = session_over;
 }
 //+------------------------------------------------------------------+
-void HandlePostSession(CTrade &trader)
+void EndSession(CTrade &trader)
 {
   if (IsEmptyChart()) return;
 
