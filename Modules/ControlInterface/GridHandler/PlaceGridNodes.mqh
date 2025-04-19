@@ -23,100 +23,87 @@ void OnTest()
    PlaceRecoveryNode(ticket);  
   }
 //+------------------------------------------------------------------+
-struct GridNode{
-    string node_name;
-    ENUM_ORDER_TYPE node_type;
-    double node_price;
-    double node_volume;
-};
-void PlaceRecoveryNode(ulong reference_ticket)
-{
-    // validate ticket
-    // Build node structure
-    // instantiate node
-    // declare node.name as "Recovery"
-    // assert node value(), return node
-    // place node
+// Build node structure
+//struct...
 
+void PlaceRecoveryNode(ulong reference_ticket, Grid grid)
+{
+    // Reference ticket type
+    ENUM_POSITION_TYPE base_type_position;
+    ENUM_ORDER_TYPE base_type_order;
+
+    // Validate reference ticket
+    if (PositionSelectByTicket(reference_ticket))
+        base_type_position = PositionGetInteger(POSITION_TYPE);
+    elseif (OrderSelect(reference_ticket))
+        base_type_order = OrderGetInteger(ORDER_TYPE);
+        if (base_type_order != ORDER_TYPE_BUY_STOP) // order must be a recovery buy stop
+        {
+            Print(__FUNCTION__, " - FATAL. Recovery node can only be placed on buy stop"); // Rule 7
+            return
+        }
+    else 
+    {
+        Print(__FUNCTION__, " - FATAL. Recovery node can only be placed on open position or buy stop"); // Rule 7
+      return;
+    }
 
     // Assert Node values
-    ENUM_ORDER_TYPE order_type=0;
-    double order_price=0;
-    double order_volume=0;
-    
-    //Affected by open or pending
-    // - Price, volume, selecting entitiy
+    GridNode node;
+    node.name = "Recovery node";
+    node = AssertNodeValue(node, reference_ticket, grid);
 
-    // If reference ticket is open position
-    if (PositionSelectByTicket(reference_ticket))
-    {
-        // Get ticket details
-        long ticket_type = PositionGetInteger(POSITION_TYPE);
-        double open_price = PositionGetDouble(POSITION_PRICE_OPEN);
-        double stop_loss = PositionGetDouble(POSITION_SL);
-        double open_volume = PositionGetDouble(POSITION_VOLUME);
-
-        // Check if there is a take profit set for the reference position
-        if (stop_loss == 0)
-        {
-            Print(__FUNCTION__, " - Failed to place recovery stop order. No stop loss set for reference ticket: ", reference_ticket);
-            return;
-        }
-
-        // Set order details
-        int open_volume_index = GetValueIndex(open_volume,Sequence); 
-        order_volume = Sequence[open_volume_index+1];
-        order_type = (ticket_type == POSITION_TYPE_SELL) ? ORDER_TYPE_BUY_STOP : ORDER_TYPE_SELL_STOP;
-        order_price = (ticket_type == POSITION_TYPE_SELL) ? stop_loss+grid_spread : stop_loss; //XXX: Place on grid_unit
-    }
-
-    // If reference ticket is pending order
-    else if (OrderSelect(reference_ticket)) // order must be a recovery buy stop
-    {       
-        // Get ticket details
-        long ticket_type = OrderGetInteger(ORDER_TYPE);
-        double open_price = OrderGetDouble(ORDER_PRICE_OPEN);
-        double open_volume = OrderGetDouble(ORDER_VOLUME_CURRENT);
-        string comment = OrderGetString(ORDER_COMMENT);
-        
-        // Check if the reference order is a recovery buy stop
-        if (ticket_type != ORDER_TYPE_BUY_STOP || (StringFind(comment, "recovery") == -1))
-        {
-            Print(__FUNCTION__, " - Failed to place replacement recovery sell stop order. Reference order: ", reference_ticket, " is not a recovery buy stop");
-            return;
-        }
-        
-        // Set order details 
-        order_volume = open_volume;
-        order_type = ORDER_TYPE_SELL_STOP;
-        order_price = open_price - grid_size; 
-    }
-    else // Reference ticket is  neither open nor pending, it does not exist.
-    {
-      Print(__FUNCTION__, " - FATAL. Recovery node can only be placed on open position or buy stop");
-      return;
-    } 
-
-    // Check if an order already exists at the calculated price
-     ulong ticket_exists = NodeExistsAtPrice(order_price);
+    // Check if an order already exists at the node price
+     ulong ticket_exists = NodeExistsAtPrice(node.price);
      if (ticket_exists!=0)
      {
-         Print(__FUNCTION__, " - Recovery stop order already exists at the calculated price for reference ticket: ",
-               reference_ticket, ", order ticket: ", ticket_exists);
+         Print(__FUNCTION__, " - Recovery node with ticket:",ticket_exists , " already exists at price: ", node.price);
          return;
      }
 
-     // Place a stop order opposite to the open/pending position’s type
-     string comment = "recovery " + EnumToString(order_type);
-     bool placed = trade.OrderOpen(_Symbol, order_type, order_volume, 0.0, order_price, 0, 0, ORDER_TIME_GTC, 0, comment);
-     if (placed)
-     {
-         ulong order_ticket = trade.ResultOrder(); // Get the ticket number of the placed order
-         Print(__FUNCTION__, " - Recovery stop order placed on reference ticket: ", reference_ticket, ", order ticket: ", order_ticket, ", comment: ", comment);
-     }
-     else
-     {
-         Print(__FUNCTION__, " - Failed to place recovery stop order");// Potential invalid price, need to handle
-     }
+     // Place a grid node
+     string node_comment = EA_TAG +" "+ node.name +" as "+ EnumToString(node.type);
+     bool placed = trade.OrderOpen(_Symbol, node.type, node.volume, 0.0, node.price, 0, 0, ORDER_TIME_GTC, 0, node_comment);
+     if (!placed)// Potential invalid price,handle stop limit
+         Print(__FUNCTION__, " - Failed to place ", node.type, " recovery node on ", EnumToString(((PositionSelectByTicket(reference_ticket))? base_type_position:base_type_order)));
+     
 }
 
+GridNode AssertNodeValue(GridNode node, ulong ref_ticket, Grid grid)
+{
+    // If reference ticket is open position
+    if (PositionSelectByTicket(ref_ticket))
+    {
+        // Get ticket details
+        long reference_type = PositionGetInteger(POSITION_TYPE);
+        double reference_price = PositionGetDouble(POSITION_PRICE_OPEN);
+        double stop_loss = PositionGetDouble(POSITION_SL);
+        double reference_volume = PositionGetDouble(POSITION_VOLUME);
+
+        // Check if there is a take profit set for the reference position
+        if (stop_loss == 0)
+            Print(__FUNCTION__, " - WARNING. No stop loss set for open position with ticket: ", ref_ticket);
+
+        // Set order details
+        int reference_volume_index = GetValueIndex(reference_volume, grid.progression_sequence); 
+        node.volume = grid.progression_sequence[reference_volume_index+1];
+        node.type = (reference_type == POSITION_TYPE_SELL) ? ORDER_TYPE_BUY_STOP : ORDER_TYPE_SELL_STOP;
+        node.price = reference_price +( (reference_type == POSITION_TYPE_SELL) ? (grid.unit+grid.spread) : -grid.unit);
+    }
+
+    // If reference ticket is pending order
+    else if (OrderSelect(ref_ticket))
+    {
+        // Get ticket details
+        long reference_type = OrderGetInteger(ORDER_TYPE);
+        double reference_price = OrderGetDouble(ORDER_PRICE_OPEN);
+        double reference_volume = OrderGetDouble(ORDER_VOLUME_CURRENT);
+        string reference_comment = OrderGetString(ORDER_COMMENT);
+        
+        // Set order details 
+        node.volume = reference_volume;
+        node.type = ORDER_TYPE_SELL_STOP;
+        node.price = reference_price - (grid.unit + grid.spread);
+    }
+    return node;
+}

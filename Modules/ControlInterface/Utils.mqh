@@ -1,13 +1,20 @@
-/*FUNCTION LIST
-NodeExistsAtPrice - Checks if an order exist at a particular price,
-                      Returns the ticket if it exists, or 0 if not.
-GetValueIndex - Checks an array of float values for a value,
-                Returns the index of the value if found, or -1 if not.
-ArraySum - Returns the sum all the values of an array of float values.
 
-*/
 #include <Trade\Trade.mqh>
 //+------------------------------------------------------------------+
+//+------------------------------------------------------------------+
+struct GridNode{
+    string name;
+    ENUM_ORDER_TYPE type;
+    double price;
+    double volume;
+    // should track reference details
+};
+struct Grid{
+    double unit;
+    double spread;
+    double multiplier;
+    double []progression_sequence;
+};
 //+------------------------------------------------------------------+
 ulong NodeExistsAtPrice(double order_price)
 {
