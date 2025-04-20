@@ -50,7 +50,6 @@ struct GridBase{
 }
 }
 
-};
 //+------------------------------------------------------------------+
 
 ulong NodeExistsAtPrice(double order_price)
