@@ -12,13 +12,22 @@ struct GridNode{
     ENUM_ORDER_TYPE type;
     double price;
     double volume;
-    // should track reference details
+    string comment;
 };
 struct Grid{
     double unit;
     double spread;
     double multiplier;
+    double target;
     double []progression_sequence;
+
+    // Function to initialize values
+    void Init(double grid_unit, double grid_spread, double grid_multiplier) {
+        unit = grid_unit;
+        spread = grid_spread;
+        multiplier = grid_multiplier;
+        target = unit * multiplier;
+    }
 };
 struct GridBase{
   string name;

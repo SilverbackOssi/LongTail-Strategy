@@ -4,6 +4,9 @@ bool use_trading_session = false; // trade 24/7
 datetime session_start = StringToTime("08:30");
 datetime session_end = StringToTime("18:30");// test server time = real time +1
 int session_status;
+double grid_unit = 2.0;
+double grid_spread = 0.4;
+int LTSMultiplier = 3;
 
 //+------------------------------------------------------------------+
 
@@ -12,9 +15,11 @@ public:// XXX: Dont encapsulate, allow full scope for this project
     //private sequence
     //predefined sequenceLength
 
+    // initialize Grid, GridNode, and GridBase
     void start(multiplier){
-        // define progression sequence
-        build_sequence(multiplier, sequenceLength, sequence);
+        
+        Grid.Init(grid_unit, grid_spread, LTSMultiplier);
+        build_sequence(Grid.multiplier, Grid.progression_sequence);
         
         // start Grid
         if (use_trading_session && !IsWithinTradingTime()) return init succesful; // Handles placing EA on chart, outside trading time
