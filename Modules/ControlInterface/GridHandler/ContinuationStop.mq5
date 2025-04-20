@@ -33,73 +33,7 @@ void OnStart()
   }
 //+------------------------------------------------------------------+
 
-/**
- * @brief Places a continuation stop order based on a reference position.
- *
- * This function places a continuation stop order if certain conditions are met.
- * It first checks if the trading session has ended and if the reference position
- * is open. If the reference position has a take profit set, it calculates the 
- * order price and checks if an order already exists at that price. If no order 
- * exists, it places a new stop order.
- *
- * @param reference_ticket The ticket number of the reference position.
- *
- * @note The function will not place an order if the trading session has ended,
- *       if the reference position is not open, or if the reference position 
- *       does not have a take profit set.
- */
-void place_continuation_stop(ulong reference_ticket)
-{
-    
-    if (is_end_session) return;
 
-    if (PositionSelectByTicket(reference_ticket))
-    {
-        // Get ticket details
-        long ticket_type = PositionGetInteger(POSITION_TYPE);
-        double open_price = PositionGetDouble(POSITION_PRICE_OPEN);
-        double take_profit = PositionGetDouble(POSITION_TP);
-
-        // Check if there is a take profit set for the reference position
-        if (take_profit == 0)
-        {
-            Print(__FUNCTION__, " - Failed to place continuation stop order. No take profit set for reference ticket: ", reference_ticket);
-            return;
-        }
-
-        // Get lot size as the first term of the progression sequence
-        double order_volume = Sequence[0];
-        ENUM_ORDER_TYPE order_type = (ticket_type == POSITION_TYPE_BUY) ? ORDER_TYPE_BUY_STOP : ORDER_TYPE_SELL_STOP;
-        double order_price = (ticket_type == POSITION_TYPE_BUY) ? take_profit+grid_spread : take_profit;
-         
-        // Check if an order already exists at the calculated price
-        ulong ticket_exists = order_exists_at_price(_Symbol, order_type, order_price);
-        if (ticket_exists!=0)
-        {
-            Print(__FUNCTION__, " - Continuation stop order already exists at the calculated price for reference ticket: ",
-                  reference_ticket, ", order ticket: ", ticket_exists);
-            return;
-        }
-
-        // Place a stop order similar to the open position’s type
-        string comment = "continuation " + EnumToString(order_type);
-        bool placed = trade.OrderOpen(_Symbol, order_type, order_volume, 0.0, order_price, 0, 0, ORDER_TIME_GTC, 0, comment);
-        if (placed)
-        {
-            ulong order_ticket = trade.ResultOrder(); // Get the ticket number of the placed order
-            Print(__FUNCTION__, " - Continuation stop order placed on reference ticket: ", reference_ticket, ", order ticket: ", order_ticket, ", comment: ", comment);
-        }
-        else
-        {
-            Print(__FUNCTION__, " - Failed to place continuation stop order");
-        }
-
-    }
-    else
-    {
-        Print(__FUNCTION__, " - Reference position not open");
-    } // Fatal error
-}
 
 ulong order_exists_at_price(const string symbol, ENUM_ORDER_TYPE order_type, double order_price)
 {

@@ -2,7 +2,9 @@
 #include <Trade\Trade.mqh>
 //+------------------------------------------------------------------+
 
-string EA_TAG = "LongTailsScalper";
+const string EA_TAG = "LongTailsScalper";
+const int SESSION_RUNNING = 100;
+const int SESSION_OVER = 101;
 //+------------------------------------------------------------------+
 
 struct GridNode{

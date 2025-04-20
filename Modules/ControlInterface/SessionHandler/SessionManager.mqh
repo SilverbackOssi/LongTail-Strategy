@@ -6,11 +6,11 @@
 #include  <Ossi\LongTails\Utils.mqh>
 
 //+------------------------------------------------------------------+
-void UpdateSesionStatus(int &session_state, const int &session_on, const int &session_over, datetime start_time, datetime end_time)
+void UpdateSesionStatus(int &session_state, datetime start_time, datetime end_time)
 {
   if (IsWithinTradingTime(start_time, end_time))
-    session_state = session_on;
-  else session_state = session_over;
+    session_state = SESSION_RUNNING;
+  else session_state = SESSION_OVER;
 }
 //+------------------------------------------------------------------+
 void EndSession(CTrade &trader)
