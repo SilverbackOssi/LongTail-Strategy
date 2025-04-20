@@ -22,8 +22,6 @@ void OnTest()
    
   }
 //+------------------------------------------------------------------+
-// Build node structure
-//struct...
 
 /**
  * @brief Places a continuation stop order based on a reference position.

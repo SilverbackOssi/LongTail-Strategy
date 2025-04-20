@@ -7,13 +7,6 @@ const int SESSION_RUNNING = 100;
 const int SESSION_OVER = 101;
 //+------------------------------------------------------------------+
 
-struct GridNode{
-    string name;
-    ENUM_ORDER_TYPE type;
-    double price;
-    double volume;
-    string comment;
-};
 struct Grid{
     double unit;
     double spread;
@@ -28,6 +21,13 @@ struct Grid{
         multiplier = grid_multiplier;
         target = unit * multiplier;
     }
+};
+struct GridNode{
+    string name;
+    ENUM_ORDER_TYPE type;
+    double price;
+    double volume;
+    string comment;
 };
 struct GridBase{
   string name;
