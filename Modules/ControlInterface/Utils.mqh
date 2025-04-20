@@ -36,6 +36,20 @@ struct GridBase{
   double open_price;
   double volume;
   int volume_index;
+
+  void UpdateGridBase(const ulong ticket) {
+    if (PositionSelect(ticket)) {
+        name = PositionGetString(POSITION_COMMENT);  // Assign to struct member
+        this->ticket = ticket;  // Ensure ticket is a member of the struct
+        type = EnumToString((ENUM_POSITION_TYPE)PositionGetInteger(POSITION_TYPE));
+        open_price = PositionGetDouble(POSITION_PRICE_OPEN);
+        volume = PositionGetDouble(POSITION_VOLUME);
+    } else {
+        Print("Failed to update base, could not find position with ticket: ", ticket);
+    }
+}
+}
+
 };
 //+------------------------------------------------------------------+
 
@@ -124,13 +138,19 @@ bool IsWithinTradingTime(datetime start_time, datetime end_time)
     return (current_time >= start_time && current_time <= end_time);
 }
 //+------------------------------------------------------------------+
-bool OpenShort(double deal_volume, string ea_tag)
-{
-  // a function that opens a sell position at the current market price
-  // with ea comment and position type
-  Print("Started trading session with short at market price.");
-  // returns if placed or not
-  return false;
+ulong OpenShort(double deal_volume, CTrade &trader) {
+    // Define trade parameters
+    string comment = EA_TAG + " Session Start";
+
+    // Attempt to execute a sell order
+    if (trader.Sell(deal_volume, _Symbol, 0, 0, 0, comment)) {
+        ulong ticket = trader.ResultOrder();
+        Print("Sell order placed successfully. Ticket: ", ticket);
+        return ticket; // Trade executed successfully
+    } else {
+        Print("Failed to place sell order. Error: ", GetLastError());
+        return 0; // Trade execution failed
+    }
 }
 //+------------------------------------------------------------------+
 bool IsNewPosition(ulong &saved_ticket)

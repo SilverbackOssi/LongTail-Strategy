@@ -47,9 +47,12 @@ void StartSession(const double &progression_sequence[], const string ea_tag)
       Print("Starting Trading session within trading time. Current time: ", TimeCurrent());
       
       double order_volume = progression_sequence[0];
-      if (OpenShort(order_volume, ea_tag))
+      ulong ticket = OpenShort(order_volume, trade);
+      if (ticket){
+        Base.UpdateGridBase(ticket);
+        Base.volume_index = 0;
         Print(__FUNCTION__, ": Started trading session with short at market price.");
-      else
+      }else
           Print(__FUNCTION__, ": Failed to start new session with short position at market price.");
     }  
 }

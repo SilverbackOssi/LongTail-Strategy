@@ -29,7 +29,9 @@ void HandleNewPosition(, ENUM_POSITION_TYPE &last_type)
 { // Sets grid
     
     // update GridBase
+    
     long ticket_type = PositionGetInteger(POSITION_TYPE);
+    base.volume_index ++;
     
     // call set exits()
     
