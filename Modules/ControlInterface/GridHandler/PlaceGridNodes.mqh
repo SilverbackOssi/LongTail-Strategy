@@ -8,25 +8,21 @@
 //+------------------------------------------------------------------+
 void OnTest()
   {
-//---
-   // Test on open position
-   ulong ticket = 0;
-   if (PositionSelect(_Symbol)){
-      ticket = PositionGetInteger(POSITION_TICKET);
-      }
-   //Test on buy stop
-   for (int i = OrdersTotal() - 1; i >= 0; --i)
-   {
-      ticket = OrderGetTicket(i);
-   } 
+
+   // Test structures 
+   // Test node values
+   // Test on invalid reference ticket.
+   // Test on open position.
+   // Test on buy stop
+   // Test on already existing node
+   // Test failed execution, on invalid price/stop limits
    
-   PlaceRecoveryNode(ticket);  
   }
 //+------------------------------------------------------------------+
 // Build node structure
 //struct...
 
-void PlaceRecoveryNode(ulong reference_ticket, Grid grid)
+void PlaceRecoveryNode(ulong reference_ticket,const Grid &grid, const GridBase *base=NULL)
 {
     // Reference ticket type
     ENUM_POSITION_TYPE base_type_position;
@@ -51,7 +47,7 @@ void PlaceRecoveryNode(ulong reference_ticket, Grid grid)
     // Assert Node values
     GridNode node;
     node.name = "Recovery node";
-    node = AssertNodeValue(node, reference_ticket, grid);
+    node = AssertNodeValue(node, reference_ticket, grid, base);
 
     // Check if an order already exists at the node price
      ulong ticket_exists = NodeExistsAtPrice(node.price);
@@ -69,11 +65,16 @@ void PlaceRecoveryNode(ulong reference_ticket, Grid grid)
      
 }
 
-GridNode AssertNodeValue(GridNode node, ulong ref_ticket, Grid grid)
+GridNode AssertNodeValue(GridNode node, ulong ref_ticket, const Grid &grid, const GridBase base)
 {
     // If reference ticket is open position
     if (PositionSelectByTicket(ref_ticket))
     {
+        if (base == NULL)
+        {
+            Print(__FUNCTION__," unable to assess grid base, volume index");
+            return node;
+        }
         // Get ticket details
         long reference_type = PositionGetInteger(POSITION_TYPE);
         double reference_price = PositionGetDouble(POSITION_PRICE_OPEN);
@@ -85,7 +86,7 @@ GridNode AssertNodeValue(GridNode node, ulong ref_ticket, Grid grid)
             Print(__FUNCTION__, " - WARNING. No stop loss set for open position with ticket: ", ref_ticket);
 
         // Set order details
-        int reference_volume_index = GetValueIndex(reference_volume, grid.progression_sequence); 
+        int reference_volume_index = base.volume_index; 
         node.volume = grid.progression_sequence[reference_volume_index+1];
         node.type = (reference_type == POSITION_TYPE_SELL) ? ORDER_TYPE_BUY_STOP : ORDER_TYPE_SELL_STOP;
         node.price = reference_price +( (reference_type == POSITION_TYPE_SELL) ? (grid.unit+grid.spread) : -grid.unit);

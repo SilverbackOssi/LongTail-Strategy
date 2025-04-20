@@ -27,8 +27,10 @@ void OnStart()
 
 void HandleNewPosition(, ENUM_POSITION_TYPE &last_type)
 { // Sets grid
+    
+    // update GridBase
     long ticket_type = PositionGetInteger(POSITION_TYPE);
-    Print("New position opened, proceeding to manage.");
+    
     // call set exits()
     
     DeletePendingOrders();

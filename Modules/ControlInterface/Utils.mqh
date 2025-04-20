@@ -1,7 +1,10 @@
 
 #include <Trade\Trade.mqh>
 //+------------------------------------------------------------------+
+
+string EA_TAG = "LongTailsScalper";
 //+------------------------------------------------------------------+
+
 struct GridNode{
     string name;
     ENUM_ORDER_TYPE type;
@@ -15,7 +18,16 @@ struct Grid{
     double multiplier;
     double []progression_sequence;
 };
+struct GridBase{
+  string name;
+  ulong ticket;
+  ENUM_POSITION_TYPE type;
+  double open_price;
+  double volume;
+  int volume_index;
+};
 //+------------------------------------------------------------------+
+
 ulong NodeExistsAtPrice(double order_price)
 {
     for (int i = OrdersTotal() - 1; i >= 0; --i)
