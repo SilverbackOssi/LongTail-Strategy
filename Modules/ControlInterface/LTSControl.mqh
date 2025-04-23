@@ -17,7 +17,7 @@ public:// XXX: Dont encapsulate, allow full scope for this project
     //private sequence
     //predefined sequenceLength
 
-    // initialize Grid Grid, GridNode Node, and GridBase Base
+    // initialize Grid Grid, and GridBase Base
 
     void start(multiplier){
         
@@ -50,7 +50,7 @@ public:// XXX: Dont encapsulate, allow full scope for this project
         // Track grid motion
         if (IsNewPosition(Base.ticket)) 
             HandleNewPosition(Base, Grid);   
-        HandleGridShift(Base, trade);
+        HandleGridGap(Grid, Base, trade);
         
         // Track Trading Session
         if (use_trading_session)

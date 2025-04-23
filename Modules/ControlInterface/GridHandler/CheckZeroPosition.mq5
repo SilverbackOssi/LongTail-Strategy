@@ -37,7 +37,7 @@ void check_zero_position()
     check_range_delay();
 }
 
-void HandleGridShift(const GridBase &base, CTrade &trader)
+void check_range_delay(const GridBase &base, CTrade &trader)
 {
     int orders_total = OrdersTotal();
     if (PositionSelect(_Symbol) || orders_total == 0) return;
@@ -140,28 +140,3 @@ void HandleGridShift(const GridBase &base, CTrade &trader)
     }
 }
 
-HandleGridGap()
-{
-    // Context validation
-    int orders_total = SymbolOrdersTotal();
-    if (PositionSelect(_Symbol) || orders_total == 0) return;
-
-    if (orders_total>2)
-    {
-        Print(__FUNCTION__, "- WARNING. ", orders_total," nodes found on the chart.");
-        Print("Unable to replace grid nodes");
-        return;
-    }
-    
-    // grid shifts on a short position
-    if (base.type == POSITION_TYPE_BUY) return;
-
-    // clear continuation orders
-    ClearContinuationNodes(trader);
-    
-    if (SymbolOrdersTotal() > 1) return; // Shift recovery node already placed
-    
-    // place RecoveryNode node on recovery node
-    ulong stop_ticket = OrderGetTicket(0);
-    PlaceRecoveryNode(stop_ticket, grid);
-}
