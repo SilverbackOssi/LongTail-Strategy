@@ -167,3 +167,36 @@ bool IsNewPosition(ulong &saved_ticket)
     return false;
 }
 //+------------------------------------------------------------------+
+int SymbolOrdersTotal()
+{
+    // returns the total number of orders on the current chart.
+    // Do not use for iteration to avoid inaccurate indexing.
+    int symbol_total = 0;
+    for (int i = OrdersTotal() - 1; i >= 0; --i)
+    {
+        ulong order_ticket = OrderGetTicket(i);
+        if (order_ticket == 0) continue;
+        if (OrderGetString(ORDER_SYMBOL) == _Symbol) symbol_total++;
+    }
+    return symbol_total;
+}
+//+------------------------------------------------------------------+
+void ClearContinuationNodes(CTrade &trader)
+{
+  for (int i = OrdersTotal() - 1; i >= 0; --i)
+  {
+    ulong order_ticket = OrderGetTicket(i);
+    if (order_ticket == 0) continue;
+    if (OrderGetString(ORDER_SYMBOL) != _Symbol) continue;
+    string comment = OrderGetString(ORDER_COMMENT);
+
+    // Skip recovery nodes
+    if (StringFind(comment, "Recovery") != -1) continue;
+
+    if (trader.OrderDelete(order_ticket))
+      Print(__FUNCTION__, ": Deleted order with ticket: ", order_ticket, " and comment: ", comment);
+    else
+      Print(__FUNCTION__, ": Failed to delete order with ticket: ", order_ticket, " and comment: ", comment);
+  }
+}
+//+------------------------------------------------------------------+

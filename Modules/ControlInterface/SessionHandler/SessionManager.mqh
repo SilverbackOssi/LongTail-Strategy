@@ -18,24 +18,7 @@ void HandleSessionEnd(CTrade &trader, const Grid &grid)
   if (IsEmptyChart()) return;
 
   // clear continuation orders
-  for (int i = OrdersTotal() - 1; i >= 0; --i)
-  {
-    ulong order_ticket = OrderGetTicket(i);
-    string order_symbol = OrderGetString(ORDER_SYMBOL);
-    if (order_symbol != _Symbol) continue;
-    string comment = OrderGetString(ORDER_COMMENT);
-
-    if (order_ticket != 0)
-    {
-      // Skip recovery nodes
-      if (StringFind(comment, "Recovery") != -1) continue;
-
-      if (trader.OrderDelete(order_ticket))
-        Print(__FUNCTION__, ": Deleted order with ticket: ", order_ticket, " and comment: ", comment);
-      else
-        Print(__FUNCTION__, ": Failed to delete order with ticket: ", order_ticket, " and comment: ", comment);
-    }
-  }
+  ClearContinuationNodes(trader);
 
   // clear post-session recovery lag
   ClearRecoveryLag(trader, grid);

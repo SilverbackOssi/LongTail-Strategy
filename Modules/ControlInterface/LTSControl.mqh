@@ -50,7 +50,7 @@ public:// XXX: Dont encapsulate, allow full scope for this project
         // Track grid motion
         if (IsNewPosition(Base.ticket)) 
             HandleNewPosition(Base, Grid);   
-        HandleGridShift(Base);
+        HandleGridShift(Base, trade);
         
         // Track Trading Session
         if (use_trading_session)

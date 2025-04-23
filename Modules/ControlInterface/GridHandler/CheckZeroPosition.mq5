@@ -37,10 +37,17 @@ void check_zero_position()
     check_range_delay();
 }
 
-void HandleGridShift(const GridBase &base)
+void HandleGridShift(const GridBase &base, CTrade &trader)
 {
     int orders_total = OrdersTotal();
     if (PositionSelect(_Symbol) || orders_total == 0) return;
+
+    if (orders_total>2)
+    {
+        Print(__FUNCTION__, "- WARNING. ", orders_total," nodes found on the chart.");
+        Print("Unable to replace grid nodes");
+        return;
+    }
     
     // grid shifts on a short position
     if (base.type == POSITION_TYPE_BUY) return;
@@ -56,38 +63,35 @@ void HandleGridShift(const GridBase &base)
         for (int i = orders_total - 1; i >= 0; i--)
         {
             ulong order_ticket = OrderGetTicket(i);
-            if (order_ticket != 0)
+            if (order_ticket == 0) continue;
+            if (OrderGetString(ORDER_SYMBOL) != _Symbol) continue;
+
+            ENUM_ORDER_TYPE order_type = (ENUM_ORDER_TYPE)OrderGetInteger(ORDER_TYPE);
+            double price = OrderGetDouble(ORDER_PRICE_OPEN);
+
+            // Store order prices
+            if (price1 == 0.0)
+                price1 = price;
+            else
+                price2 = price;
+
+            // Store tickets based on order type
+            if (order_type == ORDER_TYPE_BUY_STOP)
             {
-                if (OrderGetString(ORDER_SYMBOL) != _Symbol)
-                    continue;
-
-                ENUM_ORDER_TYPE order_type = (ENUM_ORDER_TYPE)OrderGetInteger(ORDER_TYPE);
-                double price = OrderGetDouble(ORDER_PRICE_OPEN);
-
-                // Store order prices
-                if (price1 == 0.0)
-                    price1 = price;
-                else
-                    price2 = price;
-
-                // Store tickets based on order type
-                if (order_type == ORDER_TYPE_BUY_STOP)
-                {
-                    buy_stop_ticket = order_ticket;
-                }
-                else if (order_type == ORDER_TYPE_SELL_STOP)
-                {
-                    sell_stop_ticket = order_ticket; // not relevant
-                }
+                buy_stop_ticket = order_ticket;
             }
+            else if (order_type == ORDER_TYPE_SELL_STOP)
+            {
+                sell_stop_ticket = order_ticket; // not relevant
+            }
+            
         }
         
         double current_price = SymbolInfoDouble(_Symbol, SYMBOL_BID);
         double distance = MathAbs(price1 - price2);
-        double half_distance = (price1 + price2) / 2.0;
-        // If the distance is less than or equal to grid_size plus twice the range spread, return
         if (distance <= (grid_size + grid_spread * 2)) return;// Range delay is already set
-
+        
+        double half_distance = (price1 + price2) / 2.0;
         // If the price is closer to the higher ticket
         if (current_price > half_distance)
         {
@@ -136,3 +140,28 @@ void HandleGridShift(const GridBase &base)
     }
 }
 
+HandleGridGap()
+{
+    // Context validation
+    int orders_total = SymbolOrdersTotal();
+    if (PositionSelect(_Symbol) || orders_total == 0) return;
+
+    if (orders_total>2)
+    {
+        Print(__FUNCTION__, "- WARNING. ", orders_total," nodes found on the chart.");
+        Print("Unable to replace grid nodes");
+        return;
+    }
+    
+    // grid shifts on a short position
+    if (base.type == POSITION_TYPE_BUY) return;
+
+    // clear continuation orders
+    ClearContinuationNodes(trader);
+    
+    if (SymbolOrdersTotal() > 1) return; // Shift recovery node already placed
+    
+    // place RecoveryNode node on recovery node
+    ulong stop_ticket = OrderGetTicket(0);
+    PlaceRecoveryNode(stop_ticket, grid);
+}
