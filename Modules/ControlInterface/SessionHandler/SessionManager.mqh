@@ -6,11 +6,11 @@
 #include  <Ossi\LongTails\Utils.mqh>
 
 //+------------------------------------------------------------------+
-void UpdateSesionStatus(int &session_state, datetime start_time, datetime end_time)
+void UpdateSesionStatus(Grid &grid)
 {
-  if (IsWithinTradingTime(start_time, end_time))
-    session_state = SESSION_RUNNING;
-  else session_state = SESSION_OVER;
+  if (IsWithinTradingTime(grid.session_time_start, grid.session_time_end))
+    grid.session_status = SESSION_RUNNING;
+  else grid.session_status = SESSION_OVER;
 }
 //+------------------------------------------------------------------+
 void EndSession(CTrade &trader)
@@ -28,7 +28,7 @@ void EndSession(CTrade &trader)
     if (order_ticket != 0)
     {
       // Check if the comment does not contain "recovery"
-      if (StringFind(comment, "recovery") != -1) continue;
+      if (StringFind(comment, "Recovery") != -1) continue;
 
       if (trader.OrderDelete(order_ticket))
         Print(__FUNCTION__, ": Deleted order with ticket: ", order_ticket, " and comment: ", comment);

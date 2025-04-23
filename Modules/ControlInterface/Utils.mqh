@@ -13,6 +13,9 @@ struct Grid{
     double multiplier;
     double target;
     double []progression_sequence;
+    int session_status;
+    datetime session_time_start;
+    datetime session_time_end;
 
     // Function to initialize values
     void Init(double grid_unit, double grid_spread, double grid_multiplier) {
@@ -39,9 +42,9 @@ struct GridBase{
 
   void UpdateGridBase(const ulong ticket) {
     if (PositionSelect(ticket)) {
-        name = PositionGetString(POSITION_COMMENT);  // Assign to struct member
-        this->ticket = ticket;  // Ensure ticket is a member of the struct
-        type = EnumToString((ENUM_POSITION_TYPE)PositionGetInteger(POSITION_TYPE));
+        name = PositionGetString(POSITION_COMMENT);
+        this->ticket = ticket;
+        type = PositionGetInteger(POSITION_TYPE);
         open_price = PositionGetDouble(POSITION_PRICE_OPEN);
         volume = PositionGetDouble(POSITION_VOLUME);
     } else {
@@ -88,7 +91,7 @@ double ArraySum(const double &array[])
    return sum;
   }
 //+------------------------------------------------------------------+
-void DeletePendingOrders(CTrade &trader, const string symbol)
+void DeleteAllPending(CTrade &trader, const string symbol)
 {
     for (int i = OrdersTotal() - 1; i >= 0; --i)
     {

@@ -100,6 +100,7 @@ void check_range_delay()
             if (buy_stop_ticket != 0) 
             {
                //place_recovery_stop(buy_stop_ticket);
+               PlaceRecoveryNode(ulong reference_ticket, const Grid &grid, const GridBase *base=NULL)
             }               
             else
             {

@@ -18,6 +18,7 @@ public:// XXX: Dont encapsulate, allow full scope for this project
     //predefined sequenceLength
 
     // initialize Grid Grid, GridNode Node, and GridBase Base
+    Base.ticket = 0;
     void start(multiplier){
         
         Grid.Init(grid_unit, grid_spread, LTSMultiplier);
@@ -40,24 +41,27 @@ public:// XXX: Dont encapsulate, allow full scope for this project
     }
 
     void Manage(){  
+        // return irrelevant ticket
+        if(use_trading_session && session_status == SESSION_OVER && IsEmptyChart) return;
+
         // manage mismanagement ☑️
         check_strategy_rules();
 
-        // Track new position (a new position is the one the EA has not tracked before)
-        // On EA start, last_saved_ticket should be Zero and Type should be buy(Rule 1).
-        if (IsNewPosition(last_saved_ticket)) 
-            HandleNewPosition();   
+        // Track grid motion
+        // On EA start, Base.ticket should be Zero and Type should be buy(Rule 1).
+        if (IsNewPosition(Base.ticket)) 
+            HandleNewPosition(Base, Grid);   
 
+        // manage delay 
+        check_zero_position();
+        
         // Track Trading Session
         if (use_trading_session)
         {
-            UpdateSesionStatus(session_status, session_start, session_end);
-            if (session_status == SESSION_OVER) { EndSession();}
+            UpdateSesionStatus(Grid);
+            if (Grid.session_status == SESSION_OVER) { EndSession();}
             else StartSession(sequence, EA_TAG);
         }
-    
-        // manage delay ☑️
-        check_zero_position();
     }
 
     void Stop(){

@@ -7,7 +7,7 @@
 
 //+------------------------------------------------------------------+
 
-void set_exits(CTrade &trader, ulong reference_ticket, double stop_size, int target_multiplier,const string ea_tag)
+void SetExits(CTrade &trader, ulong reference_ticket, double stop_size, int target_multiplier)
 {
     //XXX:  1.Make sure it is same symbol.
     //      2.Before moving any exits, ensure current price is not
@@ -16,9 +16,9 @@ void set_exits(CTrade &trader, ulong reference_ticket, double stop_size, int tar
     {
         // Check if the position's comment matches the EA's comment
         string position_comment = PositionGetString(POSITION_COMMENT);
-        if (StringFind(position_comment, ea_tag) == -1)
+        if (StringFind(position_comment, EA_TAG) == -1)
         {
-            Print(__FUNCTION__, " - Position was not placed by ",ea_tag,". Skipping ticket: ", reference_ticket);
+            Print(__FUNCTION__, " - Position was not placed by ",EA_TAG,". Skipping ticket: ", reference_ticket);
             return;
         }
 
