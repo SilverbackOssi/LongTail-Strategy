@@ -34,8 +34,8 @@ struct GridNode{
 };
 struct GridBase{
   string name;
-  ulong ticket;
-  ENUM_POSITION_TYPE type;
+  ulong ticket = 0; // default (rule 7)
+  ENUM_POSITION_TYPE type = POSITION_TYPE_BUY; // default (rule 7)
   double open_price;
   double volume;
   int volume_index;

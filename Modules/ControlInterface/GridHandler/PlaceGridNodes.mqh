@@ -130,7 +130,7 @@ GridNode AssertRecoveryNode(GridNode node, ulong ref_ticket, const Grid &grid, c
     {
         if (base == NULL)
         {
-            Print(__FUNCTION__," unable to assess grid base, volume index");
+            Print(__FUNCTION__," unable to assess grid base, volume index. Please pass the Base data.");
             return node; // as it came
         }
         // Get ticket details

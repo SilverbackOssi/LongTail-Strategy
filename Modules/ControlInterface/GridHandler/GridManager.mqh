@@ -13,20 +13,16 @@ void HandleNewPosition(GridBase &base, const Grid &grid)
     // update GridBase
     base.UpdateGridBase(ticket);
     if (StringFind(base.name, "Recovery") != -1)
-        base.volume_index = 0;
+        base.volume_index ++;
     else 
-      base.volume_index ++;
+      base.volume_index = 0;
     
     // set TP/SL
     SetExits(trade, ticket, Grid.unit, Grid.multiplier);
     
-    // Clean lagging orders
-    DeleteAllPending(trade, _Symbol)
-    
-    // call recovery.
-    PlaceRecoveryNode(ticket, grid, base)
-    
-    // call continuation.
-    PlaceContinuationNode(ticket, grid.status, grid)
+    // Update grid nodes
+    DeleteAllPending(trade, _Symbol);
+    PlaceRecoveryNode(ticket, grid, base);
+    PlaceContinuationNode(ticket, grid.status, grid);
     
 }

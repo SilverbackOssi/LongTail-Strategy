@@ -32,7 +32,7 @@ void check_strategy_rules()
     // consider unseen edge cases
 }
 
-void check_core_rules()
+void check_core_rules() //mFATAL
 {
     // Check if there is more than one position
     if (PositionsTotal() > 1)

@@ -13,7 +13,7 @@ void UpdateSesionStatus(Grid &grid)
   else grid.session_status = SESSION_OVER;
 }
 //+------------------------------------------------------------------+
-void EndSession(CTrade &trader)
+void HandleSessionEnd(CTrade &trader, const Grid &grid)
 {
   if (IsEmptyChart()) return;
 
@@ -27,7 +27,7 @@ void EndSession(CTrade &trader)
 
     if (order_ticket != 0)
     {
-      // Check if the comment does not contain "recovery"
+      // Skip recovery nodes
       if (StringFind(comment, "Recovery") != -1) continue;
 
       if (trader.OrderDelete(order_ticket))
@@ -36,6 +36,9 @@ void EndSession(CTrade &trader)
         Print(__FUNCTION__, ": Failed to delete order with ticket: ", order_ticket, " and comment: ", comment);
     }
   }
+
+  // clear post-session recovery lag
+  ClearRecoveryLag(trader, grid);
 }
 //+------------------------------------------------------------------+
 void StartSession(const double &progression_sequence[], const string ea_tag)
@@ -57,8 +60,33 @@ void StartSession(const double &progression_sequence[], const string ea_tag)
     }  
 }
 //+------------------------------------------------------------------+
-void DeleteContinuationOrders()
-{ /*Deletes any order whose comment does not contain 'recovery' */
-  
+void ClearRecoveryLag(CTrade &trader, const Grid &grid)
+{
+    // One recovery node lags after session ends and cycle ends
+    if (PositionSelect(_Symbol)) return;
+    
+    if (OrdersTotal() == 1)
+    {   
+        ulong order_ticket = OrderGetTicket(0);
+        if (order_ticket != 0)
+        {
+            double order_price = OrderGetDouble(ORDER_PRICE_OPEN);
+            ulong order_ticket = OrderGetInteger(ORDER_TICKET);
+            string order_comment = OrderGetString(ORDER_COMMENT);
+            double current_price = SymbolInfoDouble(_Symbol, SYMBOL_BID);
+
+            // Confirm node lag
+            double threshold = grid.unit * 2;
+            double distance = MathAbs(current_price - order_price);
+            if (distance > threshold)
+            {
+                bool deleted = trader.OrderDelete(order_ticket);
+                if (deleted)
+                    Print(__FUNCTION__, " - Deleted order with ticket: ", order_ticket, " and comment: ", order_comment, " as forgotten order cleanup ");
+                else
+                    Print(__FUNCTION__, " - Failed to delete order with ticket: ", order_ticket, " and comment: ", order_comment, " as forgotten order cleanup ");
+            }
+        }
+    }
 }
 //+------------------------------------------------------------------+

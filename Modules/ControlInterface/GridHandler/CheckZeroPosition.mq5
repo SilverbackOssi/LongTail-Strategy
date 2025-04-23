@@ -37,20 +37,19 @@ void check_zero_position()
     check_range_delay();
 }
 
-void check_range_delay()
+void HandleGridShift(const GridBase &base)
 {
     int orders_total = OrdersTotal();
-
-    // If there is an open position or no pending orders, return (not a delay)
     if (PositionSelect(_Symbol) || orders_total == 0) return;
     
-    // If the last position was a buy, return (not a range delay)
-    if (last_saved_type == POSITION_TYPE_BUY) return;
+    // grid shifts on a short position
+    if (base.type == POSITION_TYPE_BUY) return;
     
     // Variables to store order prices and tickets
     double price1 = 0.0, price2 = 0.0;
     ulong buy_stop_ticket = 0, sell_stop_ticket = 0;
 
+    // handle grid shift during trading session
     if (orders_total == 2) // Continuation stop is present
     {
         // get pending orders details
@@ -108,11 +107,11 @@ void check_range_delay()
             }
         }
     }
-    else if (orders_total == 1) // Outside trading session
+    // handle grid shift outside trading session
+    else if (orders_total == 1)
     {
-        //post_session_clean_up();
-
-        // Attempt to get the buy stop's ticket
+        ulong stop_ticket = 0;
+        // Attempt to get the Long recovery node
         for (int i = orders_total - 1; i >= 0; i--)
         {
             ulong order_ticket = OrderGetTicket(i);
@@ -122,63 +121,18 @@ void check_range_delay()
                     continue;
 
                 ENUM_ORDER_TYPE order_type = (ENUM_ORDER_TYPE)OrderGetInteger(ORDER_TYPE);
-
                 if (order_type == ORDER_TYPE_BUY_STOP)
                 {
-                    buy_stop_ticket = order_ticket;
+                    stop_ticket = order_ticket;
                     break;
                 }
             }
         }
 
         // If no buy stop ticket is found, return
-        if (buy_stop_ticket == 0) return;
+        if (stop_ticket == 0) return;
 
-        //place_recovery_order(buy_stop_ticket);
-    }
-    else // Mismanagement error
-    {
-        Print(__FUNCTION__, " - FATAL. Unseen. ", orders_total," orders exist.");
-        //check_strategy_rules();
-    }
-}
-
-void post_session_clean_up()
-{
-    // Ensure that the session has ended and there are no open positions
-    if (is_end_session == false || PositionSelect(_Symbol)) return;
-    
-    // Check if there is only one pending order
-    if (OrdersTotal() == 1)
-    {   
-        ulong order_ticket = OrderGetTicket(0);
-        if (order_ticket != 0)
-        {
-            double order_price = OrderGetDouble(ORDER_PRICE_OPEN);
-            ulong order_ticket = OrderGetInteger(ORDER_TICKET);
-            string order_comment = OrderGetString(ORDER_COMMENT);
-
-            // Get the current market price
-            double current_price = SymbolInfoDouble(_Symbol, SYMBOL_BID);
-
-            // Calculate the distance relative to grid_size and grid_spread
-            double threshold = grid_size + grid_spread * 2;
-            double distance = MathAbs(current_price - order_price);
-
-            // If the price is far from the order
-            if (distance > threshold)
-            {
-                bool deleted = trade.OrderDelete(order_ticket);
-                if (deleted)
-                {
-                    Print(__FUNCTION__, " - Deleted order with ticket: ", order_ticket, " and comment: ", order_comment, " as forgotten order cleanup ");
-                }
-                else
-                {
-                    Print(__FUNCTION__, " - Failed to delete order with ticket: ", order_ticket, " and comment: ", order_comment, " as forgotten order cleanup ");
-                }
-            }
-        }
+        PlaceRecoveryNode(stop_ticket, grid);
     }
 }
 
