@@ -3,24 +3,15 @@
 //|                                      Copyright 2025, Anyim Ossi. |
 //|                                          anyimossi.dev@gmail.com |
 //+------------------------------------------------------------------+
-#property copyright "Copyright 2025, Anyim Ossi."
-#property link      "anyimossi.dev@gmail.com"
-#property version   "1.00"
-//+------------------------------------------------------------------+
-//| Script program start function                                    |
-//+------------------------------------------------------------------+
-double Sequence[]={0.01, 0.01, 0.02, 0.02, 0.03, 0.04, 0.05, 0.07, 0.09, 0.12, 0.16, 0.22, 0.29, 0.39, 0.52, 0.69, 0.92, 1.23, 1.64, 2.18};
-double grid_size = 2.00;
-double grid_spread = 0.40;
-bool is_end_session = false; // false if session is active(default)
+// ALL THE CODE THAT ENSURES STRATEGY GUIDELINES ARE ADHERED
 
-void OnStart()
+void OnTest()
   {
-//---
+
    check_strategy_rules();
   }
 //+------------------------------------------------------------------+
-// ALL THE CODE THAT ENSURES STRATEGY GUIDELINES ARE ADHERED
+
 
 void check_strategy_rules()
 {
