@@ -19,25 +19,31 @@ public:// XXX: Dont encapsulate, allow full scope for this project
 
     // initialize Grid Grid, and GridBase Base
 
-    void start(multiplier){
+    void start(){
         
         Grid.Init(grid_unit, grid_spread, LTSMultiplier);
         build_sequence(Grid.multiplier, Grid.progression_sequence);
         
         // start Grid
         if (use_trading_session && !IsWithinTradingTime()) return init succesful; // Handles placing EA on chart, outside trading time
-
-        if (!PositionSelect(_Symbol)) 
-            { //XXX: handle cases of positions already opened on the chart(other symbols).
-            ulong ticket = OpenShort(Grid.progression_sequence[0], trade);
-            if (ticket) 
-                {
-                    Base.UpdateGridBase(ticket);
-                    Base.volume_index = 0;
-                    Print(__FUNCTION__, ": Started trading session with short at market price");   
-                }
-            else return init error, error message "unable to start grid short";
+        
+        /*if (!IsEmptyChart) // Prod
+            {
+                Print("Failed to start grid, please clear all orders and close all positions on the current chart");
+                return init error, error message "unable to start grid";
             }
+        */
+        if (!PositionSelect(_Symbol)) 
+        {
+        ulong ticket = OpenShort(Grid.progression_sequence[0], trade);
+        if (ticket) 
+            {
+                Base.UpdateGridBase(ticket);
+                Base.volume_index = 0;
+                Print(__FUNCTION__, ": Started trading session with short at market price");   
+            }
+        else return init error, error message "unable to start grid short";
+        }
     }
 
     void Manage(){  
