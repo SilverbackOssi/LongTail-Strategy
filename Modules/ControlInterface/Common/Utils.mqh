@@ -13,7 +13,7 @@ struct Grid{
     double spread;
     double multiplier;
     double target;
-    double []progression_sequence;
+    double progression_sequence[];
     int session_status;
     datetime session_time_start;
     datetime session_time_end;
@@ -35,24 +35,24 @@ struct GridNode{
 };
 struct GridBase{
   string name;
-  ulong ticket = 0; // default (rule 7)
-  ENUM_POSITION_TYPE type = POSITION_TYPE_BUY; // default (rule 7)
+  ulong ticket;
+  ENUM_POSITION_TYPE type;
   double open_price;
   double volume;
   int volume_index;
 
-  void UpdateGridBase(const ulong ticket) {
-    if (PositionSelect(ticket)) {
+  void UpdateGridBase(const ulong pos_ticket) {
+    if (PositionSelectByTicket(pos_ticket)) {
         name = PositionGetString(POSITION_COMMENT);
-        this->ticket = ticket;
-        type = PositionGetInteger(POSITION_TYPE);
+        ticket = pos_ticket;
+        type = ENUM_POSITION_TYPE(PositionGetInteger(POSITION_TYPE));
         open_price = PositionGetDouble(POSITION_PRICE_OPEN);
         volume = PositionGetDouble(POSITION_VOLUME);
     } else {
         Print("Failed to update base, could not find position with ticket: ", ticket);
     }
-}
-}
+   }
+};
 
 //+------------------------------------------------------------------+
 

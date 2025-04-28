@@ -23,7 +23,9 @@ public:// XXX: Dont encapsulate, allow full scope for this project
         
         Grid.Init(grid_unit, grid_spread, LTSMultiplier);
         build_sequence(Grid.multiplier, Grid.progression_sequence);
-        
+        Base.ticket = 0; // default (rule 7)
+        Base.type = POSITION_TYPE_BUY;
+
         // start Grid
         if (use_trading_session && !IsWithinTradingTime()) return init succesful; // Handles placing EA on chart, outside trading time
         
