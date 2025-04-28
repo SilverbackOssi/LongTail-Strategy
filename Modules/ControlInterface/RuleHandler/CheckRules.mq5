@@ -7,6 +7,7 @@
 
 string EA_TAG = "LongTailsScalper";
 
+
 void OnTest()
   {
 
@@ -32,16 +33,17 @@ void EnforceStrategyRules(CTrade &trader)
 //+------------------------------------------------------------------+
 void EnforceGridPlacementAccuracy(CTrade &trader)
 {
-    // check if orders are misplaced and properly spread relative to open position
+    // check if orders are priced correctly, relative to open position
+    // grid.target + grid.spread
 }
 
 void EnforceNoInterference(Grid &grid, CTrade &trader)
 {
-    // Handle human interference on Position, order.
-    // Check for positions not containing EA_TAG and close them
+    // Handle human interference on Positions.
     for (int i = PositionsTotal() - 1; i >= 0; i--)
     {
-        if (PositionSelectByIndex(i))
+        string symbol = PositionGetSymbol(i);
+        if (symbol == _Symbol)
         {
             string comment = PositionGetString(POSITION_COMMENT);
             ulong ticket = PositionGetInteger(POSITION_TICKET);
@@ -55,22 +57,21 @@ void EnforceNoInterference(Grid &grid, CTrade &trader)
         }
     }
 
-    // Check for orders not containing EA_TAG and delete them
+    // Handle human interference on Orders
     for (int i = OrdersTotal() - 1; i >= 0; i--)
     {
         ulong order_ticket = OrderGetTicket(i);
         if (order_ticket == 0) continue;
-        if (OrderSelect(i, SELECT_BY_POS))
+        if (OrderGetString(ORDER_SYMBOL) != _Symbol) continue;
+
+        string comment = OrderGetString(ORDER_COMMENT);
+        ulong ticket = OrderGetInteger(ORDER_TICKET);
+        if (StringFind(comment, EA_TAG) == -1) // EA_TAG not found in comment
         {
-            string comment = OrderGetString(ORDER_COMMENT);
-            ulong ticket = OrderGetInteger(ORDER_TICKET);
-            if (StringFind(comment, EA_TAG) == -1) // EA_TAG not found in comment
-            {
-                if (!trader.OrderDelete(ticket))
-                    Print(__FUNCTION__, " - Error: Failed to delete foreign order with ticket: ", ticket);
-                else
-                    Print(__FUNCTION__, " - Deleted foreign order with ticket: ", ticket);
-            }
+            if (!trader.OrderDelete(ticket))
+                Print(__FUNCTION__, " - Error: Failed to delete foreign order with ticket: ", ticket);
+            else
+                Print(__FUNCTION__, " - Deleted foreign order with ticket: ", ticket);
         }
     }
 
@@ -152,7 +153,7 @@ void EnforceCoreRules(CTrade &trader)
         }
     }
 
-    // Check post-session lag, handled by session manager
+    // Check post-session lag, handled by session manager.
 }
 //+------------------------------------------------------------------+
 // Check Stop loss and Take profit
