@@ -13,7 +13,8 @@ double   min_volume                       = SymbolInfoDouble(_Symbol,SYMBOL_VOLU
 
 void OnStart()
   {
-
+   // Test all Control sub modules here
+   
    TestExitManagement TestExit;
    TestExit.SetOnForiegnPosition();
    TestExit.SetOnEAPosition();
