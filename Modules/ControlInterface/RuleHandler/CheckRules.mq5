@@ -5,9 +5,6 @@
 //+------------------------------------------------------------------+
 #include  <Ossi\LongTails\Utils.mqh>
 
-string EA_TAG = "LongTailsScalper";
-
-
 void OnTest()
   {
 
@@ -20,15 +17,16 @@ void EnforceStrategyRules(CTrade &trader)
 {
     // Call enforecers
     EnforceCoreRules(trader);
-    //EnforceNoInterference(trader);
+    EnforceNoInterference(trader);
     //EnforceGridPlacementAccuracy(trader);
 
     // Call Checkers 
     CheckSLTP();
-    //CheckVolumeAccuracy();
+    CheckVolumeAccuracy();
     //CheckSequenceAccuracy();
     
     // consider unseen edge cases
+    // - deleted node by foreign
 }
 //+------------------------------------------------------------------+
 // check if orders are priced correctly, relative to open position
@@ -191,7 +189,7 @@ void CheckVolumeAccuracy(const Grid &grid, const GridBase &base)
 {
     // Check mathematical accuracy across all nodes
 
-    // Check grid-base volume accuracy
+    // Check open position volume in sequence
     for (int i = PositionsTotal() - 1; i >= 0; i--)
     {
         string symbol=PositionGetSymbol(i);
@@ -211,15 +209,12 @@ void CheckVolumeAccuracy(const Grid &grid, const GridBase &base)
             }
 
             if (!volume_ok)
-            {
                 Print(__FUNCTION__, " - Warning: Volume for position with ticket: ", PositionGetInteger(POSITION_TICKET), " does not match any value in the progression sequence array.");
-            }
         }
     }
-    // check node volume accuracy
-    
-    // Check grid sequence accuracy
 
+    // check node volume accuracy by index in sequence
+    
     // get recovery volume index
     // base volume should be -1
     // compare first term of sequence with continuation volume
