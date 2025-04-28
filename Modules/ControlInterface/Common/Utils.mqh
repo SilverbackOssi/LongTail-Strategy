@@ -1,4 +1,5 @@
-
+#ifndef Utils_MQH
+#define Utils_MQH
 #include <Trade\Trade.mqh>
 //+------------------------------------------------------------------+
 
@@ -200,3 +201,4 @@ void ClearContinuationNodes(CTrade &trader)
   }
 }
 //+------------------------------------------------------------------+
+#endif // Utils_MQH

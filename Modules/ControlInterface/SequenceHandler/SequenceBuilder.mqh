@@ -3,12 +3,6 @@
 //|                                      Copyright 2025, Anyim Ossi. |
 //|                                          anyimossi.dev@gmail.com |
 //+------------------------------------------------------------------+
-/*
-Build for XAU/USD
-Minimum volume = 0.01
-@Unit size of 200 points = $2
-Minimum balance = $2000 [Moderate risk]
-*/
 
 #include  <Ossi\LongTails\Utils.mqh>
 
@@ -39,8 +33,7 @@ void build_sequence(int reward_multiplier, double &progression_sequence[])
 
 double GetMinimumTerm()
    {
-   
-   //get minimum volume: assuming the minimum volume is appropriate for a $2000 account
+   //get minimum volume: assuming the minimum volume is minimum term for a $2000 account
    double min_volume = SymbolInfoDouble(_Symbol, SYMBOL_VOLUME_MIN);
 
    //get account balance
@@ -58,4 +51,5 @@ double GetMinimumTerm()
 void RebuildSequence()
 {
   // Updates the progression sequence based on accound balance increase.
+  // Update every 10% increase or decrease
 }

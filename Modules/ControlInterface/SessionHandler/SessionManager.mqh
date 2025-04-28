@@ -47,6 +47,7 @@ void ClearRecoveryLag(CTrade &trader, const Grid &grid)
 {
     // One recovery node lags after session ends and cycle ends
     if (PositionSelect(_Symbol)) return;
+    if (grid.session_status != SESSION_OVER)  Print(__FUNCTION__,': LTS might not be functioning properly, inappropriate grid placement.');
     
     if (OrdersTotal() == 1)
     {   
