@@ -31,10 +31,18 @@ void EnforceStrategyRules(CTrade &trader)
     // consider unseen edge cases
 }
 //+------------------------------------------------------------------+
-void EnforceGridPlacementAccuracy(CTrade &trader)
+// check if orders are priced correctly, relative to open position
+void EnforceGridPlacementAccuracy(Grid &grid, CTrade &trader)
 {
-    // check if orders are priced correctly, relative to open position
-    // grid.target + grid.spread
+    // get the base by sellecting open position
+    // calculate correct recovery node// open_price - grid.unit for buy position
+    // calculate correct continuation node// open_price + grid.target + grid.spread for buy position
+
+    // get actual recovery node
+    // if price don't match,modify
+
+    // get actual continuation node
+    // if price don't match,modify
 }
 
 void EnforceNoInterference(Grid &grid, CTrade &trader)
