@@ -1,17 +1,5 @@
-//+------------------------------------------------------------------+
-//|                                                   TestUtils.mq5  |
-//|                        Copyright 2023, MetaQuotes Software Corp. |
-//|                                             https://www.mql5.com |
-//+------------------------------------------------------------------+
-#property copyright "Copyright 2023, MetaQuotes Software Corp."
-#property link      "https://www.mql5.com"
-#property version   "1.00"
-#property script_show_inputs // Optional: Good practice for scripts
 
-// Include the header file we want to test
 #include "Utils.mqh"
-// We need CTrade for many utility functions and test setup
-#include <Trade\Trade.mqh>
 
 //+------------------------------------------------------------------+
 //| Global Variables for Testing                                     |
@@ -344,8 +332,8 @@ void OnStart()
      if(AccountInfoInteger(ACCOUNT_TRADE_MODE)==ACCOUNT_TRADE_MODE_REAL)
      {
         Print("WARNING: Running tests on a REAL account! Ensure this is intended and the symbol/volume are safe.");
-        // ExpertRemove(); // Uncomment this line to automatically stop the script on a real account
-        // return;        // Uncomment this line to automatically stop the script on a real account
+        ExpertRemove();
+        return;
      }
      if(SymbolInfoInteger(_Symbol, SYMBOL_TRADE_MODE) == SYMBOL_TRADE_MODE_DISABLED)
      {
@@ -354,7 +342,7 @@ void OnStart()
      }
 
     // --- Initialize CTrade ---
-    // trade.SetExpertMagicNumber(12345); // Set if your EA uses magic numbers consistently
+    // trade.SetExpertMagicNumber(EA_MAGIC);
     trade.SetTypeFillingBySymbol(_Symbol); // Crucial for execution
     trade.SetDeviationInPoints(10); // Allow some slippage for market orders in tests
 
@@ -372,7 +360,7 @@ void OnStart()
     PrintFormat("Tests Failed: %d", tests_failed);
     Print("--- Testing Finished ---");
 
-    // Optional: Clean up chart after tests if desired
+    // Clean up chart after tests
     // ObjectsDeleteAll(0);
     // ChartRedraw();
 }

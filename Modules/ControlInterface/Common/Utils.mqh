@@ -4,6 +4,7 @@
 //+------------------------------------------------------------------+
 
 const string EA_TAG = "LongTailsScalper";
+const int EA_MAGIC = 405897;
 const int SESSION_RUNNING = 100;
 const int SESSION_OVER = 101;
 //+------------------------------------------------------------------+
