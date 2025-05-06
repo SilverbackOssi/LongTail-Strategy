@@ -7,6 +7,7 @@ const string EA_TAG = "LongTailsScalper";
 const int EA_MAGIC = 405897;
 const int SESSION_RUNNING = 100;
 const int SESSION_OVER = 101;
+// use_session = false; //default
 //+------------------------------------------------------------------+
 
 struct Grid{
@@ -25,6 +26,12 @@ struct Grid{
         spread = grid_spread;
         multiplier = grid_multiplier;
         target = unit * multiplier;
+
+        // Default values
+        progression_sequence = {};
+        session_status = SESSION_OVER;
+        session_time_start = StringToTime("7:30");
+        session_time_end = StringToTime("12:30");
     }
 };
 struct GridNode{
@@ -41,6 +48,10 @@ struct GridBase{
   double open_price;
   double volume;
   int volume_index;
+
+  void GridBase(){
+    volume_index = 0;
+  }
 
   void UpdateGridBase(const ulong pos_ticket) {
     if (PositionSelectByTicket(pos_ticket)) {

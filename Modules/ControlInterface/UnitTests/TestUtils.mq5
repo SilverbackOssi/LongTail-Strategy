@@ -23,9 +23,7 @@ void Assert(bool condition, string test_name, string message = "")
     {
         string fail_msg = StringFormat("%s - %s: FAILED", current_test_suite, test_name);
         if (message != "")
-        {
             fail_msg += " (" + message + ")";
-        }
         Print(fail_msg);
         tests_failed++;
     }
@@ -35,23 +33,21 @@ void Assert(bool condition, string test_name, string message = "")
 //| Test Suite Functions                                             |
 //+------------------------------------------------------------------+
 
-void Test_StructureInitialization()
+void Test_StructureInitialization() //CLEAN
 {
     current_test_suite = "Struct Init";
     // --- Test Grid::Init ---
     Grid test_grid;
-    double unit = 0.01, spread = 0.0002, multiplier = 1.5;
+    double unit = 2.0, spread = 0.4, multiplier = 1.5;
     test_grid.Init(unit, spread, multiplier);
 
     Assert(test_grid.unit == unit, "Grid::Init Unit");
     Assert(test_grid.spread == spread, "Grid::Init Spread");
     Assert(test_grid.multiplier == multiplier, "Grid::Init Multiplier");
     Assert(test_grid.target == unit * multiplier, "Grid::Init Target");
-    // Note: progression_sequence, session_status, session_time_* are not initialized by Init
+    // Note: progression_sequence, session_status, session_time_* are initialized to default
 
     // --- Test GridBase::UpdateGridBase ---
-    // This is hard to test reliably in a script without a known position.
-    // We'll place a position if possible.
     GridBase test_base;
     ulong test_pos_ticket = 0;
     string symbol = _Symbol;
@@ -83,7 +79,7 @@ void Test_StructureInitialization()
        else
        {
            Print("Test_StructureInitialization - GridBase::UpdateGridBase: SKIPPED (Could not select test position after opening)");
-           tests_failed++; // Or handle as skipped
+           tests_failed++; // handle as skipped
            // Attempt cleanup just in case
            if(PositionSelect(symbol)) trade.PositionClose(symbol);
        }
@@ -91,7 +87,7 @@ void Test_StructureInitialization()
     else
     {
         Print("Test_StructureInitialization - GridBase::UpdateGridBase: SKIPPED (Failed to open test position. Error: ", GetLastError(), ")");
-        tests_failed++; // Or handle as skipped
+        tests_failed++; // handle as skipped
     }
 }
 

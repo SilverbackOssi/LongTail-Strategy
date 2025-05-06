@@ -41,7 +41,6 @@ public:// XXX: Dont encapsulate, allow full scope for this project
         if (ticket) 
             {
                 Base.UpdateGridBase(ticket);
-                Base.volume_index = 0;
                 Print(__FUNCTION__, ": Started trading session with short at market price");   
             }
         else return init error, error message "unable to start grid short";
