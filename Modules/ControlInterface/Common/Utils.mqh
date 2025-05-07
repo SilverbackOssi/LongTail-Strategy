@@ -4,10 +4,8 @@
 //+------------------------------------------------------------------+
 
 const string EA_TAG = "LongTailsScalper";
-const int EA_MAGIC = 405897;
 const int SESSION_RUNNING = 100;
 const int SESSION_OVER = 101;
-// use_session = false; //default
 //+------------------------------------------------------------------+
 
 struct Grid{
@@ -26,12 +24,6 @@ struct Grid{
         spread = grid_spread;
         multiplier = grid_multiplier;
         target = unit * multiplier;
-
-        // Default values
-        progression_sequence = {};
-        session_status = SESSION_OVER;
-        session_time_start = StringToTime("7:30");
-        session_time_end = StringToTime("12:30");
     }
 };
 struct GridNode{
@@ -48,10 +40,6 @@ struct GridBase{
   double open_price;
   double volume;
   int volume_index;
-
-  void GridBase(){
-    volume_index = 0;
-  }
 
   void UpdateGridBase(const ulong pos_ticket) {
     if (PositionSelectByTicket(pos_ticket)) {
@@ -125,18 +113,10 @@ void DeleteAllPending(CTrade &trader, const string symbol)
     }
 }
 //+------------------------------------------------------------------+
-bool IsEmptyChart()
+bool IsEmptyChart() //PASSED
 {/* Checks if there are no open positions or pending orders on the current chart*/
 
-  if (!PositionSelect(_Symbol)) return true;
-  if (OrdersTotal()==0) return true;
-  for (int i = OrdersTotal() - 1; i >= 0; --i)
-  {
-    ulong order_ticket = OrderGetTicket(i);
-    string order_symbol = OrderGetString(ORDER_SYMBOL);
-    if (order_symbol == _Symbol) return false;
-
-  }
+  if (PositionSelect(_Symbol) || SymbolOrdersTotal()>0) return false;
   return true;
 }
 //+------------------------------------------------------------------+
@@ -180,7 +160,7 @@ bool IsNewPosition(ulong &saved_ticket)
     return false;
 }
 //+------------------------------------------------------------------+
-int SymbolOrdersTotal()
+int SymbolOrdersTotal() // PASSED
 {
     // returns the total number of orders on the current chart.
     // Do not use for iteration to avoid inaccurate indexing.
