@@ -9,14 +9,16 @@
 
 void SetExits(CTrade &trader, ulong reference_ticket, double stop_size, int target_multiplier)
 {
-    //XXX:  1.Make sure it is same symbol.
-    //      2.Before moving any exits, ensure current price is not
-    //      close to symbols stop limits to avoid modification errors.
     if (PositionSelectByTicket(reference_ticket))
-    {
-        // Check if the position's comment matches the EA's comment
+    {     
+        if (PositionGetString(POSITION_SYMBOL) != _Symbol) // Position not on current chart
+        {
+            Print(__FUNCTION__, " - Cannot modify external symbol. Skipping ticket: ", reference_ticket);
+            return;
+        }
+        
         string position_comment = PositionGetString(POSITION_COMMENT);
-        if (StringFind(position_comment, EA_TAG) == -1)
+        if (StringFind(position_comment, EA_TAG) == -1) // Position not placed by EA, should not be modified
         {
             Print(__FUNCTION__, " - Position was not placed by ",EA_TAG,". Skipping ticket: ", reference_ticket);
             return;
@@ -40,7 +42,12 @@ void SetExits(CTrade &trader, ulong reference_ticket, double stop_size, int targ
         }
         else
         {
-            Print(__FUNCTION__, " - Failed to set take profit and stop loss for ticket: ", reference_ticket);
+            Print(__FUNCTION__, " FATAL ERROR - Failed to set take profit and stop loss for ticket: ", reference_ticket, " Check stop symbol level");
+            // close the open position, avoid further error
+            if (trader.PositionClose(reference_ticket))
+                Print(__FUNCTION__, " - Position closed due to error in setting TP/SL for ticket: ", reference_ticket);
+            else
+                Print(__FUNCTION__, " - Failed to close position with ticket: ", reference_ticket, " after TP/SL modification error. Check your account settings.");
         }
     }
     else
