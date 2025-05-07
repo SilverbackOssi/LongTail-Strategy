@@ -1,5 +1,5 @@
 
-#include "Utils.mqh"
+#include  <Ossi\LongTails\Utils.mqh>
 
 //+------------------------------------------------------------------+
 //| Global Variables for Testing                                     |
@@ -91,7 +91,7 @@ void Test_StructureInitialization() //CLEAN
     }
 }
 
-void Test_ArrayAndValueFunctions()
+void Test_ArrayAndValueFunctions()  //CLEAN
 {
     current_test_suite = "Array/Value Utils";
     // --- Test GetValueIndex ---
@@ -113,7 +113,7 @@ void Test_ArrayAndValueFunctions()
     Assert(MathAbs(ArraySum(empty_arr) - 0.0) < 0.00001, "ArraySum Empty Array");
 }
 
-void Test_TimeFunctions()
+void Test_TimeFunctions()  //CLEAN
 {
     current_test_suite = "Time Utils";
     // --- Test IsWithinTradingTime ---
@@ -133,7 +133,7 @@ void Test_TimeFunctions()
 }
 
 
-void Test_OrderRelatedFunctions()
+void Test_OrderRelatedFunctions() //CLEAN
 {
     current_test_suite = "Order Utils";
     string symbol = _Symbol;
@@ -152,7 +152,7 @@ void Test_OrderRelatedFunctions()
 
     // --- Test NodeExistsAtPrice ---
     Assert(NodeExistsAtPrice(price1) == 0, "NodeExistsAtPrice Not Found Initially");
-    if(trade.BuyLimit(0.01, price1, symbol, 0, 0, "TestNode1"))
+    if(trade.BuyLimit(0.01, price1, symbol, 0, 0, ORDER_TIME_GTC, 0, "TestNode1"))
     {
         ticket1 = trade.ResultOrder();
         Sleep(500); // Allow order processing
@@ -166,7 +166,7 @@ void Test_OrderRelatedFunctions()
 
     // --- Test SymbolOrdersTotal ---
     Assert(SymbolOrdersTotal() == (ticket1 != 0 ? 1 : 0), "SymbolOrdersTotal One Order");
-    if(trade.BuyLimit(0.01, price2, symbol, 0, 0, "TestNode2"))
+    if(trade.BuyLimit(0.01, price2, symbol, 0, 0, ORDER_TIME_GTC, 0, "TestNode2"))
     {
         ticket2 = trade.ResultOrder();
         Sleep(500);
@@ -188,7 +188,7 @@ void Test_OrderRelatedFunctions()
         double other_ask = SymbolInfoDouble(other_symbol, SYMBOL_ASK);
         double other_point = SymbolInfoDouble(other_symbol, SYMBOL_POINT);
         if(other_ask > 0 && other_point > 0) {
-             if(trade.BuyLimit(0.01, other_ask + 100 * other_point, other_symbol, 0, 0, "TestOtherSymbol")) {
+             if(trade.BuyLimit(0.01, other_ask + 100 * other_point, other_symbol, 0, 0, ORDER_TIME_GTC, 0, "TestOtherSymbol")) {
                  other_ticket = trade.ResultOrder();
                  Sleep(500);
                  int expected_count = (ticket1 != 0 ? 1 : 0) + (ticket2 != 0 ? 1 : 0);
@@ -211,9 +211,9 @@ void Test_OrderRelatedFunctions()
 
     // --- Test ClearContinuationNodes ---
     ulong t_cont1=0, t_cont2=0, t_rec=0;
-    if(trade.BuyLimit(0.01, price1, symbol, 0, 0, "Some Node")) t_cont1 = trade.ResultOrder();
-    if(trade.BuyLimit(0.01, price2, symbol, 0, 0, EA_TAG + " Continuation")) t_cont2 = trade.ResultOrder();
-    if(trade.BuyLimit(0.01, price3, symbol, 0, 0, "Recovery Node Test")) t_rec = trade.ResultOrder();
+    if(trade.BuyLimit(0.01, price1, symbol, 0, 0, ORDER_TIME_GTC, 0, "Some Node")) t_cont1 = trade.ResultOrder();
+    if(trade.BuyLimit(0.01, price2, symbol, 0, 0, ORDER_TIME_GTC, 0, EA_TAG + " Continuation")) t_cont2 = trade.ResultOrder();
+    if(trade.BuyLimit(0.01, price3, symbol, 0, 0, ORDER_TIME_GTC, 0, "Recovery Node Test")) t_rec = trade.ResultOrder();
     Sleep(500);
 
     int initial_orders = SymbolOrdersTotal(); // Should be 3 if all placed
@@ -224,7 +224,7 @@ void Test_OrderRelatedFunctions()
     bool cont2_exists = OrderSelect(t_cont2);
     bool rec_exists = OrderSelect(t_rec);
 
-    Assert(cont1_exists == false, "ClearContinuationNodes Deletes Normal Node");
+    Assert(cont1_exists == false, "ClearContinuationNodes Deletes Random Node");
     Assert(cont2_exists == false, "ClearContinuationNodes Deletes Continuation Node");
     Assert(rec_exists == true, "ClearContinuationNodes Keeps Recovery Node");
     Assert(SymbolOrdersTotal() == (rec_exists ? 1:0), "ClearContinuationNodes Final Count");
@@ -234,7 +234,7 @@ void Test_OrderRelatedFunctions()
     Sleep(500);
 }
 
-void Test_PositionRelatedFunctions()
+void Test_PositionRelatedFunctions() //CLEAN
 {
     current_test_suite = "Position Utils";
     string symbol = _Symbol;
@@ -245,13 +245,13 @@ void Test_PositionRelatedFunctions()
     // --- Cleanup before tests ---
     if(PositionSelect(symbol))
        trade.PositionClose(symbol);
-    DeleteAllPending(trade, symbol); // Also clear orders
+    DeleteAllPending(trade, symbol);
     Sleep(500);
 
     // --- Test IsEmptyChart ---
     Assert(IsEmptyChart() == true, "IsEmptyChart Initially True");
     // Place an order
-    if(trade.BuyLimit(0.01, SymbolInfoDouble(symbol, SYMBOL_ASK) + _Point * 100, symbol, 0, 0, "TestEmptyOrder")) {
+    if(trade.BuyLimit(0.01, SymbolInfoDouble(symbol, SYMBOL_ASK) + _Point * 100, symbol, 0, 0, ORDER_TIME_GTC, 0, "TestEmptyOrder")) {
         ulong order_ticket = trade.ResultOrder();
         Sleep(500);
         Assert(IsEmptyChart() == false, "IsEmptyChart False with Order");
@@ -271,6 +271,30 @@ void Test_PositionRelatedFunctions()
         Print("Test_PositionRelatedFunctions - IsEmptyChart (Position): SKIPPED (Failed to open test position. Error: ", GetLastError(), ")");
         tests_failed++;
     }
+    // Test with an order for another symbol (if possible)
+    string other_symbol = "";
+    for(int i=0; i < SymbolsTotal(false); i++) {
+       string s = SymbolName(i, false);
+       if (s != symbol && SymbolInfoInteger(s, SYMBOL_TRADE_MODE) != SYMBOL_TRADE_MODE_DISABLED) {
+          other_symbol = s; break;
+       }
+    }
+    ulong other_ticket = 0;   
+    if(other_symbol != "") {
+        double other_ask = SymbolInfoDouble(other_symbol, SYMBOL_ASK);
+        double other_point = SymbolInfoDouble(other_symbol, SYMBOL_POINT);
+        if(other_ask > 0 && other_point > 0) {
+             if(trade.BuyLimit(0.01, other_ask + 100 * other_point, other_symbol, 0, 0, ORDER_TIME_GTC, 0, "TestOtherSymbol")) {
+                 other_ticket = trade.ResultOrder();
+                 Sleep(500);
+                 Assert(IsEmptyChart() == true, "IsEmptyChart True with Other Symbol Order");
+                 trade.OrderDelete(other_ticket); // Clean up other symbol order
+                 Sleep(500);
+             }
+        }
+    }
+    Assert(IsEmptyChart() == false, "IsEmptyChart False with Position");
+    
 
     // --- Test IsNewPosition ---
     // Assumes position from previous test is open

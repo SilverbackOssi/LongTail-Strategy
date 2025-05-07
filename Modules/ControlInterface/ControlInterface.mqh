@@ -11,6 +11,7 @@ int LTSMultiplier = 3;
 CTrade trade;
 
 //+------------------------------------------------------------------+
+// Perform Sanity Checks
 
 class LTSControl(){
 public:// XXX: Dont encapsulate, allow full scope for this project
