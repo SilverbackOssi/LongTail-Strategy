@@ -12,7 +12,7 @@ int tests_failed = 0;
 string current_test_suite = ""; // To group assertion messages
 
 //+------------------------------------------------------------------+
-//| Assertion Helper (similar to TestUtils.mq5)                    |
+//| Assertion Helper                                                 |
 //+------------------------------------------------------------------+
 void Assert(bool condition, string test_name, string message = "")
 {
@@ -31,48 +31,6 @@ void Assert(bool condition, string test_name, string message = "")
     }
 }
 
-//+------------------------------------------------------------------+
-//| Helper to clean up positions and orders for the current symbol   |
-//+------------------------------------------------------------------+
-void CleanupCurrentSymbol(string sym = "")
-{
-    string current_sym = (sym == "") ? _Symbol : sym;
-
-    // Close open position for the specified symbol
-    if (PositionSelect(current_sym))
-    {
-        if (trade.PositionClose(current_sym))
-        {
-            PrintFormat("CleanupCurrentSymbol: Closed position on %s", current_sym);
-        }
-        else
-        {
-            PrintFormat("CleanupCurrentSymbol: Failed to close position on %s. Error: %d", current_sym, GetLastError());
-        }
-        Sleep(500); // Allow time for close
-    }
-
-    // Delete pending orders for the specified symbol
-    for (int i = OrdersTotal() - 1; i >= 0; i--)
-    {
-        ulong order_ticket = OrderGetTicket(i);
-        if (OrderSelect(order_ticket)) // Ensure order is selectable
-        {
-            if (OrderGetString(ORDER_SYMBOL) == current_sym)
-            {
-                if (trade.OrderDelete(order_ticket))
-                {
-                    PrintFormat("CleanupCurrentSymbol: Deleted order %d on %s", order_ticket, current_sym);
-                }
-                else
-                {
-                    PrintFormat("CleanupCurrentSymbol: Failed to delete order %d on %s. Error: %d", order_ticket, GetLastError());
-                }
-                Sleep(200); // Allow time for delete
-            }
-        }
-    }
-}
 
 //+------------------------------------------------------------------+
 //| Test Suite for ExitManager::SetExits                             |

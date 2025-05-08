@@ -221,6 +221,7 @@ ulong OpenShort(double deal_volume, CTrade &trader) {
         return 0; // Trade execution failed
     }
 }
+
 //+------------------------------------------------------------------+
 ulong OpenLong(double deal_volume, CTrade &trader) {
     // Define trade parameters
@@ -235,6 +236,53 @@ ulong OpenLong(double deal_volume, CTrade &trader) {
         ResetLastError();
         Print("Failed to place sell order. Error: ", GetLastError());
         return 0; // Trade execution failed
+    }
+}
+
+//+------------------------------------------------------------------+
+void CleanupCurrentSymbol(const string sym = "") 
+{// Helper to clean up positions and orders for the current symbol
+    // If no symbol is provided, use the current chart's symbol (_Symbol)
+    string current_sym = (sym == "") ? _Symbol : sym;
+
+   // Close all open positions for the specified symbol
+   for (int i = PositionsTotal() - 1; i >= 0; i--)
+   {
+      if (PositionGetSymbol(i) == current_sym)
+      {
+         if (trade.PositionClose(PositionGetString(POSITION_SYMBOL)))
+            PrintFormat("CleanupCurrentSymbol: Closed position on %s", current_sym);
+         else
+        PrintFormat("CleanupCurrentSymbol: Failed to close position on %s. Error: %d", current_sym, GetLastError());
+        int retries = 10; // Retry up to 10 times
+        while (PositionSelect(current_sym) && retries > 0)
+        {
+            Sleep(100); // Check every 100ms
+            retries--;
+        }
+      }
+   }
+
+    // Delete pending orders for the specified symbol
+    for (int i = OrdersTotal() - 1; i >= 0; i--)
+    {
+        ulong order_ticket = OrderGetTicket(i);
+        if (OrderSelect(order_ticket)) // Ensure order is selectable
+        {
+            if (OrderGetString(ORDER_SYMBOL) == current_sym)
+            {
+                if (trade.OrderDelete(order_ticket))
+                    PrintFormat("CleanupCurrentSymbol: Deleted order %d on %s", order_ticket, current_sym);
+                else
+                    PrintFormat("CleanupCurrentSymbol: Failed to delete order %d on %s. Error: %d", order_ticket, GetLastError());
+                int retries = 10; // Retry up to 10 times
+                while (OrderSelect(order_ticket) && retries > 0)
+                {
+                    Sleep(100); // Check every 50ms
+                    retries--;
+                }
+            }
+        }
     }
 }
 
