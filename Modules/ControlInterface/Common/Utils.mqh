@@ -1,5 +1,10 @@
 #ifndef Utils_MQH
 #define Utils_MQH
+
+//+------------------------------------------------------------------+
+//| Constants and Structures                                         |
+//+------------------------------------------------------------------+
+
 #include <Trade\Trade.mqh>
 //+------------------------------------------------------------------+
 
@@ -54,24 +59,47 @@ struct GridBase{
    }
 };
 
+
+//+------------------------------------------------------------------+
+//| Assertion Helpers                                                |
+//+------------------------------------------------------------------+
+bool IsEmptyChart() //PASSED
+{/* Checks if there are no open positions or pending orders on the current chart*/
+
+  if (PositionSelect(_Symbol) || SymbolOrdersTotal()>0) return false;
+  return true;
+}
+
+//+------------------------------------------------------------------+
+bool IsWithinTradingTime(datetime start_time, datetime end_time)
+{   
+    if (start_time>end_time)
+    {
+      datetime temp = start_time;
+      start_time = end_time;
+      end_time = temp; 
+    }
+    datetime current_time = TimeCurrent();
+    
+    return (current_time >= start_time && current_time <= end_time);
+}
+
+//+------------------------------------------------------------------+
+bool IsNewPosition(ulong &saved_ticket)
+{
+// assumes there's one position open on the chart (Rule 3).
+    if (PositionSelect(_Symbol))
+    {
+        ulong open_ticket = PositionGetInteger(POSITION_TICKET);
+        if (saved_ticket != open_ticket) return true; // New position open on chart
+    }
+    return false;
+}
+
 //+------------------------------------------------------------------+
 
-ulong NodeExistsAtPrice(double order_price)
-{
-    for (int i = OrdersTotal() - 1; i >= 0; --i)
-      {
-        ulong order_ticket = OrderGetTicket(i);
-        if (order_ticket!=0)
-            {
-            if (OrderGetString(ORDER_SYMBOL) == _Symbol  
-               && OrderGetDouble(ORDER_PRICE_OPEN) == order_price)
-               {
-                return order_ticket;
-               }
-            }
-      }
-    return 0;
-}
+//+------------------------------------------------------------------+
+//| Array Related                                                    |
 //+------------------------------------------------------------------+
 int GetValueIndex(double value,const double &arr[])
 {
@@ -81,6 +109,7 @@ int GetValueIndex(double value,const double &arr[])
    }
    return -1;
 }
+
 //+------------------------------------------------------------------+
 double ArraySum(const double &array[])
   {
@@ -91,6 +120,26 @@ double ArraySum(const double &array[])
      }
    return sum;
   }
+
+//+------------------------------------------------------------------+
+
+//+------------------------------------------------------------------+
+//| Order Related                                                    |
+//+------------------------------------------------------------------+
+int SymbolOrdersTotal() // PASSED
+{
+    // returns the total number of orders on the current chart.
+    // Do not use for iteration to avoid inaccurate indexing.
+    int symbol_total = 0;
+    for (int i = OrdersTotal() - 1; i >= 0; --i)
+    {
+        ulong order_ticket = OrderGetTicket(i);
+        if (order_ticket == 0) continue;
+        if (OrderGetString(ORDER_SYMBOL) == _Symbol) symbol_total++;
+    }
+    return symbol_total;
+}
+
 //+------------------------------------------------------------------+
 void DeleteAllPending(CTrade &trader, const string symbol)
 {
@@ -112,68 +161,9 @@ void DeleteAllPending(CTrade &trader, const string symbol)
         }
     }
 }
-//+------------------------------------------------------------------+
-bool IsEmptyChart() //PASSED
-{/* Checks if there are no open positions or pending orders on the current chart*/
 
-  if (PositionSelect(_Symbol) || SymbolOrdersTotal()>0) return false;
-  return true;
-}
 //+------------------------------------------------------------------+
-bool IsWithinTradingTime(datetime start_time, datetime end_time)
-{   
-    if (start_time>end_time)
-    {
-      datetime temp = start_time;
-      start_time = end_time;
-      end_time = temp; 
-    }
-    datetime current_time = TimeCurrent();
-    
-    return (current_time >= start_time && current_time <= end_time);
-}
-//+------------------------------------------------------------------+
-ulong OpenShort(double deal_volume, CTrade &trader) {
-    // Define trade parameters
-    string comment = EA_TAG + " Session Start";
 
-    // Attempt to execute a sell order
-    if (trader.Sell(deal_volume, _Symbol, 0, 0, 0, comment)) {
-        ulong ticket = trader.ResultOrder();
-        Print("Sell order placed successfully. Ticket: ", ticket);
-        return ticket; // Trade executed successfully
-    } else {
-        Print("Failed to place sell order. Error: ", GetLastError());
-        return 0; // Trade execution failed
-    }
-}
-//+------------------------------------------------------------------+
-bool IsNewPosition(ulong &saved_ticket)
-{
-// assumes there's one position open on the chart (Rule 3).
-//XXX: Maybe call check rules here
-    if (PositionSelect(_Symbol))
-    {
-        ulong open_ticket = PositionGetInteger(POSITION_TICKET);
-        if (saved_ticket != open_ticket) return true; // New position open on chart
-    }
-    return false;
-}
-//+------------------------------------------------------------------+
-int SymbolOrdersTotal() // PASSED
-{
-    // returns the total number of orders on the current chart.
-    // Do not use for iteration to avoid inaccurate indexing.
-    int symbol_total = 0;
-    for (int i = OrdersTotal() - 1; i >= 0; --i)
-    {
-        ulong order_ticket = OrderGetTicket(i);
-        if (order_ticket == 0) continue;
-        if (OrderGetString(ORDER_SYMBOL) == _Symbol) symbol_total++;
-    }
-    return symbol_total;
-}
-//+------------------------------------------------------------------+
 void ClearContinuationNodes(CTrade &trader)
 {
   for (int i = OrdersTotal() - 1; i >= 0; --i)
@@ -192,5 +182,61 @@ void ClearContinuationNodes(CTrade &trader)
       Print(__FUNCTION__, ": Failed to delete order with ticket: ", order_ticket, " and comment: ", comment);
   }
 }
+
+//+------------------------------------------------------------------+
+ulong NodeExistsAtPrice(double order_price)
+{
+    for (int i = OrdersTotal() - 1; i >= 0; --i)
+      {
+        ulong order_ticket = OrderGetTicket(i);
+        if (order_ticket!=0)
+            {
+            if (OrderGetString(ORDER_SYMBOL) == _Symbol  
+               && OrderGetDouble(ORDER_PRICE_OPEN) == order_price)
+               {
+                return order_ticket;
+               }
+            }
+      }
+    return 0;
+}
+
+//+------------------------------------------------------------------+
+
+//+------------------------------------------------------------------+
+//| Position Related                                                 |
+//+------------------------------------------------------------------+
+ulong OpenShort(double deal_volume, CTrade &trader) {
+    // Define trade parameters
+    string comment = EA_TAG + " Session Start";
+
+    // Attempt to execute a sell order
+    if (trader.Sell(deal_volume, _Symbol, 0, 0, 0, comment)) {
+        ulong ticket = trader.ResultOrder();
+        Print("Sell order placed successfully. Ticket: ", ticket);
+        return ticket; // Trade executed successfully
+    } else {
+        ResetLastError();
+        Print("Failed to place sell order. Error: ", GetLastError());
+        return 0; // Trade execution failed
+    }
+}
+//+------------------------------------------------------------------+
+ulong OpenLong(double deal_volume, CTrade &trader) {
+    // Define trade parameters
+    string comment = EA_TAG + " Session Start";
+
+    // Attempt to execute a buy order
+    if (trader.Buy(deal_volume, _Symbol, 0, 0, 0, comment)) {
+        ulong ticket = trader.ResultOrder();
+        Print("Buy order placed successfully. Ticket: ", ticket);
+        return ticket; // Trade executed successfully
+    }else {
+        ResetLastError();
+        Print("Failed to place sell order. Error: ", GetLastError());
+        return 0; // Trade execution failed
+    }
+}
+
 //+------------------------------------------------------------------+
 #endif // Utils_MQH

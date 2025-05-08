@@ -154,7 +154,7 @@ void Test_OrderRelatedFunctions() //CLEAN
     Assert(NodeExistsAtPrice(price1) == 0, "NodeExistsAtPrice Not Found Initially");
     if(trade.BuyStop(0.01, price1, symbol, 0, 0, ORDER_TIME_GTC, 0, "TestNode1"))
     {
-    Print("xxxxxxxxxx000000000000000xxxxxxxxxxxx");
+    //Print("xxxxxxxxxx000000000000000xxxxxxxxxxxx");
         ticket1 = trade.ResultOrder();
         Sleep(500); // Allow order processing
         ulong found_ticket = NodeExistsAtPrice(price1);
