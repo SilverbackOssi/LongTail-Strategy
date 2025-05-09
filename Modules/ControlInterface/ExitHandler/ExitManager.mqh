@@ -1,13 +1,8 @@
-//+------------------------------------------------------------------+
-//|                                               ExitManagement.mqh |
-//|                                      Copyright 2025, Anyim Ossi. |
-//|                                          anyimossi.dev@gmail.com |
-//+------------------------------------------------------------------+
+
 #include  <Ossi\LongTails\Utils.mqh>
-
 //+------------------------------------------------------------------+
 
-void SetExits(CTrade &trader, ulong reference_ticket, double stop_size, int target_multiplier)
+void SetExits(CTrade &trader, ulong reference_ticket, LTSGrid &grid)
 {
     if (PositionSelectByTicket(reference_ticket))
     {     
@@ -29,11 +24,11 @@ void SetExits(CTrade &trader, ulong reference_ticket, double stop_size, int targ
         double open_price = PositionGetDouble(POSITION_PRICE_OPEN);
         long position_type = PositionGetInteger(POSITION_TYPE);
 
-        // Calculate take profit and stop loss
-        double target = stop_size * target_multiplier;
-        double risk = stop_size;
+        // Calculate take profit and stop loss using Grid instance
+        double risk_size = grid.unit;
+        double target = grid.target;
         double take_profit = (position_type == POSITION_TYPE_BUY) ? open_price + target : open_price - target;
-        double stop_loss = (position_type == POSITION_TYPE_BUY) ? open_price - risk : open_price + risk;
+        double stop_loss = (position_type == POSITION_TYPE_BUY) ? open_price - risk_size : open_price + risk_size;
 
         // Modify the position with the new TP and SL values
         bool modified = trader.PositionModify(reference_ticket, stop_loss, take_profit);

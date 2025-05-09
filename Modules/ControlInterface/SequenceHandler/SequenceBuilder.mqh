@@ -9,7 +9,7 @@
 // -- To-Do --
 // All functions should operate on any symbol(across modules).
 // - ensure set deviation, order filling policy
-// - check symbol specifics; min-volume, tick size, tick value.
+// - check symbol specifics; min-volume, tick size, tick value. goal to determin grid size and minimum term(base volume)
 
 //+------------------------------------------------------------------+
 //|                                                                  |
@@ -17,6 +17,7 @@
 void build_sequence(int reward_multiplier, double &progression_sequence[])
   {
    // Initialize variables
+   // - Empty the sequence
    double minimum_term = GetMinimumTerm();
    double minimum_profit = minimum_term * 2;
    double current_term = minimum_term;

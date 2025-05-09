@@ -6,6 +6,7 @@
 //| Global Variables for Testing                                     |
 //+------------------------------------------------------------------+
 CTrade trade;
+LTSGrid Grid;
 int tests_passed = 0;
 int tests_failed = 0;
 string current_test_suite = ""; // To group assertion messages
@@ -46,6 +47,7 @@ void Test_SetExits_Functionality()
     double stop_size_price = stop_size_pips * point;
     int target_multiplier = 2;
     ulong test_ticket = 0;
+    Grid.Init(stop_size_price, target_multiplier);
 
     CleanupCurrentSymbol(trade); // Initial cleanup
 
@@ -58,7 +60,7 @@ void Test_SetExits_Functionality()
         {
             test_ticket = PositionGetInteger(POSITION_TICKET);
             double open_price = PositionGetDouble(POSITION_PRICE_OPEN);
-            SetExits(trade, test_ticket, stop_size_price, target_multiplier);
+            SetExits(trade, test_ticket, Grid);
             Sleep(500); 
 
             if (PositionSelectByTicket(test_ticket))
@@ -87,7 +89,7 @@ void Test_SetExits_Functionality()
         {
             test_ticket = PositionGetInteger(POSITION_TICKET);
             double open_price = PositionGetDouble(POSITION_PRICE_OPEN);
-            SetExits(trade, test_ticket, stop_size_price, target_multiplier);
+            SetExits(trade, test_ticket, Grid);
             Sleep(500);
 
             if (PositionSelectByTicket(test_ticket))
@@ -111,7 +113,7 @@ void Test_SetExits_Functionality()
     Print("--- Test Case 3: Invalid ticket ---");
     CleanupCurrentSymbol(trade);
     ulong non_existent_ticket = 9999999;
-    SetExits(trade, non_existent_ticket, stop_size_price, target_multiplier);
+    SetExits(trade, non_existent_ticket, Grid);
     Assert(!PositionSelectByTicket(non_existent_ticket), "Invalid Ticket: No position selected/modified for non-existent ticket");
     // Expect log message: "TP/SL can only be placed on open positions. Invalid ticket: ..."
 
@@ -124,7 +126,7 @@ void Test_SetExits_Functionality()
         if (PositionSelect(symbol))
         {
             test_ticket = PositionGetInteger(POSITION_TICKET);
-            SetExits(trade, test_ticket, stop_size_price, target_multiplier);
+            SetExits(trade, test_ticket, Grid);
             Sleep(500);
 
             if (PositionSelectByTicket(test_ticket))
@@ -161,7 +163,7 @@ void Test_SetExits_Functionality()
             if (PositionSelect(other_symbol))
             {
                 ulong other_ticket = PositionGetInteger(POSITION_TICKET);
-                SetExits(trade, other_ticket, stop_size_price, target_multiplier); // Use main 'trade' object
+                SetExits(trade, other_ticket, Grid); // Use main 'trade' object
                 Sleep(500);
 
                 if (PositionSelectByTicket(other_ticket))
@@ -198,7 +200,7 @@ void Test_SetExits_Functionality()
             test_ticket = PositionGetInteger(POSITION_TICKET);
             PrintFormat("Attempting SetExits with too_small_stop_size: %.5f (min_stop_price_delta: %.5f) for ticket %d", too_small_stop_size, min_stop_price_delta, test_ticket);
 
-            SetExits(trade, test_ticket, too_small_stop_size, target_multiplier);
+            SetExits(trade, test_ticket, Grid);
             Sleep(1000); 
 
             Assert(!PositionSelectByTicket(test_ticket), "PositionModify Fails: Position was closed", "Ticket " + (string)test_ticket + " should be closed. LastError for trade: " + (string)trade.ResultRetcode() + ", Message: " + trade.ResultRetcodeDescription());

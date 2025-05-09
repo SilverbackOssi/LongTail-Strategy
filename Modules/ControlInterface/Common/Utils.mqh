@@ -8,12 +8,18 @@
 #include <Trade\Trade.mqh>
 //+------------------------------------------------------------------+
 
+// --- Defaults ---
 const string EA_TAG = "LongTailsScalper";
+const int EA_MAGIC = 405897;
+const datetime default_time_start = StringToTime("07:30");
+const datetime default_time_end = StringToTime("12:30");
 const int SESSION_RUNNING = 100;
 const int SESSION_OVER = 101;
+bool USE_SESSION = false;
+
 //+------------------------------------------------------------------+
 
-struct Grid{
+struct LTSGrid{
     double unit;
     double spread;
     double multiplier;
@@ -23,10 +29,23 @@ struct Grid{
     datetime session_time_start;
     datetime session_time_end;
 
+    void LTSGrid(){
+        // Set to default values
+        unit = 0.0;
+        spread = 0.0;
+        multiplier = 0.0;
+        target = 0.0;
+        ArrayResize(progression_sequence, 0);
+        session_status = SESSION_OVER;
+        session_time_start = default_time_start;
+        session_time_end = default_time_end;
+    }
+
     // Function to initialize values
-    void Init(double grid_unit, double grid_spread, double grid_multiplier) {
+    void Init(double grid_unit, double grid_multiplier) {
         unit = grid_unit;
-        spread = grid_spread;
+        // set grid spread to 20% of unit 
+        spread = unit * 0.2;
         multiplier = grid_multiplier;
         target = unit * multiplier;
     }
@@ -45,6 +64,10 @@ struct GridBase{
   double open_price;
   double volume;
   int volume_index;
+
+  void GridBase(){
+    volume_index = 0;
+  }
 
   void UpdateGridBase(const ulong pos_ticket) {
     if (PositionSelectByTicket(pos_ticket)) {
@@ -251,7 +274,7 @@ void CleanupCurrentSymbol( CTrade &trader, const string sym = "")
    {
       if (PositionGetSymbol(i) == current_sym)
       {
-         if (trader.PositionClose(PositionGetString(POSITION_SYMBOL)))
+         if (trader.PositionClose(PositionGetInteger(POSITION_TICKET)))
             PrintFormat("CleanupCurrentSymbol: Closed position on %s", current_sym);
          else
             PrintFormat("CleanupCurrentSymbol: Failed to close position on %s. Error: %d", current_sym, GetLastError());
