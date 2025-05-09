@@ -6,6 +6,11 @@
 
 #include  <Ossi\LongTails\Utils.mqh>
 
+// -- To-Do --
+// All functions should operate on any symbol(across modules).
+// - ensure set deviation, order filling policy
+// - check symbol specifics; min-volume, tick size, tick value.
+
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
