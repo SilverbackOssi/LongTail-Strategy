@@ -12,6 +12,7 @@ CTrade trade;
 
 //+------------------------------------------------------------------+
 // Perform Sanity Checks
+// Initialize Ctrade, check all tests, must init deviation, etc.
 
 class LTSControl(){
 public:// XXX: Dont encapsulate, allow full scope for this project

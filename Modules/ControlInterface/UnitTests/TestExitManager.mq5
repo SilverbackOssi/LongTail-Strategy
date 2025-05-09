@@ -154,6 +154,9 @@ void Test_SetExits_Functionality()
         CTrade other_symbol_trade;
         other_symbol_trade.SetTypeFillingBySymbol(other_symbol);
         other_symbol_trade.SetExpertMagicNumber(12346); 
+        other_symbol_trade.SetAsyncMode(false);
+        other_symbol_trade.SetDeviationInPoints(EA_DEVIATION);
+        
         double other_volume = SymbolInfoDouble(other_symbol, SYMBOL_VOLUME_MIN);
         if(other_volume == 0) other_volume = 0.01;
 
@@ -191,6 +194,7 @@ void Test_SetExits_Functionality()
 
     double too_small_stop_size = min_stop_price_delta * 0.5; // Try to set SL/TP half of minimum distance
     if (too_small_stop_size < point) too_small_stop_size = point; // Ensure it's at least 1 point
+    Grid.unit = too_small_stop_size;
 
     if (trade.Buy(volume, symbol, 0, 0, 0, EA_TAG + " TestModifyFail"))
     {
@@ -243,9 +247,9 @@ void OnStart()
     }
 
     // --- Initialize CTrade ---
-    // trade.SetExpertMagicNumber(12345); // Set a specific magic number for tests if needed, though ExitManager relies on comment
+    // trade.SetExpertMagicNumber(EA_MAGIC); // Set a specific magic number for tests if needed, though ExitManager relies on comment
     trade.SetTypeFillingBySymbol(_Symbol); 
-    trade.SetDeviationInPoints(20);      // Allow some slippage
+    trade.SetDeviationInPoints(EA_DEVIATION);      // Allow some slippage
     trade.SetAsyncMode(false);           // Synchronous trading for tests
 
     // --- Run Test Suites ---

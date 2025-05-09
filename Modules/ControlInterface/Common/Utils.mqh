@@ -11,6 +11,7 @@
 // --- Defaults ---
 const string EA_TAG = "LongTailsScalper";
 const int EA_MAGIC = 405897;
+const ulong EA_DEVIATION = EA_MAGIC;
 const datetime default_time_start = StringToTime("07:30");
 const datetime default_time_end = StringToTime("12:30");
 const int SESSION_RUNNING = 100;

@@ -1,5 +1,6 @@
 
 #include  <Ossi\LongTails\Utils.mqh>
+
 //+------------------------------------------------------------------+
 
 void SetExits(CTrade &trader, ulong reference_ticket, LTSGrid &grid)
