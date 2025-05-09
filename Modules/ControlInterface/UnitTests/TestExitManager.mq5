@@ -1,5 +1,4 @@
 
- 
 #include <Ossi\LongTails\Utils.mqh>      
 #include  <Ossi\LongTails\ExitManager.mqh>
 
@@ -48,7 +47,7 @@ void Test_SetExits_Functionality()
     int target_multiplier = 2;
     ulong test_ticket = 0;
 
-    CleanupCurrentSymbol(); // Initial cleanup
+    CleanupCurrentSymbol(trade); // Initial cleanup
 
     // --- Test Case 1: Valid BUY position ---
     Print("--- Test Case 1: Valid BUY position ---");
@@ -75,7 +74,7 @@ void Test_SetExits_Functionality()
             else { Print("Test_SetExits_Functionality - Valid BUY: FAILED (Position disappeared after SetExits call)"); tests_failed++; }
         }
         else { Print("Test_SetExits_Functionality - Valid BUY: SKIPPED (Could not select test position. Error: ", GetLastError(), ")"); tests_failed++; }
-        CleanupCurrentSymbol();
+        CleanupCurrentSymbol(trade);
     }
     else { Print("Test_SetExits_Functionality - Valid BUY: SKIPPED (Failed to open test BUY position. Error: ", GetLastError(), ")"); tests_failed++; }
 
@@ -104,13 +103,13 @@ void Test_SetExits_Functionality()
             else { Print("Test_SetExits_Functionality - Valid SELL: FAILED (Position disappeared after SetExits call)"); tests_failed++; }
         }
         else { Print("Test_SetExits_Functionality - Valid SELL: SKIPPED (Could not select test position. Error: ", GetLastError(), ")"); tests_failed++; }
-        CleanupCurrentSymbol();
+        CleanupCurrentSymbol(trade);
     }
     else { Print("Test_SetExits_Functionality - Valid SELL: SKIPPED (Failed to open test SELL position. Error: ", GetLastError(), ")"); tests_failed++; }
 
     // --- Test Case 3: Invalid ticket (position does not exist) ---
     Print("--- Test Case 3: Invalid ticket ---");
-    CleanupCurrentSymbol();
+    CleanupCurrentSymbol(trade);
     ulong non_existent_ticket = 9999999;
     SetExits(trade, non_existent_ticket, stop_size_price, target_multiplier);
     Assert(!PositionSelectByTicket(non_existent_ticket), "Invalid Ticket: No position selected/modified for non-existent ticket");
@@ -118,7 +117,7 @@ void Test_SetExits_Functionality()
 
     // --- Test Case 4: Position not placed by EA (different comment) ---
     Print("--- Test Case 4: Position not by EA ---");
-    CleanupCurrentSymbol();
+    CleanupCurrentSymbol(trade);
     if (trade.Buy(volume, symbol, 0, 0, 0, "MANUAL_TRADE_COMMENT"))
     {
         Sleep(500);
@@ -136,27 +135,19 @@ void Test_SetExits_Functionality()
             else { Print("Test_SetExits_Functionality - Not EA Position: FAILED (Position disappeared)"); tests_failed++; }
         }
         else { Print("Test_SetExits_Functionality - Not EA Position: SKIPPED (Could not select test position. Error: ", GetLastError(), ")"); tests_failed++; }
-        CleanupCurrentSymbol();
+        CleanupCurrentSymbol(trade);
     }
     else { Print("Test_SetExits_Functionality - Not EA Position: SKIPPED (Failed to open test position. Error: ", GetLastError(), ")"); tests_failed++; }
 
     // --- Test Case 5: Position on a different symbol ---
     Print("--- Test Case 5: Position on different symbol ---");
-    CleanupCurrentSymbol(); // Clean current symbol first
-    string other_symbol = "";
-    for(int i=0; i < SymbolsTotal(false); i++) {
-       string s = SymbolName(i, false);
-       if (s != symbol && SymbolInfoInteger(s, SYMBOL_TRADE_MODE) != SYMBOL_TRADE_MODE_DISABLED && SymbolInfoDouble(s, SYMBOL_VOLUME_MIN) > 0) {
-          other_symbol = s;
-          SymbolSelect(other_symbol, true); Sleep(100);
-          break;
-       }
-    }
-
+    CleanupCurrentSymbol(trade); // Clean current symbol first
+    
+    string other_symbol = GetRandomSymbol(symbol);
     if(other_symbol != "")
     {
         Print("Testing with other symbol: ", other_symbol);
-        CleanupCurrentSymbol(other_symbol); // Clean other symbol
+        CleanupCurrentSymbol(trade, other_symbol); // Clean other symbol
 
         CTrade other_symbol_trade;
         other_symbol_trade.SetTypeFillingBySymbol(other_symbol);
@@ -179,9 +170,9 @@ void Test_SetExits_Functionality()
                     Assert(PositionGetDouble(POSITION_TP) == 0.0, "Other Symbol: TP not set by current chart's SetExits");
                 }
                 else { Print("Test_SetExits_Functionality - Other Symbol: FAILED (Position on other symbol disappeared)"); tests_failed++; }
-                CleanupCurrentSymbol(other_symbol); // Clean up other_symbol's position
+                CleanupCurrentSymbol(trade, other_symbol); // Clean up other_symbol's position
             }
-            else { Print("Test_SetExits_Functionality - Other Symbol: SKIPPED (Could not select position on other symbol. Error: ", GetLastError(), ")"); tests_failed++; CleanupCurrentSymbol(other_symbol); }
+            else { Print("Test_SetExits_Functionality - Other Symbol: SKIPPED (Could not select position on other symbol. Error: ", GetLastError(), ")"); tests_failed++; CleanupCurrentSymbol(trade, other_symbol); }
         }
         else { Print("Test_SetExits_Functionality - Other Symbol: SKIPPED (Failed to open position on '", other_symbol, "'. Error: ", GetLastError(), ")"); tests_failed++; }
         SymbolSelect(other_symbol, false); 
@@ -191,7 +182,7 @@ void Test_SetExits_Functionality()
 
     // --- Test Case 6: PositionModify fails (e.g., SL/TP too close) ---
     Print("--- Test Case 6: PositionModify Fails (SL/TP too close) ---");
-    CleanupCurrentSymbol();
+    CleanupCurrentSymbol(trade);
     double stops_level_points = (double)SymbolInfoInteger(symbol, SYMBOL_TRADE_STOPS_LEVEL);
     double min_stop_price_delta = stops_level_points * point;
     if (min_stop_price_delta == 0) min_stop_price_delta = point * 5; // Fallback if stops_level is 0 or very small
@@ -214,7 +205,7 @@ void Test_SetExits_Functionality()
             // Expect log messages: "FATAL ERROR - Failed to set take profit and stop loss..." and "Position closed due to error..."
         }
         else { Print("Test_SetExits_Functionality - PositionModify Fails: SKIPPED (Could not select test position. Error: ", GetLastError(), ")"); tests_failed++; }
-        CleanupCurrentSymbol(); // Ensure clean state
+        CleanupCurrentSymbol(trade); // Ensure clean state
     }
     else { Print("Test_SetExits_Functionality - PositionModify Fails: SKIPPED (Failed to open test position. Error: ", GetLastError(), ")"); tests_failed++; }
 }
@@ -235,8 +226,8 @@ void OnStart()
     if (AccountInfoInteger(ACCOUNT_TRADE_MODE) == ACCOUNT_TRADE_MODE_REAL)
     {
         Print("WARNING: Running tests on a REAL account! Ensure this is intended and the symbol/volume are safe.");
-        // ExpertRemove(); // Good practice for real accounts, commented for dev/test
-        // return;
+        ExpertRemove(); 
+        return;
     }
     if (SymbolInfoInteger(_Symbol, SYMBOL_TRADE_MODE) == SYMBOL_TRADE_MODE_DISABLED)
     {
@@ -245,8 +236,8 @@ void OnStart()
     }
     if (SymbolInfoDouble(_Symbol, SYMBOL_VOLUME_MIN) == 0 && SymbolInfoDouble(_Symbol, SYMBOL_VOLUME_STEP) == 0)
     {
-         // This might be too broad, as some symbols (like XAUUSD on some brokers) might have 0 min_vol but allow 0.01
-         // PrintFormat("WARNING: Symbol %s reports SYMBOL_VOLUME_MIN as 0. Test trades might use a default 0.01 volume.", _Symbol);
+        // This might be too broad, as some symbols (like XAUUSD on some brokers) might have 0 min_vol but allow 0.01
+        PrintFormat("WARNING: Symbol %s reports SYMBOL_VOLUME_MIN as 0. Test trades might use a default 0.01 volume.", _Symbol);
     }
 
     // --- Initialize CTrade ---
@@ -266,7 +257,7 @@ void OnStart()
     Print("--- Testing Finished ---\n");
 
     // Final cleanup of the current symbol chart
-    CleanupCurrentSymbol();
+    CleanupCurrentSymbol(trade);
     // ObjectsDeleteAll(0);
     // ChartRedraw();
 }

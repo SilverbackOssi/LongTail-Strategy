@@ -240,8 +240,9 @@ ulong OpenLong(double deal_volume, CTrade &trader) {
 }
 
 //+------------------------------------------------------------------+
-void CleanupCurrentSymbol(const string sym = "") 
+void CleanupCurrentSymbol( CTrade &trader, const string sym = "") 
 {// Helper to clean up positions and orders for the current symbol
+    
     // If no symbol is provided, use the current chart's symbol (_Symbol)
     string current_sym = (sym == "") ? _Symbol : sym;
 
@@ -250,10 +251,10 @@ void CleanupCurrentSymbol(const string sym = "")
    {
       if (PositionGetSymbol(i) == current_sym)
       {
-         if (trade.PositionClose(PositionGetString(POSITION_SYMBOL)))
+         if (trader.PositionClose(PositionGetString(POSITION_SYMBOL)))
             PrintFormat("CleanupCurrentSymbol: Closed position on %s", current_sym);
          else
-        PrintFormat("CleanupCurrentSymbol: Failed to close position on %s. Error: %d", current_sym, GetLastError());
+            PrintFormat("CleanupCurrentSymbol: Failed to close position on %s. Error: %d", current_sym, GetLastError());
         int retries = 10; // Retry up to 10 times
         while (PositionSelect(current_sym) && retries > 0)
         {
@@ -271,7 +272,7 @@ void CleanupCurrentSymbol(const string sym = "")
         {
             if (OrderGetString(ORDER_SYMBOL) == current_sym)
             {
-                if (trade.OrderDelete(order_ticket))
+                if (trader.OrderDelete(order_ticket))
                     PrintFormat("CleanupCurrentSymbol: Deleted order %d on %s", order_ticket, current_sym);
                 else
                     PrintFormat("CleanupCurrentSymbol: Failed to delete order %d on %s. Error: %d", order_ticket, GetLastError());
@@ -284,6 +285,26 @@ void CleanupCurrentSymbol(const string sym = "")
             }
         }
     }
+}
+
+//+------------------------------------------------------------------+
+
+//+------------------------------------------------------------------+
+//| Test Related                                                 |
+//+------------------------------------------------------------------+
+string GetRandomSymbol(string current_sym)
+{
+    string other_symbol = "";
+    string symbol = current_sym;
+    for(int i=0; i < SymbolsTotal(false); i++) {
+       string s = SymbolName(i, false);
+       if (s != symbol && SymbolInfoInteger(s, SYMBOL_TRADE_MODE) != SYMBOL_TRADE_MODE_DISABLED && SymbolInfoDouble(s, SYMBOL_VOLUME_MIN) > 0) {
+          other_symbol = s;
+          SymbolSelect(other_symbol, true); Sleep(100);
+          break;
+       }
+    }
+    return other_symbol;
 }
 
 //+------------------------------------------------------------------+

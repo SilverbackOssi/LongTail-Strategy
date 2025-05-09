@@ -11,6 +11,7 @@ void SetExits(CTrade &trader, ulong reference_ticket, double stop_size, int targ
 {
     if (PositionSelectByTicket(reference_ticket))
     {     
+        // Validate the position
         if (PositionGetString(POSITION_SYMBOL) != _Symbol) // Position not on current chart
         {
             Print(__FUNCTION__, " - Cannot modify external symbol. Skipping ticket: ", reference_ticket);
