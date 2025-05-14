@@ -264,6 +264,26 @@ ulong OpenLong(double deal_volume, CTrade &trader) {
 }
 
 //+------------------------------------------------------------------+
+
+//+------------------------------------------------------------------+
+//| Test Related                                                 |
+//+------------------------------------------------------------------+
+string GetRandomSymbol(string current_sym)
+{
+    string other_symbol = "";
+    string symbol = current_sym;
+    for(int i=0; i < SymbolsTotal(false); i++) {
+       string s = SymbolName(i, false);
+       if (s != symbol && SymbolInfoInteger(s, SYMBOL_TRADE_MODE) != SYMBOL_TRADE_MODE_DISABLED && SymbolInfoDouble(s, SYMBOL_VOLUME_MIN) > 0) {
+          other_symbol = s;
+          SymbolSelect(other_symbol, true); Sleep(100);
+          break;
+       }
+    }
+    return other_symbol;
+}
+
+//+------------------------------------------------------------------+
 void CleanupCurrentSymbol( CTrade &trader, const string sym = "") 
 {// Helper to clean up positions and orders for the current symbol
     
@@ -309,26 +329,6 @@ void CleanupCurrentSymbol( CTrade &trader, const string sym = "")
             }
         }
     }
-}
-
-//+------------------------------------------------------------------+
-
-//+------------------------------------------------------------------+
-//| Test Related                                                 |
-//+------------------------------------------------------------------+
-string GetRandomSymbol(string current_sym)
-{
-    string other_symbol = "";
-    string symbol = current_sym;
-    for(int i=0; i < SymbolsTotal(false); i++) {
-       string s = SymbolName(i, false);
-       if (s != symbol && SymbolInfoInteger(s, SYMBOL_TRADE_MODE) != SYMBOL_TRADE_MODE_DISABLED && SymbolInfoDouble(s, SYMBOL_VOLUME_MIN) > 0) {
-          other_symbol = s;
-          SymbolSelect(other_symbol, true); Sleep(100);
-          break;
-       }
-    }
-    return other_symbol;
 }
 
 //+------------------------------------------------------------------+

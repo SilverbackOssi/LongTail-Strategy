@@ -1,43 +1,7 @@
-//+------------------------------------------------------------------+
-//|                                            PlaceRecoveryStop.mq5 |
-//|                                      Copyright 2025, Anyim Ossi. |
-//|                                          anyimossi.dev@gmail.com |
-//+------------------------------------------------------------------+
+
 #include  <Ossi\LongTails\Utils.mqh>
-
-//+------------------------------------------------------------------+
-void OnTest()
-  {
-    // // Test Recovery Node
-   // Test structures 
-   // Test node values
-   // Test on invalid reference ticket.
-   // Test on open position.
-   // Test on buy stop
-   // Test on already existing node
-   // Test failed execution, on invalid price/stop limits
-
-   // // Test Continuation Node
-   //
-   
-  }
 //+------------------------------------------------------------------+
 
-/**
- * @brief Places a continuation stop order based on a reference position.
- *
- * This function places a continuation stop order if certain conditions are met.
- * It first checks if the trading session has ended and if the reference position
- * is open. If the reference position has a take profit set, it calculates the 
- * order price and checks if an order already exists at that price. If no order 
- * exists, it places a new stop order.
- *
- * @param reference_ticket The ticket number of the reference position.
- *
- * @note The function will not place an order if the trading session has ended,
- *       if the reference position is not open, or if the reference position 
- *       does not have a take profit set.
- */
 void PlaceContinuationNode(ulong reference_ticket, const int session_status, const Grid &grid)
 {
     if (session_status == SESSION_OVER) return;

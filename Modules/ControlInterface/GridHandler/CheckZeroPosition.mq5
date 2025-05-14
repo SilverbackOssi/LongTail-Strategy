@@ -21,6 +21,22 @@ void OnStart()
   {
 //---
    check_zero_position();
+   //+------------------------------------------------------------------+
+void OnTest()
+  {
+    // // Test Recovery Node
+   // Test structures 
+   // Test node values
+   // Test on invalid reference ticket.
+   // Test on open position.
+   // Test on buy stop
+   // Test on already existing node
+   // Test failed execution, on invalid price/stop limits
+
+   // // Test Continuation Node
+   //
+   
+  }
   }
 //+------------------------------------------------------------------+
 
