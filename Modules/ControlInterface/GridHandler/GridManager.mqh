@@ -58,6 +58,9 @@ bool IsRecoveryGap(const GridInfo &grid)
     // confirm the distance between current price and the recovery node
     // price is within grid.unit range.
 
+    //XXX: Assumes orders are correct. 
+    //      Perform check, also force or return false on misallaignment
+
     double buy_stop_price = 0;
     for (int i = OrdersTotal() - 1; i >= 0; i--)
         {
