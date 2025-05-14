@@ -6,7 +6,7 @@
 #include  <Ossi\LongTails\Utils.mqh>
 #include  <Ossi\LongTails\PlaceGridNodes.mqh>
 //+------------------------------------------------------------------+
-void HandleNewPosition(GridBase &base, const Grid &grid)
+void HandleNewPosition(GridBase &base, const GridInfo &grid)
 {
     if (!PositionSelect(_Symbol)) return;
     ulong ticket = PositionGetInteger(POSITION_TICKET);
@@ -19,7 +19,7 @@ void HandleNewPosition(GridBase &base, const Grid &grid)
       base.volume_index = 0;
     
     // set TP/SL
-    SetExits(trade, ticket, Grid.unit, Grid.multiplier);
+    SetExits(trade, ticket, grid);
     
     // Update grid nodes
     DeleteAllPending(trade, _Symbol);
@@ -27,7 +27,7 @@ void HandleNewPosition(GridBase &base, const Grid &grid)
     PlaceContinuationNode(ticket, grid.status, grid);
 }
 //+------------------------------------------------------------------+
-HandleGridGap(Grid grid, GridBase base, CTrade trader)
+void HandleGridGap(GridInfo &grid, GridBase &base, CTrade &trader)
 {
     // Context validation
     int orders_total = SymbolOrdersTotal();
@@ -53,12 +53,12 @@ HandleGridGap(Grid grid, GridBase base, CTrade trader)
     PlaceRecoveryNode(stop_ticket, grid);
 }
 //+------------------------------------------------------------------+
-bool IsRecoveryGap(Grid &grid)
+bool IsRecoveryGap(const GridInfo &grid)
 {
     // confirm the distance between current price and the recovery node
     // price is within grid.unit range.
 
-    ulong buy_stop_price = 0;
+    double buy_stop_price = 0;
     for (int i = OrdersTotal() - 1; i >= 0; i--)
         {
             ulong order_ticket = OrderGetTicket(i);
@@ -71,7 +71,7 @@ bool IsRecoveryGap(Grid &grid)
         }
     if (!buy_stop_price) return false;
     double price_current = SymbolInfoDouble(_Symbol, SYMBOL_BID);
-    ulong recovery_treshhold = buy_stop_price - grid.unit;
+    double recovery_treshhold = buy_stop_price - grid.unit;
 
     if (price_current > recovery_treshhold) return true;
     return false;

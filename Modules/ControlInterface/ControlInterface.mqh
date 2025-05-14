@@ -19,7 +19,7 @@ public:// XXX: Dont encapsulate, allow full scope for this project
     //private sequence
     //predefined sequenceLength
 
-    // initialize Grid Grid, and GridBase Base
+    // initialize GridInfo Grid, and GridBase Base
 
     void start(){
         

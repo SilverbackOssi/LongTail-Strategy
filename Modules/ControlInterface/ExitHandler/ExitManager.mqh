@@ -3,7 +3,7 @@
 
 //+------------------------------------------------------------------+
 
-void SetExits(CTrade &trader, ulong reference_ticket, LTSGrid &grid)
+void SetExits(const CTrade &trader, ulong reference_ticket,const LTSGrid &grid)
 {
     if (PositionSelectByTicket(reference_ticket))
     {     
@@ -25,7 +25,7 @@ void SetExits(CTrade &trader, ulong reference_ticket, LTSGrid &grid)
         double open_price = PositionGetDouble(POSITION_PRICE_OPEN);
         long position_type = PositionGetInteger(POSITION_TYPE);
 
-        // Calculate take profit and stop loss using Grid instance
+        // Calculate take profit and stop loss using GridInfo instance
         double risk_size = grid.unit;
         double target = grid.target;
         double take_profit = (position_type == POSITION_TYPE_BUY) ? open_price + target : open_price - target;

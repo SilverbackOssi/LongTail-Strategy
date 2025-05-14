@@ -6,7 +6,7 @@
 //| Global Variables for Testing                                     |
 //+------------------------------------------------------------------+
 CTrade trade;
-LTSGrid Grid;
+GridInfo Grid;
 int tests_passed = 0;
 int tests_failed = 0;
 string current_test_suite = ""; // To group assertion messages

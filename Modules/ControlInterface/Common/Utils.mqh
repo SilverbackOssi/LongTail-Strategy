@@ -20,7 +20,7 @@ bool USE_SESSION = false;
 
 //+------------------------------------------------------------------+
 
-struct LTSGrid{
+struct GridInfo{
     double unit;
     double spread;
     double multiplier;

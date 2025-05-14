@@ -2,7 +2,7 @@
 #include  <Ossi\LongTails\Utils.mqh>
 //+------------------------------------------------------------------+
 
-void PlaceContinuationNode(ulong reference_ticket, const int session_status, const Grid &grid)
+void PlaceContinuationNode(ulong reference_ticket, const int session_status, const GridInfo &grid)
 {
     if (session_status == SESSION_OVER) return;
 
@@ -22,7 +22,7 @@ void PlaceContinuationNode(ulong reference_ticket, const int session_status, con
         // Assert Continuation Node
         node.volume = grid.progression_sequence[0];
         node.type = (reference_type == POSITION_TYPE_BUY) ? ORDER_TYPE_BUY_STOP : ORDER_TYPE_SELL_STOP;
-        node.price = reference_price + (reference_type == POSITION_TYPE_BUY) ? (grid.target+grid.spread) : -grid.target;
+        node.price = reference_price + ((reference_type == POSITION_TYPE_BUY) ? (grid.target+grid.spread) : -grid.target);
          
         // Check if an order already exists at the node price
         ulong ticket_exists = NodeExistsAtPrice(node.price);
@@ -45,7 +45,7 @@ void PlaceContinuationNode(ulong reference_ticket, const int session_status, con
     }
 }
 
-void PlaceRecoveryNode(ulong reference_ticket, const Grid &grid, const GridBase *base=NULL)
+void PlaceRecoveryNode(ulong reference_ticket, const GridInfo &grid, const GridBase *base=NULL)
 {
     // Reference ticket type
     ENUM_POSITION_TYPE reference_type_position;
@@ -87,7 +87,7 @@ void PlaceRecoveryNode(ulong reference_ticket, const Grid &grid, const GridBase 
          Print(__FUNCTION__, " - Failed to place ", node.type, " recovery node on ", EnumToString(((PositionSelectByTicket(reference_ticket))? reference_type_position:reference_type_order)));    
 }
 
-GridNode AssertRecoveryNode(GridNode node, ulong ref_ticket, const Grid &grid, const GridBase *base)
+GridNode AssertRecoveryNode(GridNode node, ulong ref_ticket, const GridInfo &grid, const GridBase *base)
 {
     // If reference ticket is open position
     if (PositionSelectByTicket(ref_ticket))

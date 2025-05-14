@@ -1,4 +1,4 @@
-#include <Ossi\LongTails\Utils.mqh>      // For Grid, GridBase, EA_TAG, NodeExistsAtPrice etc.
+#include <Ossi\LongTails\Utils.mqh>      // For GridInfo, GridBase, EA_TAG, NodeExistsAtPrice etc.
 #include <Ossi\LongTails\GridHandler\PlaceGridNodes.mqh> // The file to test
 
 // Global CTrade object used by PlaceGridNodes.mqh and this test script
@@ -70,7 +70,7 @@ void Test_PlaceContinuationNode_Functionality()
     double point = SymbolInfoDouble(symbol, SYMBOL_POINT);
     if (point == 0) point = (_Digits == 5 || _Digits == 3) ? 0.00001 : 0.001; // Fallback
 
-    Grid grid_params;
+    GridInfo grid_params;
     grid_params.Init(100 * point, 2.0, 5 * point); // unit, multiplier, spread
     ArrayResize(grid_params.progression_sequence, 1);
     grid_params.progression_sequence[0] = volume_min;
@@ -233,7 +233,7 @@ void Test_PlaceRecoveryNode_Functionality()
     double point = SymbolInfoDouble(symbol, SYMBOL_POINT);
     if (point == 0) point = (_Digits == 5 || _Digits == 3) ? 0.00001 : 0.001; // Fallback
 
-    Grid grid_params;
+    GridInfo grid_params;
     grid_params.Init(100 * point, 2.0, 5 * point); // unit, multiplier, spread
     ArrayResize(grid_params.progression_sequence, 2);
     grid_params.progression_sequence[0] = volume_min;

@@ -6,14 +6,14 @@
 #include  <Ossi\LongTails\Utils.mqh>
 
 //+------------------------------------------------------------------+
-void UpdateSesionStatus(Grid &grid)
+void UpdateSesionStatus(GridInfo &grid)
 {
   if (IsWithinTradingTime(grid.session_time_start, grid.session_time_end))
     grid.session_status = SESSION_RUNNING;
   else grid.session_status = SESSION_OVER;
 }
 //+------------------------------------------------------------------+
-void HandleSessionEnd(CTrade &trader, const Grid &grid)
+void HandleSessionEnd(CTrade &trader, const GridInfo &grid)
 {
   if (IsEmptyChart()) return;
 
@@ -43,7 +43,7 @@ void StartSession(const double &progression_sequence[], const string ea_tag)
     }  
 }
 //+------------------------------------------------------------------+
-void ClearRecoveryLag(CTrade &trader, const Grid &grid)
+void ClearRecoveryLag(CTrade &trader, const GridInfo &grid)
 {
     // One recovery node lags after session ends and cycle ends
     if (PositionSelect(_Symbol)) return;

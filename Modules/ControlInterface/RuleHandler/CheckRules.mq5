@@ -30,7 +30,7 @@ void EnforceStrategyRules(CTrade &trader)
 }
 //+------------------------------------------------------------------+
 // check if orders are priced correctly, relative to open position
-void EnforceGridPlacementAccuracy(Grid &grid, CTrade &trader)
+void EnforceGridPlacementAccuracy(GridInfo &grid, CTrade &trader)
 {
     // get the base by sellecting open position
     // calculate correct recovery node// open_price - grid.unit for buy position
@@ -43,7 +43,7 @@ void EnforceGridPlacementAccuracy(Grid &grid, CTrade &trader)
     // if price don't match,modify
 }
 
-void EnforceNoInterference(Grid &grid, CTrade &trader)
+void EnforceNoInterference(GridInfo &grid, CTrade &trader)
 {
     // Handle human interference on Positions.
     for (int i = PositionsTotal() - 1; i >= 0; i--)
@@ -185,7 +185,7 @@ void CheckSLTP()
 }
 
 // check volume of open position from sequence
-void CheckVolumeAccuracy(const Grid &grid, const GridBase &base)
+void CheckVolumeAccuracy(const GridInfo &grid, const GridBase &base)
 {
     // Check mathematical accuracy across all nodes
 
@@ -220,7 +220,7 @@ void CheckVolumeAccuracy(const Grid &grid, const GridBase &base)
     // compare first term of sequence with continuation volume
 }
 // check that sequence is init accurate to account balance XXX
-void CheckSequenceAccuracy(const Grid &grid)
+void CheckSequenceAccuracy(const GridInfo &grid)
 {
     // calculate minimum term
     // compare minimum term with first term of progression sequence

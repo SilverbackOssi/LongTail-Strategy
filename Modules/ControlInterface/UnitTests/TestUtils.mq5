@@ -37,7 +37,7 @@ void Test_StructureInitialization() //CLEAN
 {
     current_test_suite = "Struct Init";
     // --- Test Grid::Init ---
-    Grid test_grid;
+    GridInfo test_grid;
     double unit = 2.0, spread = 0.4, multiplier = 1.5;
     test_grid.Init(unit, spread, multiplier);
 
