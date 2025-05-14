@@ -23,7 +23,7 @@ void HandleNewPosition(GridBase &base, const Grid &grid)
     
     // Update grid nodes
     DeleteAllPending(trade, _Symbol);
-    PlaceRecoveryNode(ticket, grid, base);
+    PlaceRecoveryNode(ticket, grid, &base);
     PlaceContinuationNode(ticket, grid.status, grid);
 }
 //+------------------------------------------------------------------+

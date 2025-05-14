@@ -17,12 +17,12 @@ void PlaceContinuationNode(ulong reference_ticket, const int session_status, con
 
         // Check if there is a take profit set for the reference position
         if (take_profit == 0)
-            Print(__FUNCTION__, " - WARNING. No stop loss set for open position with ticket: ", reference_ticket);
+            Print(__FUNCTION__, " - WARNING. No take profit set for open position with ticket: ", reference_ticket);
 
         // Assert Continuation Node
         node.volume = grid.progression_sequence[0];
-        node.type = (ticket_type == POSITION_TYPE_BUY) ? ORDER_TYPE_BUY_STOP : ORDER_TYPE_SELL_STOP;
-        node.price = reference_price + (ticket_type == POSITION_TYPE_BUY) ? (grid.target+grid.spread) : -grid.target;
+        node.type = (reference_type == POSITION_TYPE_BUY) ? ORDER_TYPE_BUY_STOP : ORDER_TYPE_SELL_STOP;
+        node.price = reference_price + (reference_type == POSITION_TYPE_BUY) ? (grid.target+grid.spread) : -grid.target;
          
         // Check if an order already exists at the node price
         ulong ticket_exists = NodeExistsAtPrice(node.price);
@@ -33,7 +33,7 @@ void PlaceContinuationNode(ulong reference_ticket, const int session_status, con
         }
 
         // Place a grid node
-        string node.comment = EA_TAG +" "+ node.name +" as "+ EnumToString(node.type);
+        node.comment = EA_TAG +" "+ node.name +" as "+ EnumToString(node.type);
         bool placed = trade.OrderOpen(_Symbol, node.type, node.volume, 0.0, node.price, 0, 0, ORDER_TIME_GTC, 0, node.comment);
         if (!placed)// Potential invalid price,handle stop limit
             Print(__FUNCTION__, " - Failed to place ", node.type, " continuation node on ", reference_type);
@@ -54,12 +54,12 @@ void PlaceRecoveryNode(ulong reference_ticket, const Grid &grid, const GridBase 
     // Validate reference ticket
     if (PositionSelectByTicket(reference_ticket))
         reference_type_position = PositionGetInteger(POSITION_TYPE);
-    elseif (OrderSelect(reference_ticket))
+    else if (OrderSelect(reference_ticket))
         reference_type_order = OrderGetInteger(ORDER_TYPE);
         if (reference_type_order != ORDER_TYPE_BUY_STOP) // order must be a recovery buy stop
         {
             Print(__FUNCTION__, " - FATAL. Recovery node can only be placed on buy stop"); // Rule 7
-            return
+            return;
         }
     else 
     {
@@ -81,13 +81,13 @@ void PlaceRecoveryNode(ulong reference_ticket, const Grid &grid, const GridBase 
      }
 
      // Place a grid node
-     string node.comment = EA_TAG +" "+ node.name +" as "+ EnumToString(node.type);
+     node.comment = EA_TAG +" "+ node.name +" as "+ EnumToString(node.type);
      bool placed = trade.OrderOpen(_Symbol, node.type, node.volume, 0.0, node.price, 0, 0, ORDER_TIME_GTC, 0, node.comment);
      if (!placed)// Potential invalid price,handle stop limit
          Print(__FUNCTION__, " - Failed to place ", node.type, " recovery node on ", EnumToString(((PositionSelectByTicket(reference_ticket))? reference_type_position:reference_type_order)));    
 }
 
-GridNode AssertRecoveryNode(GridNode node, ulong ref_ticket, const Grid &grid, const GridBase base)
+GridNode AssertRecoveryNode(GridNode node, ulong ref_ticket, const Grid &grid, const GridBase *base)
 {
     // If reference ticket is open position
     if (PositionSelectByTicket(ref_ticket))
@@ -108,7 +108,7 @@ GridNode AssertRecoveryNode(GridNode node, ulong ref_ticket, const Grid &grid, c
             Print(__FUNCTION__, " - WARNING. No stop loss set for open position with ticket: ", ref_ticket);
 
         // Set order details
-        int reference_volume_index = base.volume_index; 
+        int reference_volume_index = base->volume_index; 
         node.volume = grid.progression_sequence[reference_volume_index+1];
         node.type = (reference_type == POSITION_TYPE_SELL) ? ORDER_TYPE_BUY_STOP : ORDER_TYPE_SELL_STOP;
         node.price = reference_price +( (reference_type == POSITION_TYPE_SELL) ? (grid.unit+grid.spread) : -grid.unit);
