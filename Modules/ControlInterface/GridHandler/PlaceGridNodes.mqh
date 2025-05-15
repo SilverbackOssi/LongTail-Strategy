@@ -2,8 +2,9 @@
 #include  <Ossi\LongTails\Utils.mqh>
 //+------------------------------------------------------------------+
 
-void PlaceContinuationNode(ulong reference_ticket, const int session_status, const GridInfo &grid)
+void PlaceContinuationNode(CTrade &trader, ulong reference_ticket, const GridInfo &grid)
 {
+    const int session_status = grid.status;
     if (session_status == SESSION_OVER) return;
 
     if (PositionSelectByTicket(reference_ticket))
@@ -34,7 +35,7 @@ void PlaceContinuationNode(ulong reference_ticket, const int session_status, con
 
         // Place a grid node
         node.comment = EA_TAG +" "+ node.name +" as "+ EnumToString(node.type);
-        bool placed = trade.OrderOpen(_Symbol, node.type, node.volume, 0.0, node.price, 0, 0, ORDER_TIME_GTC, 0, node.comment);
+        bool placed = trader.OrderOpen(_Symbol, node.type, node.volume, 0.0, node.price, 0, 0, ORDER_TIME_GTC, 0, node.comment);
         if (!placed)// Potential invalid price,handle stop limit
             Print(__FUNCTION__, " - Failed to place ", node.type, " continuation node on ", reference_type);
     }
@@ -45,7 +46,7 @@ void PlaceContinuationNode(ulong reference_ticket, const int session_status, con
     }
 }
 
-void PlaceRecoveryNode(ulong reference_ticket, const GridInfo &grid, const GridBase *base=NULL)
+void PlaceRecoveryNode(CTrade &trader, ulong reference_ticket, const GridInfo &grid, const GridBase *base=NULL)
 {
     // Reference ticket type
     ENUM_POSITION_TYPE reference_type_position;
@@ -82,7 +83,7 @@ void PlaceRecoveryNode(ulong reference_ticket, const GridInfo &grid, const GridB
 
      // Place a grid node
      node.comment = EA_TAG +" "+ node.name +" as "+ EnumToString(node.type);
-     bool placed = trade.OrderOpen(_Symbol, node.type, node.volume, 0.0, node.price, 0, 0, ORDER_TIME_GTC, 0, node.comment);
+     bool placed = trader.OrderOpen(_Symbol, node.type, node.volume, 0.0, node.price, 0, 0, ORDER_TIME_GTC, 0, node.comment);
      if (!placed)// Potential invalid price,handle stop limit
          Print(__FUNCTION__, " - Failed to place ", node.type, " recovery node on ", EnumToString(((PositionSelectByTicket(reference_ticket))? reference_type_position:reference_type_order)));    
 }

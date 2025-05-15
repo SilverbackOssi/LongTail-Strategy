@@ -1,6 +1,7 @@
 #ifndef Utils_MQH
 #define Utils_MQH
 
+//XXX: Include core rules
 //+------------------------------------------------------------------+
 //| Constants and Structures                                         |
 //+------------------------------------------------------------------+
@@ -187,7 +188,6 @@ void DeleteAllPending(CTrade &trader, const string symbol)
 }
 
 //+------------------------------------------------------------------+
-
 void ClearContinuationNodes(CTrade &trader)
 {
   for (int i = OrdersTotal() - 1; i >= 0; --i)
@@ -207,7 +207,25 @@ void ClearContinuationNodes(CTrade &trader)
   }
 }
 
-//XXX: Write ClearRecoveryNode
+//+------------------------------------------------------------------+
+void ClearRecoveryNodes(CTrade &trader)
+{
+    for (int i = OrdersTotal() - 1; i >= 0; --i)
+    {
+        ulong order_ticket = OrderGetTicket(i);
+        if (order_ticket == 0) continue;
+        if (OrderGetString(ORDER_SYMBOL) != _Symbol) continue;
+        string comment = OrderGetString(ORDER_COMMENT);
+
+        // Only delete recovery nodes
+        if (StringFind(comment, "Recovery") == -1) continue;
+
+        if (trader.OrderDelete(order_ticket))
+            Print(__FUNCTION__, ": Deleted recovery order with ticket: ", order_ticket, " and comment: ", comment);
+        else
+            Print(__FUNCTION__, ": Failed to delete recovery order with ticket: ", order_ticket, " and comment: ", comment);
+    }
+}
 
 //+------------------------------------------------------------------+
 ulong NodeExistsAtPrice(double order_price)
