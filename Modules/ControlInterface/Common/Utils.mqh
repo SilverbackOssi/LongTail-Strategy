@@ -207,6 +207,8 @@ void ClearContinuationNodes(CTrade &trader)
   }
 }
 
+//XXX: Write ClearRecoveryNode
+
 //+------------------------------------------------------------------+
 ulong NodeExistsAtPrice(double order_price)
 {
