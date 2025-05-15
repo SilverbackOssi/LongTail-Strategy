@@ -59,7 +59,7 @@ bool IsRecoveryGap(const GridInfo &grid)
     // price is within grid.unit range.
 
     //XXX: Assumes orders are correct. 
-    //      Perform check, also force or return false on misallaignment
+    //      Perform check, also force or return false on misalignment
 
     double buy_stop_price = 0;
     for (int i = OrdersTotal() - 1; i >= 0; i--)
