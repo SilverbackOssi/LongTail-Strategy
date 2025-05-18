@@ -9,7 +9,7 @@
 // -- To-Do --
 // All functions should operate on any symbol(across modules).
 // - ensure set deviation, order filling policy
-// - check symbol specifics; min-volume, tick size, tick value. goal to determin grid size and minimum term(base volume)
+// - check symbol specifics; min-volume, tick size, tick value. goal to determine grid size and minimum term(base volume)
 
 //+------------------------------------------------------------------+
 //|                                                                  |
@@ -54,8 +54,3 @@ double GetMinimumTerm()
    
    }
 //+------------------------------------------------------------------+
-void RebuildSequence()
-{
-  // Updates the progression sequence based on accound balance increase.
-  // Update every 10% increase or decrease
-}

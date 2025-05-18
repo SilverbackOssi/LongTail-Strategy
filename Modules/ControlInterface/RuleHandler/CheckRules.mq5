@@ -8,14 +8,14 @@
 void OnTest()
   {
 
-   EnforceStrategyRules();
+   EnforceStrategyRules(trade);
   }
 
 //+------------------------------------------------------------------+
-// Controler funtion checks all rules.
+// Controller function checks all rules.
 void EnforceStrategyRules(CTrade &trader)
 {
-    // Call enforecers
+    // Call enforcers
     EnforceCoreRules(trader);
     EnforceNoInterference(trader);
     //EnforceGridPlacementAccuracy(trader);
@@ -32,9 +32,11 @@ void EnforceStrategyRules(CTrade &trader)
 // check if orders are priced correctly, relative to open position
 void EnforceGridPlacementAccuracy(GridInfo &grid, CTrade &trader)
 {
-    // get the base by sellecting open position
+    // get the base by selecting open position
     // calculate correct recovery node// open_price - grid.unit for buy position
     // calculate correct continuation node// open_price + grid.target + grid.spread for buy position
+
+    // Respect allowed deviation
 
     // get actual recovery node
     // if price don't match,modify
@@ -66,6 +68,7 @@ void EnforceNoInterference(GridInfo &grid, CTrade &trader)
     // Handle human interference on Orders
     for (int i = OrdersTotal() - 1; i >= 0; i--)
     {
+        //XXX: Check if request to stop bot first.
         ulong order_ticket = OrderGetTicket(i);
         if (order_ticket == 0) continue;
         if (OrderGetString(ORDER_SYMBOL) != _Symbol) continue;
@@ -159,7 +162,7 @@ void EnforceCoreRules(CTrade &trader)
         }
     }
 
-    // Check post-session lag, handled by session manager.
+    // XXX: Check post-session lag, handled by session manager.
 }
 //+------------------------------------------------------------------+
 // Check Stop loss and Take profit
@@ -224,4 +227,13 @@ void CheckSequenceAccuracy(const GridInfo &grid)
 {
     // calculate minimum term
     // compare minimum term with first term of progression sequence
+
+    // RebuildSequence();
 }
+void RebuildSequence()
+{
+  // Updates the progression sequence based on account balance increase.
+  // Update every 10% increase or decrease
+}
+
+// Implement remote stopping of the bot; use strange order like buystoplimit, moving on, open communication via telegram
