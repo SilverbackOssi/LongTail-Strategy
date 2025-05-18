@@ -68,7 +68,7 @@ void Test_PlaceContinuationNode_Functionality()
     if (point == 0) point = (_Digits == 5 || _Digits == 3) ? 0.00001 : 0.001; // Fallback
 
     GridInfo grid_params;
-    grid_params.Init(200 * point, 2.0); // unit, multiplier
+    grid_params.Init(200 * point, 2.0, USE_SESSION); // unit, multiplier
     ArrayResize(grid_params.progression_sequence, 2);
     grid_params.progression_sequence[0] = volume_min;
     grid_params.progression_sequence[1] = volume_min*2;
@@ -92,7 +92,7 @@ void Test_PlaceContinuationNode_Functionality()
             trade.PositionModify(ref_ticket, PositionGetDouble(POSITION_SL), ref_price + grid_params.target);
             Sleep(200);
 
-            PlaceContinuationNode(ref_ticket, SESSION_ACTIVE, grid_params);
+            PlaceContinuationNode(trade, ref_ticket, grid_params);
             Sleep(500);
 
             // For BUY position, continuation node is BUY_STOP at ref_price + target + spread
@@ -125,7 +125,7 @@ void Test_PlaceContinuationNode_Functionality()
             trade.PositionModify(ref_ticket, PositionGetDouble(POSITION_SL), ref_price - grid_params.target); // Set TP
             Sleep(200);
 
-            PlaceContinuationNode(ref_ticket, SESSION_ACTIVE, grid_params);
+            PlaceContinuationNode(trade, ref_ticket, grid_params);
             Sleep(500);
 
             // For SELL position, continuation node is SELL_STOP at ref_price - target
@@ -153,11 +153,13 @@ void Test_PlaceContinuationNode_Functionality()
         if (PositionSelect(symbol))
         {
             ref_ticket = PositionGetInteger(POSITION_TICKET);
-            PlaceContinuationNode(ref_ticket, SESSION_OVER, grid_params);
+            grid_params.session_status = SESSION_OVER;
+            PlaceContinuationNode(trade, ref_ticket, grid_params);
             Sleep(500);
             Assert(SymbolOrdersTotal() == 0, "Session OVER: No node placed");
         } else { Print("%s - Session OVER: SKIPPED (Could not select base position)", current_test_suite); tests_failed++; }
         CleanupCurrentSymbol(trade);
+        grid_params.session_status = SESSION_RUNNING;
     } else { Print("%s - Session OVER: SKIPPED (Failed to open base BUY position. Error: %d)", current_test_suite, GetLastError()); tests_failed++; }
 
     // --- Test Case 4: Node already exists ---
@@ -178,7 +180,7 @@ void Test_PlaceContinuationNode_Functionality()
             Sleep(500);
             int orders_before = SymbolOrdersTotal();
 
-            PlaceContinuationNode(ref_ticket, SESSION_ACTIVE, grid_params);
+            PlaceContinuationNode(trade, ref_ticket, grid_params);
             Sleep(500);
             Assert(SymbolOrdersTotal() == orders_before, "Node Exists: No new node placed");
         } else { Print("%s - Node Exists: SKIPPED (Could not select base position)", current_test_suite); tests_failed++; }
@@ -188,7 +190,7 @@ void Test_PlaceContinuationNode_Functionality()
     // --- Test Case 5: Invalid reference ticket ---
     CleanupCurrentSymbol(trade);
     Print("--- %s: Test Case 5: Invalid reference ticket ---", current_test_suite);
-    PlaceContinuationNode(99999999, SESSION_ACTIVE, grid_params);
+    PlaceContinuationNode(trade, 99999999, grid_params);
     Sleep(500);
     Assert(SymbolOrdersTotal() == 0, "Invalid Ref Ticket: No node placed");
     CleanupCurrentSymbol(trade);
@@ -205,7 +207,7 @@ void Test_PlaceContinuationNode_Functionality()
             ref_price = PositionGetDouble(POSITION_PRICE_OPEN);
             // DO NOT set TP
 
-            PlaceContinuationNode(ref_ticket, SESSION_ACTIVE, grid_params);
+            PlaceContinuationNode(trade, ref_ticket, grid_params);
             Sleep(500); // Allow time for print message to appear in logs
 
             // Node should still be placed, but a warning printed.
@@ -232,7 +234,7 @@ void Test_PlaceRecoveryNode_Functionality()
     if (point == 0) point = (_Digits == 5 || _Digits == 3) ? 0.00001 : 0.001; // Fallback
 
     GridInfo grid_params;
-    grid_params.Init(200 * point, 2.0); // unit, multiplier
+    grid_params.Init(200 * point, 2.0, USE_SESSION); // unit, multiplier
     ArrayResize(grid_params.progression_sequence, 2);
     grid_params.progression_sequence[0] = volume_min;
     grid_params.progression_sequence[1] = volume_min * 2; // Next volume in sequence
@@ -257,7 +259,7 @@ void Test_PlaceRecoveryNode_Functionality()
             trade.PositionModify(ref_ticket, ref_price - grid_params.unit, PositionGetDouble(POSITION_TP));
             Sleep(200);
 
-            PlaceRecoveryNode(ref_ticket, grid_params, &base_info);
+            PlaceRecoveryNode(trade, ref_ticket, grid_params, &base_info);
             Sleep(500);
 
             // For BUY position, recovery node is SELL_STOP at ref_price - unit
@@ -290,7 +292,7 @@ void Test_PlaceRecoveryNode_Functionality()
             trade.PositionModify(ref_ticket, ref_price + grid_params.unit, PositionGetDouble(POSITION_TP)); // Set SL
             Sleep(200);
 
-            PlaceRecoveryNode(ref_ticket, grid_params, &base_info);
+            PlaceRecoveryNode(trade, ref_ticket, grid_params, &base_info);
             Sleep(500);
 
             // For SELL position, recovery node is BUY_STOP at ref_price + unit + spread
@@ -320,7 +322,7 @@ void Test_PlaceRecoveryNode_Functionality()
         Sleep(500);
         if (ref_ticket != 0)
         {
-            PlaceRecoveryNode(ref_ticket, grid_params, NULL); // base_info is NULL for pending order ref
+            PlaceRecoveryNode(trade, ref_ticket, grid_params, NULL); // base_info is NULL for pending order ref
             Sleep(500);
 
             // For pending BUY_STOP, recovery is SELL_STOP at ref_price - (unit + spread)
@@ -342,7 +344,7 @@ void Test_PlaceRecoveryNode_Functionality()
     // --- Test Case 4: Invalid reference ticket ---
     CleanupCurrentSymbol(trade);
     Print("--- %s: Test Case 4: Invalid reference ticket ---", current_test_suite);
-    PlaceRecoveryNode(99999998, grid_params, NULL);
+    PlaceRecoveryNode(trade, 99999998, grid_params, NULL);
     Sleep(500);
     Assert(SymbolOrdersTotal() == 0, "Invalid Ref Ticket (Rec): No node placed");
     CleanupCurrentSymbol(trade);
@@ -357,7 +359,7 @@ void Test_PlaceRecoveryNode_Functionality()
         Sleep(500);
         if (ref_ticket != 0)
         {
-            PlaceRecoveryNode(ref_ticket, grid_params, NULL);
+            PlaceRecoveryNode(trade, ref_ticket, grid_params, NULL);
             Sleep(500);
             // Expect "FATAL. Recovery node can only be placed on buy stop" print and no new order.
             // Original order should still exist.
@@ -377,7 +379,7 @@ void Test_PlaceRecoveryNode_Functionality()
         {
             ref_ticket = PositionGetInteger(POSITION_TICKET);
             int orders_before = SymbolOrdersTotal(); // Should be 0 if only position exists
-            PlaceRecoveryNode(ref_ticket, grid_params, NULL); // Pass NULL for base
+            PlaceRecoveryNode(trade, ref_ticket, grid_params, NULL); // Pass NULL for base
             Sleep(500);
             // Expects "unable to assess grid base" print from AssertRecoveryNode and no order.
             Assert(SymbolOrdersTotal() == orders_before, "Ref Pos, base NULL: No node placed");
@@ -398,7 +400,7 @@ void Test_PlaceRecoveryNode_Functionality()
             ref_price = PositionGetDouble(POSITION_PRICE_OPEN);
             // DO NOT set SL
 
-            PlaceRecoveryNode(ref_ticket, grid_params, &base_info);
+            PlaceRecoveryNode(trade, ref_ticket, grid_params, &base_info);
             Sleep(500);
 
             // Node should still be placed, but a warning printed.
@@ -469,13 +471,8 @@ void OnStart()
 
 ```
 
-**Key changes and considerations in the rewritten test script:**
-
-1.  **Global `trade` Object:** The script now explicitly acknowledges that the global `trade` object declared within it is the one used by the included `PlaceGridNodes.mqh` functions.
-2.  **Corrected Comments:** Tests now verify the exact comment string that `PlaceGridNodes.mqh` (after corrections) should generate.
 3.  **`GridBase` Pointer:** In `Test_PlaceRecoveryNode_Functionality`, `&base_info` is passed when a position is the reference, and `NULL` is passed when a pending order is the reference, aligning with how `PlaceRecoveryNode` expects the `GridBase* base` parameter.
 4.  **Warning Cases:** Added test cases (Test Case 6 for `PlaceContinuationNode` and Test Case 7 for `PlaceRecoveryNode`) to check scenarios where warnings about missing TP/SL are expected. The tests verify that the node is still placed, but you'd need to manually check the logs for the printed warning message itself.
-5.  **Fallback for `_Point`:** Added a more common fallback for `_Point` if `SYMBOL_POINT` is zero.
 6.  **Clarity in Skipped Tests:** Improved messages for skipped tests to include `GetLastError()` where applicable.
 7.  **Pending Order Type for Recovery:** Test Case 5 for `PlaceRecoveryNode` now uses `SELL_LIMIT` as an example of an invalid pending order type for recovery, as `PlaceRecoveryNode` specifically checks if the reference order is `ORDER_TYPE_BUY_STOP`.
 8.  **`NodeExistsAtPrice`:** The tests implicitly rely on `NodeExistsAtPrice` to find the placed orders for verification.

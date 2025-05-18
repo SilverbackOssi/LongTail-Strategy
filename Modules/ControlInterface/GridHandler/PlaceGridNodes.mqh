@@ -9,6 +9,7 @@ void PlaceContinuationNode(CTrade &trader, ulong reference_ticket, const GridInf
 
     if (PositionSelectByTicket(reference_ticket))
     {
+        // XXX: call core rules
         GridNode node;
         node.name = "Continuation node";
         // Get ticket details
@@ -67,6 +68,7 @@ void PlaceRecoveryNode(CTrade &trader, ulong reference_ticket, const GridInfo &g
         Print(__FUNCTION__, " - FATAL. Recovery node can only be placed on open position or buy stop. Reference ticket could not be selected"); // Rule 7
         return;
     }
+    // XXX: call core rules
 
     // Assert Node values
     GridNode node;
@@ -96,6 +98,7 @@ GridNode AssertRecoveryNode(GridNode node, ulong ref_ticket, const GridInfo &gri
         if (base == NULL)
         {
             Print(__FUNCTION__," unable to assess grid base, volume index. Please pass the Base data.");
+            node.price = -1.0;
             return node; // as it came
         }
         // Get ticket details

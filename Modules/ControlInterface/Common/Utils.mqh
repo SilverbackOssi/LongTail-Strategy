@@ -31,7 +31,7 @@ struct GridInfo{
     datetime session_time_start;
     datetime session_time_end;
 
-    void LTSGrid(){
+    void GridInfo(){
         // Set to default values
         unit = 0.0;
         spread = 0.0;
@@ -51,7 +51,7 @@ struct GridInfo{
 
         // set grid spread to 20% of unit 
         spread = unit * 0.2;
-        
+
         if (!use_session) session_status = SESSION_RUNNING;
     }
 };
