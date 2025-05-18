@@ -5,11 +5,7 @@
 //+------------------------------------------------------------------+
 #include  <Ossi\LongTails\Utils.mqh>
 
-void OnTest()
-  {
-
-   EnforceStrategyRules(trade);
-  }
+//void OnTest() EnforceStrategyRules(trade);
 
 //+------------------------------------------------------------------+
 // Controller function checks all rules.

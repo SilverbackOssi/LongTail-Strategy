@@ -30,7 +30,7 @@ void HandleGridGap(GridInfo &grid, GridBase &base, CTrade &trade_obj)
     //XXX: EnforceCoreRules(trade_obj); -> complete and test rules Enforcing first
     // Context validation
     int orders_total = SymbolOrdersTotal();
-    if (PositionSelect(_Symbol) || orders_total == 0) return false;
+    if (PositionSelect(_Symbol) || orders_total == 0) return;
     
     if (base.type == POSITION_TYPE_BUY) return;// grid shifts on a short position
     
@@ -41,11 +41,11 @@ void HandleGridGap(GridInfo &grid, GridBase &base, CTrade &trade_obj)
         return;}
     if (remaining_orders > 1) return; // already placed
 
-    // if price is not within range
+    // If price is not within range
     ulong recovery_node_ticket = IsRecoveryGap(grid, trade_obj);
     if (!recovery_node_ticket) return;
         
-    PlaceRecoveryNode(trade_obj, recovery_node_ticket, grid); // Recovery_node_ticket should never be 0.
+    PlaceRecoveryNode(trade_obj, recovery_node_ticket, grid, NULL); // Recovery_node_ticket should never be 0.
 }
 
 //+------------------------------------------------------------------+
@@ -59,6 +59,7 @@ ulong IsRecoveryGap(const GridInfo &grid, CTrade &trade_obj)
         {
         ulong order_ticket = OrderGetTicket(i);
         if (order_ticket == 0) continue;
+        if (!OrderSelect(order_ticket)) continue;
 
         if ((OrderGetString(ORDER_SYMBOL) == _Symbol) &&
             ((ENUM_ORDER_TYPE)OrderGetInteger(ORDER_TYPE) == ORDER_TYPE_BUY_STOP) &&

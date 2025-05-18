@@ -74,6 +74,7 @@ void PlaceRecoveryNode(CTrade &trader, ulong reference_ticket, const GridInfo &g
     GridNode node;
     node.name = EA_RECOVERY_TAG + " node";
     node = AssertRecoveryNode(node, reference_ticket, grid, base);
+    if (node.price == -1.0) return;
 
     // Check if an order already exists at the node price
      ulong ticket_exists = NodeExistsAtPrice(node.price);
@@ -97,7 +98,7 @@ GridNode AssertRecoveryNode(GridNode node, ulong ref_ticket, const GridInfo &gri
     {
         if (base == NULL)
         {
-            Print(__FUNCTION__," unable to assess grid base, volume index. Please pass the Base data.");
+            Print(__FUNCTION__," unable to assert recovery node on grid base. Please pass valid Base data not null.");
             node.price = -1.0;
             return node; // as it came
         }
