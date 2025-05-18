@@ -11,7 +11,7 @@ void PlaceContinuationNode(CTrade &trader, ulong reference_ticket, const GridInf
     {
         // XXX: call core rules
         GridNode node;
-        node.name = "Continuation node";
+        node.name = EA_CONTINUATION_TAG + " node";
         // Get ticket details
         long reference_type = PositionGetInteger(POSITION_TYPE);
         double reference_price = PositionGetDouble(POSITION_PRICE_OPEN);
@@ -72,7 +72,7 @@ void PlaceRecoveryNode(CTrade &trader, ulong reference_ticket, const GridInfo &g
 
     // Assert Node values
     GridNode node;
-    node.name = "Recovery node";
+    node.name = EA_RECOVERY_TAG + " node";
     node = AssertRecoveryNode(node, reference_ticket, grid, base);
 
     // Check if an order already exists at the node price

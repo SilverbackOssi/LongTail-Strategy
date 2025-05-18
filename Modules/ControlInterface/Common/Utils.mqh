@@ -10,14 +10,16 @@
 //+------------------------------------------------------------------+
 
 // --- Defaults ---
-const string EA_TAG = "LongTailsScalper";
-const int EA_MAGIC = 405897;
-const ulong EA_DEVIATION = EA_MAGIC;
-const datetime default_time_start = StringToTime("07:30");
-const datetime default_time_end = StringToTime("12:30");
-const int SESSION_RUNNING = 100;
-const int SESSION_OVER = 101;
-bool USE_SESSION = false;
+const string    EA_TAG = "LongTailsScalper";
+const string    EA_RECOVERY_TAG = "Recovery";
+const string    EA_CONTINUATION_TAG = "Continuation";
+const int       EA_MAGIC = 405897;
+const ulong     EA_DEVIATION = EA_MAGIC;
+const int       SESSION_RUNNING = 100;
+const int       SESSION_OVER = 101;
+const datetime  default_time_start = StringToTime("07:30");
+const datetime  default_time_end = StringToTime("12:30");
+      bool      USE_SESSION = false;
 
 //+------------------------------------------------------------------+
 
