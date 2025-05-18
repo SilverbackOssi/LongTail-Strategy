@@ -9,7 +9,7 @@ int tests_passed = 0;
 int tests_failed = 0;
 string current_test_suite = "";
 
-// Define constants if not available from includes (adjust values as per your system)
+// Define constants if not available from includes
 #ifndef SESSION_ACTIVE
 #define SESSION_ACTIVE 0
 #endif
@@ -17,9 +17,6 @@ string current_test_suite = "";
 #define SESSION_OVER 1
 #endif
 
-#ifndef EA_DEVIATION
-#define EA_DEVIATION 10 // Default slippage for trade operations
-#endif
 
 //+------------------------------------------------------------------+
 //| Assertion Helper                                                 |
@@ -71,9 +68,10 @@ void Test_PlaceContinuationNode_Functionality()
     if (point == 0) point = (_Digits == 5 || _Digits == 3) ? 0.00001 : 0.001; // Fallback
 
     GridInfo grid_params;
-    grid_params.Init(100 * point, 2.0, 5 * point); // unit, multiplier, spread
-    ArrayResize(grid_params.progression_sequence, 1);
+    grid_params.Init(200 * point, 2.0); // unit, multiplier
+    ArrayResize(grid_params.progression_sequence, 2);
     grid_params.progression_sequence[0] = volume_min;
+    grid_params.progression_sequence[1] = volume_min*2;
 
     ulong ref_ticket = 0;
     double ref_price = 0;
@@ -234,7 +232,7 @@ void Test_PlaceRecoveryNode_Functionality()
     if (point == 0) point = (_Digits == 5 || _Digits == 3) ? 0.00001 : 0.001; // Fallback
 
     GridInfo grid_params;
-    grid_params.Init(100 * point, 2.0, 5 * point); // unit, multiplier, spread
+    grid_params.Init(200 * point, 2.0); // unit, multiplier
     ArrayResize(grid_params.progression_sequence, 2);
     grid_params.progression_sequence[0] = volume_min;
     grid_params.progression_sequence[1] = volume_min * 2; // Next volume in sequence

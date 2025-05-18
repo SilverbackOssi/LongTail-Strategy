@@ -44,12 +44,15 @@ struct GridInfo{
     }
 
     // Function to initialize values
-    void Init(double grid_unit, double grid_multiplier) {
+    void Init(double grid_unit, double grid_multiplier, bool use_session) {
         unit = grid_unit;
-        // set grid spread to 20% of unit 
-        spread = unit * 0.2;
         multiplier = grid_multiplier;
         target = unit * multiplier;
+
+        // set grid spread to 20% of unit 
+        spread = unit * 0.2;
+        
+        if (!use_session) session_status = SESSION_RUNNING;
     }
 };
 struct GridNode{

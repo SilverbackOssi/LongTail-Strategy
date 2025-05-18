@@ -232,6 +232,8 @@ void CheckSequenceAccuracy(const GridInfo &grid)
 }
 void RebuildSequence()
 {
+    // calculate how many points is $1, that should be grid size. exception for rapid moving pairs
+
   // Updates the progression sequence based on account balance increase.
   // Update every 10% increase or decrease
 }
