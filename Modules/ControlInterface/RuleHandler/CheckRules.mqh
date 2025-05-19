@@ -3,27 +3,27 @@
 //|                                      Copyright 2025, Anyim Ossi. |
 //|                                          anyimossi.dev@gmail.com |
 //+------------------------------------------------------------------+
-#include  <Ossi\LongTails\Utils.mqh>
+#property copyright "Copyright 2025, Anyim Ossi."
+#property link      "anyimossi.dev@gmail.com"
 
-//void OnTest() EnforceStrategyRules(trade);
+#include  "Utils.mqh"
 
 //+------------------------------------------------------------------+
 // Controller function checks all rules.
-void EnforceStrategyRules(CTrade &trader)
+void EnforceStrategyRules(CTrade &trader, GridInfo &grid, GridBase &base)
 {
-    // Call enforcers
-    EnforceCoreRules(trader);
-    EnforceNoInterference(trader);
-    //EnforceGridPlacementAccuracy(trader);
-
-    // Call Checkers 
+    EnforceNoInterference(grid, trader);
     CheckSLTP();
-    CheckVolumeAccuracy();
+    EnforceCoreRules(trader);
+    //EnforceGridPlacementAccuracy(trader);
+    
+    //CheckVolumeAccuracy(grid, base);
     //CheckSequenceAccuracy();
     
     // consider unseen edge cases
     // - deleted node by foreign
 }
+
 //+------------------------------------------------------------------+
 // check if orders are priced correctly, relative to open position
 void EnforceGridPlacementAccuracy(GridInfo &grid, CTrade &trader)
@@ -91,14 +91,14 @@ void EnforceNoInterference(GridInfo &grid, CTrade &trader)
             double sl = PositionGetDouble(POSITION_SL);
             double open_price = PositionGetDouble(POSITION_PRICE_OPEN);
             double current_price = SymbolInfoDouble(_Symbol, SYMBOL_BID);
-            ENUM_POSITION_TYPE type = PositionGetInteger(POSITION_TYPE);
+            ENUM_POSITION_TYPE type = (ENUM_POSITION_TYPE)PositionGetInteger(POSITION_TYPE);
 
             // Supposed exits
             double corr_sl = NormalizeDouble(open_price - (type == POSITION_TYPE_BUY ? grid.unit : -grid.unit), _Digits);
             double corr_tp = NormalizeDouble(open_price + (type == POSITION_TYPE_BUY ? grid.target : -grid.target), _Digits);
 
             // Ensure SL and TP are within symbol limits
-            double min_distance = SymbolInfoDouble(_Symbol, SYMBOL_TRADE_STOPS_LEVEL) * _Point;
+            double min_distance = SymbolInfoInteger(_Symbol, SYMBOL_TRADE_STOPS_LEVEL) * _Point;
             if (MathAbs(corr_tp - current_price) < min_distance || MathAbs(current_price - corr_sl) < min_distance)
             {
                 Print(__FUNCTION__, " - Warning: Corrected SL/TP for position with ticket ", ticket, " violates symbol stop limits. Skipping modification.");
@@ -127,7 +127,7 @@ void EnforceCoreRules(CTrade &trader)
         // Close all positions except the most recent one. Access by index.
         for (int i = PositionsTotal() - 1; i > 0; i--)
         {
-            if (PositionSelectByIndex(i - 1))
+            if (PositionGetTicket(i-1))
             {
                 ulong ticket = PositionGetInteger(POSITION_TICKET);
                 if (!trader.PositionClose(ticket))
@@ -146,8 +146,7 @@ void EnforceCoreRules(CTrade &trader)
         // Close all orders except the last two. Access by index.
         for (int i = OrdersTotal() - 1; i > 1; i--)
         {
-            if (OrderSelect(i - 2, SELECT_BY_POS))
-            OrderGetTicket(i-2)
+            if (OrderGetTicket(i-2))
             {
                 ulong ticket = OrderGetInteger(ORDER_TICKET);
                 if (!trader.OrderDelete(ticket))
@@ -185,7 +184,7 @@ void CheckSLTP()
 
 // check volume of open position from sequence
 void CheckVolumeAccuracy(const GridInfo &grid, const GridBase &base)
-{
+{/*
     // Check mathematical accuracy across all nodes
 
     // Check open position volume in sequence
@@ -217,7 +216,7 @@ void CheckVolumeAccuracy(const GridInfo &grid, const GridBase &base)
     // get recovery volume index
     // base volume should be -1
     // compare first term of sequence with continuation volume
-}
+*/}
 // check that sequence is init accurate to account balance XXX
 void CheckSequenceAccuracy(const GridInfo &grid)
 {
