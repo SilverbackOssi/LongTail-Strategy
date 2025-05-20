@@ -4,7 +4,7 @@
 
 void PlaceContinuationNode(CTrade &trader, ulong reference_ticket, const GridInfo &grid)
 {
-    const int session_status = grid.status;
+    const int session_status = grid.session_status;
     if (session_status == SESSION_OVER) return;
 
     if (PositionSelectByTicket(reference_ticket))
@@ -55,9 +55,9 @@ void PlaceRecoveryNode(CTrade &trader, ulong reference_ticket, const GridInfo &g
 
     // Validate reference ticket
     if (PositionSelectByTicket(reference_ticket))
-        reference_type_position = PositionGetInteger(POSITION_TYPE);
+        reference_type_position = (ENUM_POSITION_TYPE)PositionGetInteger(POSITION_TYPE);
     else if (OrderSelect(reference_ticket))
-        reference_type_order = OrderGetInteger(ORDER_TYPE);
+        reference_type_order = (ENUM_ORDER_TYPE)OrderGetInteger(ORDER_TYPE);
         if (reference_type_order != ORDER_TYPE_BUY_STOP) // order must be a recovery buy stop
         {
             Print(__FUNCTION__, " - FATAL. Recovery node can only be placed on buy stop"); // Rule 7
@@ -91,7 +91,7 @@ void PlaceRecoveryNode(CTrade &trader, ulong reference_ticket, const GridInfo &g
          Print(__FUNCTION__, " - Failed to place ", node.type, " recovery node on ", EnumToString(((PositionSelectByTicket(reference_ticket))? reference_type_position:reference_type_order)));    
 }
 
-GridNode AssertRecoveryNode(GridNode node, ulong ref_ticket, const GridInfo &grid, const GridBase *base)
+GridNode AssertRecoveryNode(GridNode &node, ulong ref_ticket, const GridInfo &grid, const GridBase *base)
 {
     // If reference ticket is open position
     if (PositionSelectByTicket(ref_ticket))
@@ -113,7 +113,7 @@ GridNode AssertRecoveryNode(GridNode node, ulong ref_ticket, const GridInfo &gri
             Print(__FUNCTION__, " - WARNING. No stop loss set for open position with ticket: ", ref_ticket);
 
         // Set order details
-        int reference_volume_index = base->volume_index; 
+        int reference_volume_index = base.volume_index;
         node.volume = grid.progression_sequence[reference_volume_index+1];
         node.type = (reference_type == POSITION_TYPE_SELL) ? ORDER_TYPE_BUY_STOP : ORDER_TYPE_SELL_STOP;
         node.price = reference_price +( (reference_type == POSITION_TYPE_SELL) ? (grid.unit+grid.spread) : -grid.unit);
