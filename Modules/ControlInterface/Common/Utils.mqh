@@ -89,6 +89,19 @@ struct GridBase{
         Print("Failed to update base, could not find position with ticket: ", ticket);
     }
    }
+
+    void UpdateOrderAsBase(const ulong order_ticket) {
+        if (OrderSelect(order_ticket)) {
+            name = NULL_BASE_NAME;
+            ticket = order_ticket;
+            type = ENUM_POSITION_TYPE(OrderGetInteger(ORDER_TYPE));
+            open_price = OrderGetDouble(ORDER_PRICE_OPEN);
+            volume = OrderGetDouble(ORDER_VOLUME);
+        } else {
+            Print("Failed to update base, could not find order with ticket: ", ticket);
+        }
+   }
+
 };
 
 

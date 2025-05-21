@@ -20,7 +20,7 @@ void HandleNewPosition(GridBase &base, const GridInfo &grid, CTrade &trade_obj)
     
     // Update grid nodes
     DeleteAllPending(trade_obj, _Symbol);
-    PlaceRecoveryNode(trade_obj, ticket, grid, &base);
+    PlaceRecoveryNode(trade_obj, grid, &base);
     PlaceContinuationNode(trade_obj, ticket, grid);
 }
 
@@ -45,8 +45,8 @@ void HandleGridGap(GridInfo &grid, GridBase &base, CTrade &trade_obj)
     ulong recovery_node_ticket = IsRecoveryGap(grid, trade_obj);
     if (!recovery_node_ticket) return;
         
-    GridBase null_base; null_base.name = NO_BASE;
-    PlaceRecoveryNode(trade_obj, recovery_node_ticket, grid, no_base); // Recovery_node_ticket should never be 0.
+    GridBase null_base; null_base.UpdateOrderAsBase(recovery_node_ticket);
+    PlaceRecoveryNode(trade_obj, grid, null_base); // Recovery_node_ticket should never be 0.
 }
 
 //+------------------------------------------------------------------+

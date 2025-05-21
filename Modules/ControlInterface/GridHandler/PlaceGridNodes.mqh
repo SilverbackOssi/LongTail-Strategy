@@ -47,17 +47,17 @@ void PlaceContinuationNode(CTrade &trader, ulong reference_ticket, const GridInf
     }
 }
 
-void PlaceRecoveryNode(CTrade &trader, ulong reference_ticket, const GridInfo &grid, const GridBase &base) // Cannot pass pointer to type struct
+void PlaceRecoveryNode(CTrade &trader, const GridInfo &grid, const GridBase &base) // Cannot pass pointer to type struct
 {
     // Reference ticket type
-    ENUM_POSITION_TYPE reference_type_position;
-    ENUM_ORDER_TYPE reference_type_order;
+    ulong reference_ticket = base.ticket;
+    string reference_type = "";
 
     // Validate reference ticket
     if (PositionSelectByTicket(reference_ticket))
-        reference_type_position = (ENUM_POSITION_TYPE)PositionGetInteger(POSITION_TYPE);
+        reference_type = EnumToString(PositionGetInteger(POSITION_TYPE));
     else if (OrderSelect(reference_ticket))
-        reference_type_order = (ENUM_ORDER_TYPE)OrderGetInteger(ORDER_TYPE);
+        reference_type = EnumToString(OrderGetInteger(ORDER_TYPE));
         if (reference_type_order != ORDER_TYPE_BUY_STOP) // order must be a recovery buy stop
         {
             Print(__FUNCTION__, " - FATAL. Recovery node can only be placed on buy stop"); // Rule 7
@@ -88,7 +88,7 @@ void PlaceRecoveryNode(CTrade &trader, ulong reference_ticket, const GridInfo &g
      node.comment = EA_TAG +" "+ node.name +" as "+ EnumToString(node.type);
      bool placed = trader.OrderOpen(_Symbol, node.type, node.volume, 0.0, node.price, 0, 0, ORDER_TIME_GTC, 0, node.comment);
      if (!placed)// Potential invalid price,handle stop limit
-         Print(__FUNCTION__, " - Failed to place ", node.type, " recovery node on ", EnumToString(((PositionSelectByTicket(reference_ticket))? reference_type_position:reference_type_order)));    
+         Print(__FUNCTION__, " - Failed to place ", node.type, " recovery node on ", reference_type);    
 }
 
 GridNode AssertRecoveryNode(GridNode &node, ulong ref_ticket, const GridInfo &grid, const GridBase &base)
