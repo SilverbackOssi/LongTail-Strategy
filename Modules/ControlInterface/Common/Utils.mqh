@@ -96,7 +96,7 @@ struct GridBase{
             ticket = order_ticket;
             type = ENUM_POSITION_TYPE(OrderGetInteger(ORDER_TYPE));
             open_price = OrderGetDouble(ORDER_PRICE_OPEN);
-            volume = OrderGetDouble(ORDER_VOLUME);
+            volume = OrderGetDouble(ORDER_VOLUME_CURRENT);
         } else {
             Print("Failed to update base, could not find order with ticket: ", ticket);
         }
