@@ -3,7 +3,7 @@
 
 //+------------------------------------------------------------------+
 
-void SetExits(const CTrade &trader, ulong reference_ticket,const LTSGrid &grid)
+void SetExits(CTrade &trader, ulong reference_ticket, GridInfo &grid)
 {
     if (PositionSelectByTicket(reference_ticket))
     {     
