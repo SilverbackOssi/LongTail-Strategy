@@ -45,7 +45,8 @@ void HandleGridGap(GridInfo &grid, GridBase &base, CTrade &trade_obj)
     ulong recovery_node_ticket = IsRecoveryGap(grid, trade_obj);
     if (!recovery_node_ticket) return;
         
-    PlaceRecoveryNode(trade_obj, recovery_node_ticket, grid, NULL); // Recovery_node_ticket should never be 0.
+    GridBase null_base; null_base.name = NO_BASE;
+    PlaceRecoveryNode(trade_obj, recovery_node_ticket, grid, no_base); // Recovery_node_ticket should never be 0.
 }
 
 //+------------------------------------------------------------------+

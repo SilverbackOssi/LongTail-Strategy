@@ -47,7 +47,7 @@ void PlaceContinuationNode(CTrade &trader, ulong reference_ticket, const GridInf
     }
 }
 
-void PlaceRecoveryNode(CTrade &trader, ulong reference_ticket, const GridInfo &grid, const GridBase *base=NULL)
+void PlaceRecoveryNode(CTrade &trader, ulong reference_ticket, const GridInfo &grid, const GridBase &base) // Cannot pass pointer to type struct
 {
     // Reference ticket type
     ENUM_POSITION_TYPE reference_type_position;
@@ -91,12 +91,12 @@ void PlaceRecoveryNode(CTrade &trader, ulong reference_ticket, const GridInfo &g
          Print(__FUNCTION__, " - Failed to place ", node.type, " recovery node on ", EnumToString(((PositionSelectByTicket(reference_ticket))? reference_type_position:reference_type_order)));    
 }
 
-GridNode AssertRecoveryNode(GridNode &node, ulong ref_ticket, const GridInfo &grid, const GridBase *base)
+GridNode AssertRecoveryNode(GridNode &node, ulong ref_ticket, const GridInfo &grid, const GridBase &base)
 {
     // If reference ticket is open position
     if (PositionSelectByTicket(ref_ticket))
     {
-        if (base == NULL)
+        if (base.name == NULL_BASE_NAME)
         {
             Print(__FUNCTION__," unable to assert recovery node on grid base. Please pass valid Base data not null.");
             node.price = -1.0;

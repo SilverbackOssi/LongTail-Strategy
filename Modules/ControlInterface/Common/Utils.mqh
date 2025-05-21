@@ -7,9 +7,11 @@
 //+------------------------------------------------------------------+
 
 #include <Trade\Trade.mqh>
+
 //+------------------------------------------------------------------+
 
 // --- Defaults ---
+#define         NULL_BASE_NAME "null base"
 const string    EA_TAG = "LongTailsScalper";
 const string    EA_RECOVERY_TAG = "Recovery";
 const string    EA_CONTINUATION_TAG = "Continuation";
@@ -357,4 +359,5 @@ void CleanupCurrentSymbol( CTrade &trader, const string sym = "")
 }
 
 //+------------------------------------------------------------------+
+#include "StrictRuleManager.mqh"
 #endif // Utils_MQH
