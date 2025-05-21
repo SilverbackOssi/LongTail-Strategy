@@ -1,0 +1,6 @@
+- test grid manager
+- modularize rule handler
+- build out rule handler
+- robust and test sequence handler
+- session handler
+- Integration testing
