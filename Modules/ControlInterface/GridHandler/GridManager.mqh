@@ -1,9 +1,16 @@
+//+------------------------------------------------------------------+
+//|                                                  GridManager.mqh |
+//|                                      Copyright 2025, Anyim Ossi. |
+//|                                          anyimossi.dev@gmail.com |
+//+------------------------------------------------------------------+
+#property copyright "Copyright 2025, Anyim Ossi."
+#property link      "anyimossi.dev@gmail.com"
 
-#include  <Ossi\LongTails\Utils.mqh>
-#include  <Ossi\LongTails\PlaceGridNodes.mqh>
+#include  "GridNodes.mqh"
+#include  "ExitManager.mqh"
 
 //+------------------------------------------------------------------+
-void HandleNewPosition(GridBase &base, const GridInfo &grid, CTrade &trade_obj)
+void HandleNewPosition(GridBase &base, GridInfo &grid, CTrade &trade_obj)
 {
     if (!PositionSelect(_Symbol)) return;
     ulong ticket = PositionGetInteger(POSITION_TICKET);
@@ -20,7 +27,7 @@ void HandleNewPosition(GridBase &base, const GridInfo &grid, CTrade &trade_obj)
     
     // Update grid nodes
     DeleteAllPending(trade_obj, _Symbol);
-    PlaceRecoveryNode(trade_obj, grid, &base);
+    PlaceRecoveryNode(trade_obj, grid, base);
     PlaceContinuationNode(trade_obj, ticket, grid);
 }
 

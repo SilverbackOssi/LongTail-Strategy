@@ -55,10 +55,11 @@ void PlaceRecoveryNode(CTrade &trader, const GridInfo &grid, const GridBase &bas
 
     // Validate reference ticket
     if (PositionSelectByTicket(reference_ticket))
-        reference_type = EnumToString(PositionGetInteger(POSITION_TYPE));
+        reference_type = EnumToString((ENUM_POSITION_TYPE)PositionGetInteger(POSITION_TYPE));
     else if (OrderSelect(reference_ticket))
-        reference_type = EnumToString(OrderGetInteger(ORDER_TYPE));
-        if (reference_type_order != ORDER_TYPE_BUY_STOP) // order must be a recovery buy stop
+    
+        reference_type = EnumToString((ENUM_ORDER_TYPE)OrderGetInteger(ORDER_TYPE)); 
+        if (reference_type != EnumToString(ORDER_TYPE_BUY_STOP)) // order must be a recovery buy stop
         {
             Print(__FUNCTION__, " - FATAL. Recovery node can only be placed on buy stop"); // Rule 7
             return;
