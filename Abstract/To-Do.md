@@ -17,6 +17,7 @@
 - Confirm short scalps strategy idea - screen shot on 13th feb.2025
 ---
 - All functions should return success or failure. Return Value Checks for Trade Operations:
+- Define utility to avoid midnight/weekend skippage
 
 -
 // NEW IDEA
