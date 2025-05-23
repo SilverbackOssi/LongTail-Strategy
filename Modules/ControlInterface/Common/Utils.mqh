@@ -7,7 +7,7 @@
 //+------------------------------------------------------------------+
 
 #include <Trade\Trade.mqh>
-
+#include  "SequenceBuilder.mqh"
 //+------------------------------------------------------------------+
 
 // --- Defaults ---
@@ -52,6 +52,7 @@ struct GridInfo{
         unit = grid_unit;
         multiplier = grid_multiplier;
         target = unit * multiplier;
+        BuildSequence(multiplier, progression_sequence);
 
         // set grid spread to 20% of unit 
         spread = unit * 0.2;
@@ -90,16 +91,16 @@ struct GridBase{
     }
    }
 
-    void UpdateOrderAsBase(const ulong order_ticket) {
-        if (OrderSelect(order_ticket)) {
-            name = NULL_BASE_NAME;
-            ticket = order_ticket;
-            type = ENUM_POSITION_TYPE(OrderGetInteger(ORDER_TYPE));
-            open_price = OrderGetDouble(ORDER_PRICE_OPEN);
-            volume = OrderGetDouble(ORDER_VOLUME_CURRENT);
-        } else {
-            Print("Failed to update base, could not find order with ticket: ", ticket);
-        }
+  void UpdateOrderAsBase(const ulong order_ticket) {
+     if (OrderSelect(order_ticket)) {
+         name = NULL_BASE_NAME;
+         ticket = order_ticket;
+         type = ENUM_POSITION_TYPE(OrderGetInteger(ORDER_TYPE));
+         open_price = OrderGetDouble(ORDER_PRICE_OPEN);
+         volume = OrderGetDouble(ORDER_VOLUME_CURRENT);
+     } else {
+      Print("Failed to update base, could not find order with ticket: ", ticket);
+     }
    }
 
 };
@@ -136,7 +137,10 @@ bool IsNewPosition(ulong &saved_ticket)
     if (PositionSelect(_Symbol))
     {
         ulong open_ticket = PositionGetInteger(POSITION_TICKET);
-        if (saved_ticket != open_ticket) return true; // New position open on chart
+        if (saved_ticket != open_ticket){
+            saved_ticket=open_ticket;
+            return true; // New position open on chart
+            }
     }
     return false;
 }
@@ -372,5 +376,5 @@ void CleanupCurrentSymbol( CTrade &trader, const string sym = "")
 }
 
 //+------------------------------------------------------------------+
-#include "StrictRuleManager.mqh"
+//#include "StrictRuleManager.mqh"
 #endif // Utils_MQH

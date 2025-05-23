@@ -3,16 +3,22 @@
 //|                                      Copyright 2025, Anyim Ossi. |
 //|                                          anyimossi.dev@gmail.com |
 //+------------------------------------------------------------------+
+#ifndef RuleManager_MQH
+#define RuleManager_MQH
+
 #property copyright "Copyright 2025, Anyim Ossi."
 #property link      "anyimossi.dev@gmail.com"
 
-#include  "Utils.mqh"
+#include  "Utils.mqh" //- circular import
 
 //+------------------------------------------------------------------+
 // Controller function checks all rules.
 void EnforceStrategyRules(CTrade &trader, GridInfo &grid, GridBase &base)
 {
-    EnforceNoInterference(grid, trader);
+    NoInterferenceOnPos(trader);
+    NoInterferenceOnOrders(trader);
+    EnforceExits(grid, trader);
+
     CheckSLTP();
     EnforceCoreRules(trader);
     //EnforceGridPlacementAccuracy(trader);
@@ -40,8 +46,7 @@ void EnforceGridPlacementAccuracy(GridInfo &grid, CTrade &trader)
     // get actual continuation node
     // if price don't match,modify
 }
-
-void EnforceNoInterference(GridInfo &grid, CTrade &trader)
+void NoInterferenceOnPos(CTrade &trader)
 {
     // Handle human interference on Positions.
     for (int i = PositionsTotal() - 1; i >= 0; i--)
@@ -60,7 +65,9 @@ void EnforceNoInterference(GridInfo &grid, CTrade &trader)
             }
         }
     }
-
+}
+void NoInterferenceOnOrders(CTrade &trader)
+{
     // Handle human interference on Orders
     for (int i = OrdersTotal() - 1; i >= 0; i--)
     {
@@ -79,14 +86,17 @@ void EnforceNoInterference(GridInfo &grid, CTrade &trader)
                 Print(__FUNCTION__, " - Deleted foreign order with ticket: ", ticket);
         }
     }
-
-    // Enforce no interference on exits
+}
+void EnforceExits(GridInfo &grid, CTrade &trader)
+{
+    // Enforce no interference on exits(SL/TP) on all open positions
     for (int i = PositionsTotal() - 1; i >= 0; i--)
     {
         string symbol = PositionGetSymbol(i);
         if (symbol == _Symbol)
         {
             ulong ticket = PositionGetInteger(POSITION_TICKET);
+            if (!ticket) continue;
             double tp = PositionGetDouble(POSITION_TP);
             double sl = PositionGetDouble(POSITION_SL);
             double open_price = PositionGetDouble(POSITION_PRICE_OPEN);
@@ -111,7 +121,7 @@ void EnforceNoInterference(GridInfo &grid, CTrade &trader)
                 if (!trader.PositionModify(ticket, corr_sl, corr_tp))
                     Print(__FUNCTION__, " - Error: Failed to modify tampered position with ticket ", ticket);
                 else
-                    Print(__FUNCTION__, " - Modified tampered position with ticket ", ticket);
+                    Print(__FUNCTION__, " - Modified inaccurate exits on position with ticket ", ticket);
             }
         }
     }
@@ -234,3 +244,6 @@ void RebuildSequence()
 }
 
 // Implement remote stopping of the bot; use strange order like buystoplimit, moving on, open communication via telegram
+
+#endif // RuleManager_MQH
+

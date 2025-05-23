@@ -14,7 +14,7 @@
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
-void build_sequence(int reward_multiplier, double &progression_sequence[])
+void BuildSequence(double reward_multiplier, double &progression_sequence[])
   {
    // Initialize variables
    // - Empty the sequence
@@ -34,6 +34,9 @@ void build_sequence(int reward_multiplier, double &progression_sequence[])
       ArrayResize(progression_sequence, ArraySize(progression_sequence) + 1);
       progression_sequence[ArraySize(progression_sequence) - 1] = current_term;
      }
+     
+   Print("Current progression: ");
+   ArrayPrint(progression_sequence);
   }
 //+------------------------------------------------------------------+
 
@@ -43,7 +46,9 @@ double GetMinimumTerm()
    double min_volume = SymbolInfoDouble(_Symbol, SYMBOL_VOLUME_MIN);
 
    //get account balance
-   double account_bal = AccountInfoDouble(ACCOUNT_BALANCE); Print("account balance: ", account_bal);
+   double account_bal = AccountInfoDouble(ACCOUNT_BALANCE);
+   Print("account balance: ", account_bal);
+   
    if (account_bal<2000) return min_volume;
 
    //get the relationship between account balance and $2000

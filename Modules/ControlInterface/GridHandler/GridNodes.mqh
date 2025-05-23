@@ -17,10 +17,6 @@ void PlaceContinuationNode(CTrade &trader, ulong reference_ticket, const GridInf
         double reference_price = PositionGetDouble(POSITION_PRICE_OPEN);
         double take_profit = PositionGetDouble(POSITION_TP);
 
-        // Check if there is a take profit set for the reference position
-        if (take_profit == 0)
-            Print(__FUNCTION__, " - WARNING. No take profit set for open position with ticket: ", reference_ticket);
-
         // Assert Continuation Node
         node.volume = grid.progression_sequence[0];
         node.type = (reference_type == POSITION_TYPE_BUY) ? ORDER_TYPE_BUY_STOP : ORDER_TYPE_SELL_STOP;
@@ -57,13 +53,18 @@ void PlaceRecoveryNode(CTrade &trader, const GridInfo &grid, const GridBase &bas
     if (PositionSelectByTicket(reference_ticket))
         reference_type = EnumToString((ENUM_POSITION_TYPE)PositionGetInteger(POSITION_TYPE));
     else if (OrderSelect(reference_ticket))
-    
+    {
         reference_type = EnumToString((ENUM_ORDER_TYPE)OrderGetInteger(ORDER_TYPE)); 
-        if (reference_type != EnumToString(ORDER_TYPE_BUY_STOP)) // order must be a recovery buy stop
-        {
+        if (reference_type != EnumToString(ORDER_TYPE_BUY_STOP)){ // order must be a recovery buy stop
             Print(__FUNCTION__, " - FATAL. Recovery node can only be placed on buy stop"); // Rule 7
             return;
         }
+        
+        if (!IsRecoveryGap(grid, trader)){
+            Print("Setup is not a Recovery Gap");
+            return;
+        }
+    }
     else 
     {
         Print(__FUNCTION__, " - FATAL. Recovery node can only be placed on open position or buy stop. Reference ticket could not be selected"); // Rule 7
@@ -109,10 +110,6 @@ GridNode AssertRecoveryNode(GridNode &node, ulong ref_ticket, const GridInfo &gr
         double stop_loss = PositionGetDouble(POSITION_SL);
         double reference_volume = PositionGetDouble(POSITION_VOLUME);
 
-        // Check if there is a take profit set for the reference position
-        if (stop_loss == 0)
-            Print(__FUNCTION__, " - WARNING. No stop loss set for open position with ticket: ", ref_ticket);
-
         // Set order details
         int reference_volume_index = base.volume_index;
         node.volume = grid.progression_sequence[reference_volume_index+1];
@@ -136,3 +133,35 @@ GridNode AssertRecoveryNode(GridNode &node, ulong ref_ticket, const GridInfo &gr
     }
     return node;
 }
+
+ulong IsRecoveryGap(const GridInfo &grid, CTrade &trade_obj)
+{
+    // Validate that current price is between the recovery node and grid unit
+    // Get current recovery buy stop
+    double curr_recovery_node_price = 0;
+    ulong recovery_node_ticket = 0;
+    
+    for (int i = OrdersTotal() - 1; i >= 0; i--)
+        {
+        ulong order_ticket = OrderGetTicket(i);
+        if (!OrderSelect(order_ticket)) continue;
+
+        if ((OrderGetString(ORDER_SYMBOL) == _Symbol) &&
+            ((ENUM_ORDER_TYPE)OrderGetInteger(ORDER_TYPE) == ORDER_TYPE_BUY_STOP) &&
+            (StringFind(OrderGetString(ORDER_COMMENT), EA_RECOVERY_TAG) != -1))
+            {
+                recovery_node_ticket = order_ticket;
+                curr_recovery_node_price = OrderGetDouble(ORDER_PRICE_OPEN);
+                break;
+            }
+        }
+    if (!curr_recovery_node_price) return 0;
+
+    double price_current = SymbolInfoDouble(_Symbol, SYMBOL_BID);
+    double recovery_threshold = curr_recovery_node_price - grid.unit;
+    if (price_current > recovery_threshold && price_current < curr_recovery_node_price)
+        return recovery_node_ticket;
+    return 0;
+}
+
+//+------------------------------------------------------------------+

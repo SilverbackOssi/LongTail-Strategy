@@ -32,7 +32,7 @@ void HandleNewPosition(GridBase &base, GridInfo &grid, CTrade &trade_obj)
 }
 
 //+------------------------------------------------------------------+
-void HandleGridGap(GridInfo &grid, GridBase &base, CTrade &trade_obj)
+void HandleGridGap(GridInfo &grid, GridBase &base, CTrade &trade_obj) // place recovery node on orders only
 {
     //XXX: EnforceCoreRules(trade_obj); -> complete and test rules Enforcing first
     // Context validation
@@ -54,37 +54,6 @@ void HandleGridGap(GridInfo &grid, GridBase &base, CTrade &trade_obj)
         
     GridBase null_base; null_base.UpdateOrderAsBase(recovery_node_ticket);
     PlaceRecoveryNode(trade_obj, grid, null_base); // Recovery_node_ticket should never be 0.
-}
-
-//+------------------------------------------------------------------+
-ulong IsRecoveryGap(const GridInfo &grid, CTrade &trade_obj)
-{
-    // Validate that current price is between the recovery node and grid unit
-    // Get current recovery buy stop
-    double curr_recovery_node_price = 0;
-    ulong recovery_node_ticket = 0;
-    for (int i = OrdersTotal() - 1; i >= 0; i--)
-        {
-        ulong order_ticket = OrderGetTicket(i);
-        if (order_ticket == 0) continue;
-        if (!OrderSelect(order_ticket)) continue;
-
-        if ((OrderGetString(ORDER_SYMBOL) == _Symbol) &&
-            ((ENUM_ORDER_TYPE)OrderGetInteger(ORDER_TYPE) == ORDER_TYPE_BUY_STOP) &&
-            (StringFind(OrderGetString(ORDER_COMMENT), EA_RECOVERY_TAG) != -1))
-            {
-                recovery_node_ticket = order_ticket;
-                curr_recovery_node_price = OrderGetDouble(ORDER_PRICE_OPEN);
-                break;
-            }
-        }
-    if (!curr_recovery_node_price) return 0;
-
-    double price_current = SymbolInfoDouble(_Symbol, SYMBOL_BID);
-    double recovery_threshold = curr_recovery_node_price - grid.unit;
-    if (price_current > recovery_threshold && price_current < curr_recovery_node_price)
-        return recovery_node_ticket;
-    return 0;
 }
 
 //+------------------------------------------------------------------+

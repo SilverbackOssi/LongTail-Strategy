@@ -17,3 +17,9 @@
 - Confirm short scalps strategy idea - screen shot on 13th feb.2025
 ---
 - All functions should return success or failure. Return Value Checks for Trade Operations:
+
+-
+// NEW IDEA
+// Advantage of quick reactions
+// --- anticipate reaction, place stop order with tp only(at minimum stop level)
+// --- place 500 order at 1% account_bal
