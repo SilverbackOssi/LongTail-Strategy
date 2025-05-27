@@ -82,20 +82,22 @@ LongTail-Strategy/
 - Primary focus is on XAU/USD with a grid spread of 40 points
 - Can potentially be used with Volatility 75 and 75(1s)
 - Requires careful monitoring during initial deployment
-- Recommended to test thoroughly on demo account first
+- Recommended to test thoroughly on a demo account first
 
 ## Known Limitations
 
 - Slippage can affect order placement
 - Spread variations may impact strategy performance
-- Maximum range survival threshold still under study
+- Maximum range survival threshold is still under study
 
 ## Development Status
 
-Current version: 1.00
+Current version: 1.73
+
 Status: Under active development and testing
 
 ## License
 
 Copyright © 2025 Anyim Ossi
+
 Contact: anyimossi.dev@gmail.com
