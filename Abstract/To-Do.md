@@ -21,6 +21,6 @@
 
 -
 // NEW IDEA
-// Advantage of quick reactions
+// Advantage of quick reactions at value points
 // --- anticipate reaction, place stop order with tp only(at minimum stop level)
 // --- place 500 order at 1% account_bal
