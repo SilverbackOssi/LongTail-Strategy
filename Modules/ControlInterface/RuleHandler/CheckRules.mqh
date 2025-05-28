@@ -9,7 +9,7 @@
 #property copyright "Copyright 2025, Anyim Ossi."
 #property link      "anyimossi.dev@gmail.com"
 
-#include  "Utils.mqh" //- circular import
+#include  "Utils.mqh"
 
 //+------------------------------------------------------------------+
 // Controller function checks all rules.
@@ -88,7 +88,7 @@ void NoInterferenceOnOrders(CTrade &trader)
     }
 }
 void EnforceExits(GridInfo &grid, CTrade &trader)
-{
+{ //XXX: Use coherence, use SetExits
     // Enforce no interference on exits(SL/TP) on all open positions
     for (int i = PositionsTotal() - 1; i >= 0; i--)
     {

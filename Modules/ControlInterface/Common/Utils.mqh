@@ -351,5 +351,4 @@ void CleanupCurrentSymbol( CTrade &trader, const string sym = "")
 }
 
 //+------------------------------------------------------------------+
-//#include "StrictRuleManager.mqh"
 #endif // Utils_MQH
