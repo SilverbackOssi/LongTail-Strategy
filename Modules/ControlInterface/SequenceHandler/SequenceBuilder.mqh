@@ -58,9 +58,9 @@ void BuildSequence(double reward_multiplier, double &progression_sequence[])
   }
   
 //+------------------------------------------------------------------+
-void RebuildSequence(double reward_multiplier, double &progression_sequence[], double &tracked_bal)
+void RebuildSequence(double reward_multiplier, double &progression_sequence[], double &tracked_bal, int percent_target)
 {
-   double percentage_increase = 1 + (50 / 100); //50% increase
+   double percentage_increase = 1 + (percent_target / 100); //x% increase
    double target = tracked_bal*percentage_increase;
    
    if (AccountInfoDouble(ACCOUNT_BALANCE)>=target)

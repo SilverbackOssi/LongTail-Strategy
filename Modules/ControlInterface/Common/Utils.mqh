@@ -34,6 +34,7 @@ struct GridInfo{
     int session_status;
     datetime session_time_start;
     datetime session_time_end;
+    double tracked_balance;
 
     void GridInfo(){
         // Set to default values
@@ -45,9 +46,9 @@ struct GridInfo{
         session_status = SESSION_OVER;
         session_time_start = default_time_start;
         session_time_end = default_time_end;
+        tracked_balance = AccountInfoDouble(ACCOUNT_BALANCE);
     }
 
-    // Function to initialize values
     void Init(double grid_unit, double grid_multiplier, bool use_session) {
         unit = grid_unit;
         multiplier = grid_multiplier;
@@ -59,7 +60,12 @@ struct GridInfo{
 
         if (!use_session) session_status = SESSION_RUNNING;
     }
+
+    void CheckNewBalance(int percentage_target = 50){
+        RebuildSequence(multiplier, progression_sequence, tracked_balance, percentage_target);
+    }
 };
+
 struct GridNode{
     string name;
     ENUM_ORDER_TYPE type;
@@ -67,6 +73,7 @@ struct GridNode{
     double volume;
     string comment;
 };
+
 struct GridBase{
   string name;
   ulong ticket;
@@ -132,8 +139,7 @@ bool IsWithinTradingTime(datetime start_time, datetime end_time)
 
 //+------------------------------------------------------------------+
 bool IsNewPosition(ulong &saved_ticket)
-{
-// assumes there's one position open on the chart (Rule 3).
+{// assumes there's one position open on the chart (Rule 3).
     if (PositionSelect(_Symbol))
     {
         ulong open_ticket = PositionGetInteger(POSITION_TICKET);
