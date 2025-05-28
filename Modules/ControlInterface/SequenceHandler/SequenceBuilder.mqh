@@ -4,7 +4,7 @@
 //|                                          anyimossi.dev@gmail.com |
 //+------------------------------------------------------------------+
 
-#include  <Ossi\LongTails\Utils.mqh>
+//#include  <Ossi\LongTails\Utils.mqh>
 
 // -- To-Do --
 // All functions should operate on any symbol(across modules).
@@ -58,4 +58,15 @@ double GetMinimumTerm()
    return NormalizeDouble(min_volume*balance_factor,2);
    
    }
+//+------------------------------------------------------------------+
+double ArraySum(const double &array[])
+  {
+   double sum = 0;
+   for(int i = 0; i < ArraySize(array); i++)
+     {
+      sum += array[i];
+     }
+   return sum;
+  }
+
 //+------------------------------------------------------------------+
