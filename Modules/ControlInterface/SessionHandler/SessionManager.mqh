@@ -21,7 +21,7 @@ void HandleSessionEnd(CTrade &trader, const GridInfo &grid)
   ClearContinuationNodes(trader);
 
   // clear post-session recovery lag
-  ClearRecoveryLag(trader, grid);
+  ClearPostSessionRecoveryNode(trader, grid);
 }
 //+------------------------------------------------------------------+
 void StartSession(const double &progression_sequence[], const string ea_tag)
@@ -43,7 +43,7 @@ void StartSession(const double &progression_sequence[], const string ea_tag)
     }  
 }
 //+------------------------------------------------------------------+
-void ClearRecoveryLag(CTrade &trader, const GridInfo &grid)
+void ClearPostSessionRecoveryNode(CTrade &trader, const GridInfo &grid)
 {
     // One recovery node lags after session ends and cycle ends
     if (PositionSelect(_Symbol)) return;
