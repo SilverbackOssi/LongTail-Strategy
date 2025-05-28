@@ -4,3 +4,5 @@
 - robust and test sequence handler
 - session handler
 - Integration testing
+
+- write script get Asian session range as csv for 10years
