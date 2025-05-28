@@ -1,3 +1,5 @@
+const int GRID_UNIT_POINT = 200;
+const int magic_balance = 2000; //$2000, For XAU/USD
 
 double ArraySum(const double &array[])
   {
@@ -12,21 +14,24 @@ double ArraySum(const double &array[])
 //+------------------------------------------------------------------+
 double GetMinimumTerm()
    {
-   //get minimum volume: assuming the minimum volume is minimum term for a $2000 account
-   double min_volume = SymbolInfoDouble(_Symbol, SYMBOL_VOLUME_MIN);
+    double min_volume = SymbolInfoDouble(_Symbol, SYMBOL_VOLUME_MIN);
+    double account_bal = AccountInfoDouble(ACCOUNT_BALANCE); Print("DEBUG- account balance: ", account_bal);
 
-   //get account balance
-   double account_bal = AccountInfoDouble(ACCOUNT_BALANCE);
-   Print("account balance: ", account_bal);
-   
-   if (account_bal<2000) return min_volume;
+    double min_term_cash = 0.001 * AccountInfoDouble(ACCOUNT_BALANCE);// $ = 0.1% of balance
+    double target_points = GRID_UNIT_POINT; // target points = 200;
+    double minimum_term = min_term_cash / target_points; // volume = $/target points;
 
-   //get the relationship between account balance and $2000
-   double balance_factor = account_bal/2000;
+    if (minimum_term < min_volume) return min_volume;
+    return NormalizeDouble(minimum_term, 2);
+
+  /*
+   if (account_bal<magic_balance) return min_volume;
+   //get the relationship between account balance and magic balance
+   double balance_factor = account_bal/magic_balance;
    
    //return -> multiply minimum volume by that relationship
    return NormalizeDouble(min_volume*balance_factor,2);
-   
+   */
    }
 
 //+------------------------------------------------------------------+
