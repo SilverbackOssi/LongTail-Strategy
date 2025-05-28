@@ -1,18 +1,4 @@
-//+------------------------------------------------------------------+
-//|                                              SequenceBuilder.mqh |
-//|                                      Copyright 2025, Anyim Ossi. |
-//|                                          anyimossi.dev@gmail.com |
-//+------------------------------------------------------------------+
 
-//#include  <Ossi\LongTails\Utils.mqh>
-
-// -- To-Do --
-// All functions should operate on any symbol(across modules).
-// - ensure set deviation, order filling policy
-// - check symbol specifics; min-volume, tick size, tick value. goal to determine grid size and minimum term(base volume)
-
-//+------------------------------------------------------------------+
-//|                                                                  |
 //+------------------------------------------------------------------+
 void BuildSequence(double reward_multiplier, double &progression_sequence[])
   {
