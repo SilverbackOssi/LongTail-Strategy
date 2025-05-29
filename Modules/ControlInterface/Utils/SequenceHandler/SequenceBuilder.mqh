@@ -2,6 +2,10 @@
 #ifndef GridUnit_MQH
 #define GridUnit_MQH
 
+const string SINGLE_UNIT_PAIRS[]    = {"EURUSD", "GBPUSD",
+                                      "AUDUSD", "USDJPY",
+                                      "CADJPY", "USDCAD",
+                                      "NZDUSD", "USDCHF"};
 const int GRIDUNITPOINTS_DEFAULT    =  100;
 const int GRIDUNITPOINTS_GOLD       =  200;
 
@@ -11,7 +15,8 @@ const int GRIDUNITPOINTS_GOLD       =  200;
 #ifndef SequenceBuilder_MQH
 #define SequenceBuilder_MQH
   //XXX: Add functionaity to fetch grid points for symbol
-double target_points = GRIDUNITPOINTS_GOLD; // target points = 200 points/20 pips
+  // target points = 200 points/20 pips for gold, 100 points/10 pips for others
+double target_points = (_Symbol == "XAUUSD") ? GRIDUNITPOINTS_GOLD : GRIDUNITPOINTS_DEFAULT; 
 
 double ArraySum(const double &array[])
   {
@@ -65,7 +70,7 @@ void BuildSequence(double reward_multiplier, double &progression_sequence[])
    double account_balance = AccountInfoDouble(ACCOUNT_BALANCE);
 
    // Compute the progression sequence
-   while(True)
+   while(true)
    {
       // Calculate minimum required outcome for this iteration
       double minimum_outcome = ArraySum(progression_sequence) + minimum_profit;
@@ -79,7 +84,10 @@ void BuildSequence(double reward_multiplier, double &progression_sequence[])
       // Check if adding current term would exceed account balance
       double potential_sequence_cash = (ArraySum(progression_sequence) + current_term) * target_points;
       if(potential_sequence_cash >= account_balance) 
-         break;
+         {
+            Print("Sequence Size: ", current_size);
+            break;
+         }
       
       // Add current term to sequence
       current_size++;
