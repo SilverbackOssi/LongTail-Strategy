@@ -19,6 +19,7 @@ void HandleNewPosition(GridBase &base, GridInfo &grid, CTrade &trade_obj)
     base.UpdateGridBase(ticket);
     if (StringFind(base.name, EA_RECOVERY_TAG) != -1)
         base.volume_index ++;
+        // IF base.volume_index + 1 not in progression_sequence, print game over error, remove expert.
     else 
       base.volume_index = 0;
     
