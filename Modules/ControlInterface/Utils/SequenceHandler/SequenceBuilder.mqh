@@ -105,12 +105,14 @@ void BuildSequence(double reward_multiplier, double &progression_sequence[])
 //+------------------------------------------------------------------+
 void RebuildSequence(double reward_multiplier, double &progression_sequence[], double &tracked_bal, int percent_target)
 {
+   // For now we manually add or remove the bot. Each time bot is added it rebuilds the sequence.
+   
    double percentage_increase = 1 + (percent_target / 100); //x% increase
    double target = tracked_bal*percentage_increase;
    
    if (AccountInfoDouble(ACCOUNT_BALANCE)>=target)
       {
-         // Initiate a 20% withdrawal before sequence rebuild
+         // Initiate a 20% withdrawal before sequence rebuild(for 50% increas)
          BuildSequence(reward_multiplier,progression_sequence);
          tracked_bal = AccountInfoDouble(ACCOUNT_BALANCE);
       }

@@ -12,33 +12,27 @@
 #include  "Utils.mqh"
 
 //+------------------------------------------------------------------+
-// Controller function checks all rules.
-void EnforceStrategyRules(CTrade &trader, GridInfo &grid, GridBase &base)
+// CONTROLLER FUNCTION, CHECKS ALL RULES
+void EnforceCoreRules(CTrade &trader, GridInfo &grid, GridBase &base)
 {
     NoInterferenceOnPos(trader);
     NoInterferenceOnOrders(trader);
     EnforceExits(grid, trader);
 
-    CheckSLTP();
-    EnforceCoreRules(trader);
-    //EnforceGridPlacementAccuracy(trader);
-    
-    //CheckVolumeAccuracy(grid, base);
-    //CheckSequenceAccuracy();
-    
-    // consider unseen edge cases
-    // - deleted node by foreign
+    //EnforeMaxPosition(blah);
+    //EnforceMaxOrders(blah);
+    //EnforceGridPlacementAccuracy(blah);
 }
 
 //+------------------------------------------------------------------+
-// check if orders are priced correctly, relative to open position
-void EnforceGridPlacementAccuracy(GridInfo &grid, CTrade &trader)
-{
+// check if orders are priced correctly(or deleted), relative to open position
+void EnforceGridPlacementAccuracy(GridInfo &grid, CTrade &trader){
     // get the base by selecting open position
     // calculate correct recovery node// open_price - grid.unit for buy position
     // calculate correct continuation node// open_price + grid.target + grid.spread for buy position
 
     // Respect allowed deviation
+    // if not NodeExistsAtPrice, clear node and place
 
     // get actual recovery node
     // if price don't match,modify
@@ -46,9 +40,14 @@ void EnforceGridPlacementAccuracy(GridInfo &grid, CTrade &trader)
     // get actual continuation node
     // if price don't match,modify
 }
+//+------------------------------------------------------------------+
+
+/*
+Closes any position not placed by the EA.
+Does not replace closed positions.
+*/
 void NoInterferenceOnPos(CTrade &trader)
 {
-    // Handle human interference on Positions.
     for (int i = PositionsTotal() - 1; i >= 0; i--)
     {
         string symbol = PositionGetSymbol(i);
@@ -66,12 +65,16 @@ void NoInterferenceOnPos(CTrade &trader)
         }
     }
 }
-void NoInterferenceOnOrders(CTrade &trader)
-{
-    // Handle human interference on Orders
+//+------------------------------------------------------------------+
+
+/*
+Deletes any order not placed by the EA.
+Does not replace deleted orders.
+*/
+void NoInterferenceOnOrders(CTrade &trader){
     for (int i = OrdersTotal() - 1; i >= 0; i--)
     {
-        //XXX: Check if request to stop bot first.
+        
         ulong order_ticket = OrderGetTicket(i);
         if (order_ticket == 0) continue;
         if (OrderGetString(ORDER_SYMBOL) != _Symbol) continue;
@@ -87,11 +90,13 @@ void NoInterferenceOnOrders(CTrade &trader)
         }
     }
 }
-void EnforceExits(GridInfo &grid, CTrade &trader){
+//+------------------------------------------------------------------+
+
 /* 
 This module ensures appropriate risk management as per the LTS strategy.
 Sets Stoploss and Takeprofits on all positions on the current symbol.
 */
+void EnforceExits(GridInfo &grid, CTrade &trader){
     // Enforce no interference on exits(SL/TP) on all open positions
     for (int i = PositionsTotal() - 1; i >= 0; i--)
     {
@@ -130,18 +135,21 @@ Sets Stoploss and Takeprofits on all positions on the current symbol.
         // Ideally, close the position.
     }
 }
+//+------------------------------------------------------------------+
 
-void EnforceCoreRules(CTrade &trader)
-{
-    // Check positions excess
-    if (PositionsTotal() > 1)
+/*
+Ensures there is only required no of open position in the chart.
+Closes all, except the last opened position(s).
+*/
+void EnforeMaxPosition(CTrade &trader, int max_pos){
+    if (PositionsTotal() > max_pos)
     {
-        Print(__FUNCTION__, " - Fatal: More than one position open. Closing older");
+        Print(__FUNCTION__, " - Fatal: More than ", max_pos, " position open. Closing older");
 
-        // Close all positions except the most recent one. Access by index.
-        for (int i = PositionsTotal() - 1; i > 0; i--)
+        // Close all positions except the most recent one. Accessed by index.
+        for (int i = PositionsTotal() - 1; i > (max_pos-1); i--)
         {
-            if (PositionGetTicket(i-1))
+            if (PositionGetTicket(i-max_pos))
             {
                 ulong ticket = PositionGetInteger(POSITION_TICKET);
                 if (!trader.PositionClose(ticket))
@@ -151,16 +159,23 @@ void EnforceCoreRules(CTrade &trader)
             }
         }
     }
+}
+//+------------------------------------------------------------------+
 
+/*
+Ensures there is only required no of pending orders in the chart.
+Closes all, except the last opened pending order(s).
+*/
+void EnforceMaxOrders(CTrade &trader, int max_pending){
     // Check orders excess
-    if (OrdersTotal() > 2)
+    if (OrdersTotal() > max_pending)
     {
-        Print(__FUNCTION__, " - Fatal error: More than two orders open. Closing older");
+        Print(__FUNCTION__, " - Fatal error: More than ", max_pending, " orders open. Closing older");
 
         // Close all orders except the last two. Access by index.
-        for (int i = OrdersTotal() - 1; i > 1; i--)
+        for (int i = OrdersTotal() - 1; i > (max_pending-1); i--)
         {
-            if (OrderGetTicket(i-2))
+            if (OrderGetTicket(i-max_pending))
             {
                 ulong ticket = OrderGetInteger(ORDER_TICKET);
                 if (!trader.OrderDelete(ticket))
@@ -170,84 +185,16 @@ void EnforceCoreRules(CTrade &trader)
             }
         }
     }
-
-    // XXX: Check post-session lag, handled by session manager.
 }
 //+------------------------------------------------------------------+
-// Check Stop loss and Take profit
-void CheckSLTP()
-{
-    //Loop all open pos on symbol
-    for (int i = PositionsTotal() - 1; i >= 0; i--)
-    {
-        string symbol = PositionGetSymbol(i);
-        if (symbol == _Symbol)
-        {
-            double tp = PositionGetDouble(POSITION_TP);
-            double sl = PositionGetDouble(POSITION_SL);
-            
-            // Check if TP and SL are set
-            if (tp == 0 || sl == 0)
-            {
-                for (int j = 2; j >= 0; j-- )
-                {Print(__FUNCTION__, " - Warning: TP/SL not set for position with ticket: ", PositionGetInteger(POSITION_TICKET));}
-            }
-        }
-    }
-}
 
-// check volume of open position from sequence
-void CheckVolumeAccuracy(const GridInfo &grid, const GridBase &base)
-{/*
-    // Check mathematical accuracy across all nodes
-
-    // Check open position volume in sequence
-    for (int i = PositionsTotal() - 1; i >= 0; i--)
-    {
-        string symbol=PositionGetSymbol(i);
-        if (symbol == _Symbol)
-        {
-            double volume = PositionGetDouble(POSITION_VOLUME);
-            int sequence[] = grid.progression_sequence;
-            bool volume_ok = false;
-
-            for (int j = 0; j < ArraySize(sequence); j++)
-            {
-                if (volume == sequence[j])
-                {
-                    volume_ok = true;
-                    break;
-                }
-            }
-
-            if (!volume_ok)
-                Print(__FUNCTION__, " - Warning: Volume for position with ticket: ", PositionGetInteger(POSITION_TICKET), " does not match any value in the progression sequence array.");
-        }
-    }
-
-    // check node volume accuracy by index in sequence
-    
-    // get recovery volume index
-    // base volume should be -1
-    // compare first term of sequence with continuation volume
-*/}
-// check that sequence is init accurate to account balance XXX
-void CheckSequenceAccuracy(const GridInfo &grid)
-{
-    // calculate minimum term
-    // compare minimum term with first term of progression sequence
-
-    // RebuildSequence();
-}
-void RebuildSequence()
-{
-    // calculate how many points is $1, that should be grid size. exception for rapid moving pairs
-
-  // Updates the progression sequence based on account balance increase.
-  // Update every 10% increase or decrease
-}
-
-// Implement remote stopping of the bot; use strange order like buystoplimit, moving on, open communication via telegram
+//+------------------------------------------------------------------+
+//XXX: Implement remote stopping of the bot; use strange order like buystoplimit, moving on, open communication via telegram
+//XXX: Check if request to stop bot first.
+//--- check for strange order like buystoplimit
+//--- set USE_SESSION to true and set SESSION_OVER.
+//--- use endsession() to clear continuation orders, allow progression cycle to end.
+// Later use http through tel or whatsapp
+//+------------------------------------------------------------------+
 
 #endif // RuleManager_MQH
-
