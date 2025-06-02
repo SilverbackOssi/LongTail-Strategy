@@ -1,7 +1,7 @@
 
 ALL THE CODE THAT ENSURES STRATEGY GUIDELINES ARE ADHERED
 
-This worker module ensures the strategy rules are followed.
+This worker module ensures the Strategy and Risk-managament rules are followed.
 
 - EnforceGridPlacementAccuracy; checks if the grid nodes are in the right price or have been moved(by a user). A small deviation is considered to account for slippage.
 

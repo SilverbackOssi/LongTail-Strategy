@@ -87,13 +87,15 @@ void NoInterferenceOnOrders(CTrade &trader)
         }
     }
 }
-void EnforceExits(GridInfo &grid, CTrade &trader)
-{ //XXX: Use coherence, use SetExits
+void EnforceExits(GridInfo &grid, CTrade &trader){
+/* 
+This module ensures appropriate risk management as per the LTS strategy.
+Sets Stoploss and Takeprofits on all positions on the current symbol.
+*/
     // Enforce no interference on exits(SL/TP) on all open positions
     for (int i = PositionsTotal() - 1; i >= 0; i--)
     {
-        string symbol = PositionGetSymbol(i);
-        if (symbol == _Symbol)
+        if (PositionGetSymbol(i) == _Symbol)
         {
             ulong ticket = PositionGetInteger(POSITION_TICKET);
             if (!ticket) continue;
@@ -115,15 +117,17 @@ void EnforceExits(GridInfo &grid, CTrade &trader)
                 continue;
             }
 
-            // Correct tampered exits
+            // Modify with correct exits
             if (tp != corr_tp || sl != corr_sl)
             {
                 if (!trader.PositionModify(ticket, corr_sl, corr_tp))
-                    Print(__FUNCTION__, " - Error: Failed to modify tampered position with ticket ", ticket);
+                    Print(__FUNCTION__, " - Error: Failed to modify inaccurate exits on position with ticket ", ticket);
                 else
                     Print(__FUNCTION__, " - Modified inaccurate exits on position with ticket ", ticket);
             }
         }
+        else Print("LTSGold does not support multiple symbols yet.");
+        // Ideally, close the position.
     }
 }
 

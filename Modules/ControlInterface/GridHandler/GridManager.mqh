@@ -23,8 +23,8 @@ void HandleNewPosition(GridBase &base, GridInfo &grid, CTrade &trade_obj)
     else 
       base.volume_index = 0;
     
-    // set TP/SL
-    SetExits(trade_obj, ticket, grid);
+    /*// set TP/SL
+    SetExits(trade_obj, ticket, grid);*/
     
     // Update grid nodes
     DeleteAllPending(trade_obj, _Symbol);
