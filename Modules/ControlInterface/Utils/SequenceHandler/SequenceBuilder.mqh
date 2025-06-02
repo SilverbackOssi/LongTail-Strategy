@@ -12,6 +12,8 @@ const int GRIDUNITPOINTS_GOLD       =  200;
 #endif // GridUnit_MQH
 //+------------------------------------------------------------------+
 
+
+
 #ifndef SequenceBuilder_MQH
 #define SequenceBuilder_MQH
   //XXX: Add functionaity to fetch grid points for symbol
@@ -31,7 +33,8 @@ double ArraySum(const double &array[])
 //+------------------------------------------------------------------+
 double GetMinimumTerm()
    {
-    double min_volume = SymbolInfoDouble(_Symbol, SYMBOL_VOLUME_MIN);
+    // Minimum term represents 1% of the account balance as per grid size
+    double symbol_min_volume = SymbolInfoDouble(_Symbol, SYMBOL_VOLUME_MIN);
     double account_bal = AccountInfoDouble(ACCOUNT_BALANCE); Print("DEBUG- account balance: ", account_bal);
 
     double min_term_cash = 0.001 * AccountInfoDouble(ACCOUNT_BALANCE);// $ = 0.1% of balance
@@ -39,17 +42,17 @@ double GetMinimumTerm()
     double minimum_term = min_term_cash / target_points; // volume = $/target points
     double min_balance = target_points*10; // $2k for 200points, $1k for 100points
 
-    if ((minimum_term < min_volume) || (account_bal<=min_balance)) return min_volume;
+    if ((minimum_term < symbol_min_volume) || (account_bal<=min_balance)) return symbol_min_volume;
     return NormalizeDouble(minimum_term, 2);
 
   /*
   const int magic_balance = 2000; //$2000, For XAU/USD
-   if (account_bal<magic_balance) return min_volume;
+   if (account_bal<magic_balance) return symbol_min_volume;
    //get the relationship between account balance and magic balance
    double balance_factor = account_bal/magic_balance;
    
    //return -> multiply minimum volume by that relationship
-   return NormalizeDouble(min_volume*balance_factor,2);
+   return NormalizeDouble(symbol_min_volume*balance_factor,2);
    */
    }
 
