@@ -1,7 +1,7 @@
 #ifndef Utils_MQH
 #define Utils_MQH
 
-//XXX: Include core rules
+// LTS UTILS
 //+------------------------------------------------------------------+
 //| Constants and Structures                                         |
 //+------------------------------------------------------------------+
@@ -22,7 +22,8 @@ const int       SESSION_OVER = 101;
 const datetime  default_time_start = StringToTime("01:00");
 const datetime  default_time_end = StringToTime("10:00");
       bool      USE_SESSION = false;
-
+const int       MAX_POSITIONS = 1;
+const int       MAX_ORDERS = 2;
 //+------------------------------------------------------------------+
 
 struct GridInfo{

@@ -15,12 +15,15 @@
 // CONTROLLER FUNCTION, CHECKS ALL RULES
 void EnforceCoreRules(CTrade &trader, GridInfo &grid, GridBase &base)
 {
+    int max_allowed_positions = MAX_POSITIONS;
+    int max_allowed_orders = MAX_ORDERS;
+    
     NoInterferenceOnPos(trader);
     NoInterferenceOnOrders(trader);
     EnforceExits(grid, trader);
 
-    //EnforeMaxPosition(blah);
-    //EnforceMaxOrders(blah);
+    EnforceMaxOrders(trader,max_allowed_orders);
+    EnforeMaxPosition(trader,max_allowed_positions);
     //EnforceGridPlacementAccuracy(blah);
 }
 
@@ -36,7 +39,7 @@ void EnforceGridPlacementAccuracy(GridInfo &grid, CTrade &trader){
     if (PositionSelect(_Symbol)){
         // get the base details by selecting open position
         ulong base_ticket = PositionGetTicket(0);
-        double base_open = PositionGetDouble(POSITION_OPEN);
+        double base_open = PositionGetDouble(POSITION_PRICE_OPEN);
         long base_type = PositionGetInteger(POSITION_TYPE);
 
         // calculate correct recovery node// open_price - grid.unit for buy position
