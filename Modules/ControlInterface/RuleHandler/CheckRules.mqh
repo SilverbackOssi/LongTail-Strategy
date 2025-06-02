@@ -9,7 +9,7 @@
 #property copyright "Copyright 2025, Anyim Ossi."
 #property link      "anyimossi.dev@gmail.com"
 
-#include  "Utils.mqh"
+#include  "GridManager.mqh"
 
 //+------------------------------------------------------------------+
 // CONTROLLER FUNCTION, CHECKS ALL RULES
@@ -25,20 +25,25 @@ void EnforceCoreRules(CTrade &trader, GridInfo &grid, GridBase &base)
 }
 
 //+------------------------------------------------------------------+
-// check if orders are priced correctly(or deleted), relative to open position
+
+/*
+Check if orders are priced correctly(or deleted), relative to an open position.
+Moves them if otherwise.
+Handles only position based nodes.
+Assumes other rules have been called.
+*/
 void EnforceGridPlacementAccuracy(GridInfo &grid, CTrade &trader){
-    // get the base by selecting open position
-    // calculate correct recovery node// open_price - grid.unit for buy position
-    // calculate correct continuation node// open_price + grid.target + grid.spread for buy position
+    if (PositionSelect(_Symbol)){
+        // get the base details by selecting open position
+        ulong base_ticket = PositionGetTicket(0);
+        double base_open = PositionGetDouble(POSITION_OPEN);
+        long base_type = PositionGetInteger(POSITION_TYPE);
 
-    // Respect allowed deviation
-    // if not NodeExistsAtPrice, clear node and place
+        // calculate correct recovery node// open_price - grid.unit for buy position
+        // calculate correct continuation node// open_price + grid.target + grid.spread for buy position
 
-    // get actual recovery node
-    // if price don't match,modify
-
-    // get actual continuation node
-    // if price don't match,modify
+        // if not NodeExistsAtPrice, clear corresponding node and call place corresponding
+    }
 }
 //+------------------------------------------------------------------+
 
