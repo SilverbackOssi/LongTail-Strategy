@@ -32,6 +32,7 @@ struct GridInfo{
     double multiplier;
     double target;
     double progression_sequence[];
+    bool use_session;
     int session_status;
     datetime session_time_start;
     datetime session_time_end;
@@ -44,13 +45,13 @@ struct GridInfo{
         multiplier = 0.0;
         target = 0.0;
         ArrayResize(progression_sequence, 0);
+        use_session = USE_SESSION;
         session_status = SESSION_OVER;
-        session_time_start = default_time_start;
-        session_time_end = default_time_end;
         tracked_balance = AccountInfoDouble(ACCOUNT_BALANCE);
     }
 
-    void Init(double grid_unit, double grid_multiplier, bool use_session) {
+    void Init(double grid_unit, double grid_multiplier, bool is_use_session,
+            datetime session_start=0, datetime session_end=0){
         unit = grid_unit;
         multiplier = grid_multiplier;
         target = unit * multiplier;
@@ -59,6 +60,14 @@ struct GridInfo{
         // set grid spread to 20% of unit 
         spread = unit * 0.2;
 
+        // set session start and end times
+        if (session_start==0) session_start=default_time_start;
+        if (session_end==0) session_end=default_time_end;
+        session_time_start = session_start;
+        session_time_end = session_end;
+        
+        // set session status
+        use_session = is_use_session;
         if (!use_session) session_status = SESSION_RUNNING;
     }
 
@@ -125,7 +134,7 @@ bool IsEmptyChart() //PASSED
 }
 
 //+------------------------------------------------------------------+
-bool IsWithinTradingTime(datetime start_time, datetime end_time)
+bool IsWithinTime(datetime start_time, datetime end_time)
 {   
     if (start_time>end_time)
     {
@@ -194,7 +203,7 @@ void DeleteAllPending(CTrade &trader, const string symbol)
 }
 
 //+------------------------------------------------------------------+
-void ClearContinuationNodes(CTrade &trader)
+void ClearNodeExceptRecovery(CTrade &trader)
 {
   for (int i = OrdersTotal() - 1; i >= 0; --i)
   {

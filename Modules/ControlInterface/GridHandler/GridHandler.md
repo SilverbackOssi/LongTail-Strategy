@@ -31,8 +31,8 @@ What is post-session
 1. everything that defines a gap
 2. user allows use-session
 3. session is over
+4. theres only one order on the chart(recovery node)
 
 What is a post-session lag? - an order(recovery node) left after session and complete progression cycle
 1. everything that defines post-session
-2. one order is present on the chart, and order is a recovery node.
 3. the current price is NOT within grid unit distance from recovery node
