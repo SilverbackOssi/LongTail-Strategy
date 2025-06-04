@@ -6,15 +6,13 @@
 #include  <Ossi\LongTails\Utils.mqh>
 
 //+------------------------------------------------------------------+
-void UpdateSesionStatus(GridInfo &grid)
-{
+void UpdateSesionStatus(GridInfo &grid){
   if (IsWithinTradingTime(grid.session_time_start, grid.session_time_end))
     grid.session_status = SESSION_RUNNING;
   else grid.session_status = SESSION_OVER;
 }
 //+------------------------------------------------------------------+
-void HandleSessionEnd(CTrade &trader, const GridInfo &grid)
-{
+void HandleSessionEnd(CTrade &trader, const GridInfo &grid){
   if (IsEmptyChart()) return;
 
   // clear continuation orders
@@ -24,12 +22,11 @@ void HandleSessionEnd(CTrade &trader, const GridInfo &grid)
   ClearPostSessionRecoveryNode(trader, grid);
 }
 //+------------------------------------------------------------------+
-void StartSession(const double &progression_sequence[], const string ea_tag)
-{ /* Starts a trading session*/
+void StartSession(const double &progression_sequence[], const string ea_tag){ 
+  /* Starts a trading session*/
   if (!IsEmptyChart())
     return; // Progression cycle ongoing: Proceeding to manage cycle.
-  else
-  {
+  else{
       Print("Starting Trading session within trading time. Current time: ", TimeCurrent());
       
       double order_volume = progression_sequence[0];
@@ -43,17 +40,14 @@ void StartSession(const double &progression_sequence[], const string ea_tag)
     }  
 }
 //+------------------------------------------------------------------+
-void ClearPostSessionRecoveryNode(CTrade &trader, const GridInfo &grid)
-{
+void ClearPostSessionRecoveryNode(CTrade &trader, const GridInfo &grid){
     // One recovery node lags after session ends and cycle ends
     if (PositionSelect(_Symbol)) return;
     if (grid.session_status != SESSION_OVER)  Print(__FUNCTION__,': LTS might not be functioning properly, inappropriate grid placement.');
     
-    if (OrdersTotal() == 1)
-    {   
+    if (OrdersTotal() == 1){   
         ulong order_ticket = OrderGetTicket(0);
-        if (order_ticket != 0)
-        {
+        if (order_ticket != 0){
             double order_price = OrderGetDouble(ORDER_PRICE_OPEN);
             ulong order_ticket = OrderGetInteger(ORDER_TICKET);
             string order_comment = OrderGetString(ORDER_COMMENT);

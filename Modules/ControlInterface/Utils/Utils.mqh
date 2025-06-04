@@ -294,8 +294,7 @@ ulong OpenLong(double deal_volume, CTrade &trader) {
 //+------------------------------------------------------------------+
 //| Test Related                                                 |
 //+------------------------------------------------------------------+
-string GetRandomSymbol(string current_sym)
-{
+string GetRandomSymbol(string current_sym){
     string other_symbol = "";
     string symbol = current_sym;
     for(int i=0; i < SymbolsTotal(false); i++) {
