@@ -86,7 +86,7 @@ void BuildSequence(double reward_multiplier, double &progression_sequence[])
       
       // Check if adding current term would exceed account balance
       double potential_sequence_cash = (ArraySum(progression_sequence) + current_term) * target_points;
-      if(potential_sequence_cash >= account_balance) 
+      if(potential_sequence_cash > (0.1 * account_balance)) // risk 10% 
          {
             Print("Sequence Size: ", current_size);
             break;
