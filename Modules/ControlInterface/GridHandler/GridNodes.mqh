@@ -112,7 +112,12 @@ GridNode AssertRecoveryNode(GridNode &node, ulong ref_ticket, const GridInfo &gr
 
         // Set order details
         int reference_volume_index = base.volume_index;
-        node.volume = grid.progression_sequence[reference_volume_index+1];
+        if (reference_volume_index + 1 < ArraySize(grid.progression_sequence)) {
+			    node.volume = grid.progression_sequence[reference_volume_index + 1];
+				} else {
+			    node.volume = grid.progression_sequence[0]; // Reset progression Cycle 
+				}
+
         node.type = (reference_type == POSITION_TYPE_SELL) ? ORDER_TYPE_BUY_STOP : ORDER_TYPE_SELL_STOP;
         node.price = reference_price +( (reference_type == POSITION_TYPE_SELL) ? (grid.unit+grid.spread) : -grid.unit);
     }
