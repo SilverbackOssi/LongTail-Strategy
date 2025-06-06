@@ -12,7 +12,7 @@ CTrade trade;
 
 //+------------------------------------------------------------------+
 // Perform Sanity Checks
-// set Ctrade deviation
+// set Ctrade deviation considering requotes
 // Initialize Ctrade, check all tests, must init deviation, etc.
 
 class LTSControl(){
