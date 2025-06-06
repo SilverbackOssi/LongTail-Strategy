@@ -140,33 +140,67 @@ GridNode AssertRecoveryNode(GridNode &node, ulong ref_ticket, const GridInfo &gr
     return node;
 }
 
-ulong IsRecoveryGap(const GridInfo &grid, CTrade &trade_obj)
-{
-    // Validate that current price is between the recovery node and grid unit
-    // Get current recovery buy stop
-    double curr_recovery_node_price = 0;
+ulong IsRecoveryGap(const GridInfo &grid, CTrade &trade_obj){
+    if (PositionSelect(_Symbol) || SymbolOrdersTotal() == 0) return 0; // must be a gap
+
+    // Get recovery node
     ulong recovery_node_ticket = 0;
-    
-    for (int i = OrdersTotal() - 1; i >= 0; i--)
-        {
+    double recovery_node_price = 0;
+    long recovery_node_type = 0;
+    for (int i = OrdersTotal() - 1; i >= 0; i--){
         ulong order_ticket = OrderGetTicket(i);
         if (!OrderSelect(order_ticket)) continue;
-
         if ((OrderGetString(ORDER_SYMBOL) == _Symbol) &&
-            ((ENUM_ORDER_TYPE)OrderGetInteger(ORDER_TYPE) == ORDER_TYPE_BUY_STOP) &&
-            (StringFind(OrderGetString(ORDER_COMMENT), EA_RECOVERY_TAG) != -1))
-            {
+            //((ENUM_ORDER_TYPE)OrderGetInteger(ORDER_TYPE) == ORDER_TYPE_BUY_STOP) &&
+            (StringFind(OrderGetString(ORDER_COMMENT), EA_RECOVERY_TAG) != -1)){
                 recovery_node_ticket = order_ticket;
-                curr_recovery_node_price = OrderGetDouble(ORDER_PRICE_OPEN);
+                recovery_node_price = OrderGetDouble(ORDER_PRICE_OPEN);
+                recovery_node_type = OrderGetInteger(ORDER_TYPE);
                 break;
             }
         }
-    if (!curr_recovery_node_price) return 0;
+    if (!recovery_node_price) return 0;
 
+    // Validate that current price is between the recovery node and grid unit
     double price_current = SymbolInfoDouble(_Symbol, SYMBOL_BID);
-    double recovery_threshold = curr_recovery_node_price - grid.unit;
-    if (price_current > recovery_threshold && price_current < curr_recovery_node_price)
+    double threshold = recovery_node_price + ((recovery_node_type == ORDER_TYPE_BUY_STOP)? -grid.unit : grid.unit);
+    if ((recovery_node_type == ORDER_TYPE_BUY_STOP &&
+        (price_current > threshold && price_current < recovery_node_price)) ||
+        (recovery_node_type == ORDER_TYPE_SELL_STOP &&
+        (price_current < threshold && price_current > recovery_node_price)))
         return recovery_node_ticket;
+    return 0;
+}
+
+//+------------------------------------------------------------------+
+ulong IsContinuationGap(const GridInfo &grid, CTrade &trade_obj){
+    if (PositionSelect(_Symbol) || SymbolOrdersTotal() != 2) return 0;
+
+    // Get continuation node
+    ulong continuation_node_ticket = 0;
+    double continuation_node_price = 0;
+    long continuation_node_type = 0;
+    for (int i = OrdersTotal() - 1; i >= 0; i--){
+        ulong order_ticket = OrderGetTicket(i);
+        if (!OrderSelect(order_ticket)) continue;
+        if ((OrderGetString(ORDER_SYMBOL) == _Symbol) &&
+            (StringFind(OrderGetString(ORDER_COMMENT), EA_CONTINUATION_TAG) != -1)){
+                continuation_node_ticket = order_ticket;
+                continuation_node_price = OrderGetDouble(ORDER_PRICE_OPEN);
+                continuation_node_type = OrderGetInteger(ORDER_TYPE);
+                break;
+            }
+        }
+    if (!continuation_node_price) return 0;
+
+    // Validate that current price is between the continuation node and grid unit
+    double price_current = SymbolInfoDouble(_Symbol, SYMBOL_BID);
+    double threshold = continuation_node_price + ((continuation_node_type == ORDER_TYPE_BUY_STOP)? -grid.unit : grid.unit);
+    if ((continuation_node_type == ORDER_TYPE_BUY_STOP &&
+        (price_current > threshold && price_current < continuation_node_price)) ||
+        (continuation_node_type == ORDER_TYPE_SELL_STOP &&
+        (price_current < threshold && price_current > continuation_node_price)))
+        return continuation_node_ticket;
     return 0;
 }
 
