@@ -9,7 +9,7 @@
 #property copyright "Copyright 2025, Anyim Ossi."
 #property link      "anyimossi.dev@gmail.com"
 
-#include  "GridManager.mqh"
+#include  "GridManager.mqh" // COMMING SOON
 
 //+------------------------------------------------------------------+
 // CONTROLLER FUNCTION, CHECKS ALL RULES
