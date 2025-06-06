@@ -38,8 +38,8 @@ public:// XXX: Dont encapsulate, allow full scope for this project
                 return init error, error message "unable to start grid";
             }
         */
-        if (!PositionSelect(_Symbol)) 
-        {
+        if (!PositionSelect(_Symbol)) {
+            // XXX: use start session function instead
         ulong ticket = OpenShort(Grid.progression_sequence[0], trade);
         if (ticket) 
             {
@@ -64,8 +64,7 @@ public:// XXX: Dont encapsulate, allow full scope for this project
         HandleGridGap(Grid, Base, trade);
         
         // Track Trading Session
-        if (use_trading_session)
-        {
+        if (use_trading_session){
             UpdateSesionStatus(Grid);
             if (Grid.session_status == SESSION_OVER) 
                 HandleSessionEnd(trade, Grid);
