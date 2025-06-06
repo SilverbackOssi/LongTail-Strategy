@@ -134,10 +134,8 @@ bool IsEmptyChart() //PASSED
 }
 
 //+------------------------------------------------------------------+
-bool IsWithinTime(datetime start_time, datetime end_time)
-{   
-    if (start_time>end_time)
-    {
+bool IsWithinTime(datetime start_time, datetime end_time){   
+    if (start_time>end_time){
       datetime temp = start_time;
       start_time = end_time;
       end_time = temp; 
@@ -203,10 +201,8 @@ void DeleteAllPending(CTrade &trader, const string symbol)
 }
 
 //+------------------------------------------------------------------+
-void ClearNodeExceptRecovery(CTrade &trader)
-{
-  for (int i = OrdersTotal() - 1; i >= 0; --i)
-  {
+void ClearNodeExceptRecovery(CTrade &trader){
+  for (int i = OrdersTotal() - 1; i >= 0; --i){
     ulong order_ticket = OrderGetTicket(i);
     if (order_ticket == 0) continue;
     if (OrderGetString(ORDER_SYMBOL) != _Symbol) continue;
@@ -223,10 +219,8 @@ void ClearNodeExceptRecovery(CTrade &trader)
 }
 
 //+------------------------------------------------------------------+
-void ClearRecoveryNodes(CTrade &trader)
-{
-    for (int i = OrdersTotal() - 1; i >= 0; --i)
-    {
+void ClearRecoveryNodes(CTrade &trader){
+    for (int i = OrdersTotal() - 1; i >= 0; --i){
         ulong order_ticket = OrderGetTicket(i);
         if (order_ticket == 0) continue;
         if (OrderGetString(ORDER_SYMBOL) != _Symbol) continue;
@@ -243,13 +237,10 @@ void ClearRecoveryNodes(CTrade &trader)
 }
 
 //+------------------------------------------------------------------+
-ulong NodeExistsAtPrice(double order_price)
-{
-    for (int i = OrdersTotal() - 1; i >= 0; --i)
-      {
+ulong NodeExistsAtPrice(double order_price){
+    for (int i = OrdersTotal() - 1; i >= 0; --i){
         ulong order_ticket = OrderGetTicket(i);
-        if (order_ticket!=0)
-            {
+        if (order_ticket!=0){
             if (OrderGetString(ORDER_SYMBOL) == _Symbol  
                && OrderGetDouble(ORDER_PRICE_OPEN) == order_price)
                {
