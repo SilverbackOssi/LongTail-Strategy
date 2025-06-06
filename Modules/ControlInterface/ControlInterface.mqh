@@ -53,6 +53,7 @@ public:// XXX: Dont encapsulate, allow full scope for this project
     void Manage(){  
         // return irrelevant ticket
         if(use_trading_session && session_status == SESSION_OVER && IsEmptyChart) return;
+        if (grid.use_session==false) AntiMidnightSlip(CTrade &trader, GridInfo &grid);
 
         // manage mismanagement ☑️
         check_strategy_rules();

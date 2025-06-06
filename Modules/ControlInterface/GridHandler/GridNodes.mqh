@@ -12,6 +12,7 @@ void PlaceContinuationNode(CTrade &trader, ulong reference_ticket, const GridInf
         // XXX: call core rules
         GridNode node;
         node.name = EA_CONTINUATION_TAG + " node";
+        
         // Get ticket details
         long reference_type = PositionGetInteger(POSITION_TYPE);
         double reference_price = PositionGetDouble(POSITION_PRICE_OPEN);

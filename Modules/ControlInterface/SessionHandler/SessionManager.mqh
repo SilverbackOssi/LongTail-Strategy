@@ -70,3 +70,14 @@ void ClearPostSessionRecoveryNode(CTrade &trader, GridInfo &grid){
     
 }
 //+------------------------------------------------------------------+
+void AntiMidnightSlip(CTrade &trader, GridInfo &grid){
+  if (grid.use_session == false){
+    if (IsWithinTime(StringToTime("21:00"), StringToTime("1:00"))){
+      grid.session_status = SESSION_OVER;
+      HandleSessionEnd(trader, grid);
+    } else {
+      grid.session_status = SESSION_RUNNING;
+    }
+  }
+}
+//+------------------------------------------------------------------+

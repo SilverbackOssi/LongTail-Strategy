@@ -22,10 +22,7 @@ void HandleNewPosition(GridBase &base, GridInfo &grid, CTrade &trade_obj)
         // IF base.volume_index + 1 not in progression_sequence, print game over error, remove expert.
     else 
       base.volume_index = 0;
-    
-    /*// set TP/SL
-    SetExits(trade_obj, ticket, grid);*/
-    
+
     // Update grid nodes
     DeleteAllPending(trade_obj, _Symbol);
     PlaceRecoveryNode(trade_obj, grid, base);
@@ -35,7 +32,6 @@ void HandleNewPosition(GridBase &base, GridInfo &grid, CTrade &trade_obj)
 //+------------------------------------------------------------------+
 void HandleGridGap(GridInfo &grid, GridBase &base, CTrade &trade_obj) // place recovery node on orders only
 {
-    //XXX: EnforceCoreRules(trade_obj); -> complete and test rules Enforcing first
     // Context validation
     int orders_total = SymbolOrdersTotal();
     if (PositionSelect(_Symbol) || orders_total == 0) return;
