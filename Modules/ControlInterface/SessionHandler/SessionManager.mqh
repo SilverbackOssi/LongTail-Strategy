@@ -7,6 +7,7 @@
 
 //+------------------------------------------------------------------+
 void UpdateSesionStatus(GridInfo &grid){
+	// possible logic to also update session based on account balance increament target alongside current logic 
   if (IsWithinTime(grid.session_time_start, grid.session_time_end))
     grid.session_status = SESSION_RUNNING;
   else grid.session_status = SESSION_OVER;
