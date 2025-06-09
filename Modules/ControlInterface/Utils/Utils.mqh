@@ -27,27 +27,23 @@ const int       MAX_ORDERS = 2;
 //+------------------------------------------------------------------+
 
 struct GridInfo{
-    double unit;
-    double spread;
-    double multiplier;
-    double target;
+    double unit, spread;
+    double multiplier, target;
     double progression_sequence[];
     bool use_session;
     int session_status;
-    datetime session_time_start;
-    datetime session_time_end;
+    datetime session_time_start, session_time_end;
     double tracked_balance;
+    int lost_cycle_count, won_cycle_count;
 
     void GridInfo(){
         // Set to default values
-        unit = 0.0;
-        spread = 0.0;
-        multiplier = 0.0;
-        target = 0.0;
+        unit = 0.0; spread = 0.0;
+        multiplier = 0.0; target = 0.0;
         ArrayResize(progression_sequence, 0);
-        use_session = USE_SESSION;
-        session_status = SESSION_OVER;
+        use_session = USE_SESSION; session_status = SESSION_OVER;
         tracked_balance = AccountInfoDouble(ACCOUNT_BALANCE);
+        lost_cycle_count = 0; won_cycle_count = 0;
     }
 
     void Init(double grid_unit, double grid_multiplier, bool is_use_session,
@@ -96,17 +92,29 @@ struct GridBase{
     volume_index = 0;
   }
 
-  void UpdateGridBase(const ulong pos_ticket) {
+  void UpdateGridBase(const ulong pos_ticket, GridInfo &grid) {
     if (PositionSelectByTicket(pos_ticket)) {
         name = PositionGetString(POSITION_COMMENT);
         ticket = pos_ticket;
         type = ENUM_POSITION_TYPE(PositionGetInteger(POSITION_TYPE));
         open_price = PositionGetDouble(POSITION_PRICE_OPEN);
         volume = PositionGetDouble(POSITION_VOLUME);
+        // update volume index
+        if (StringFind(base.name, EA_RECOVERY_TAG) != -1)
+            if (volume_index + 1 < ArraySize(grid.progression_sequence))
+                volume_index ++; // or print game over error, remove expert.
+            else{
+                volume_index=0;
+                grid.lost_cycle_count++;
+            }
+        else {
+            volume_index = 0;
+            grid.won_cycle_count++;
+        }
     } else {
         Print("Failed to update base, could not find position with ticket: ", ticket);
     }
-   }
+  }
 
   void UpdateOrderAsBase(const ulong order_ticket) {
      if (OrderSelect(order_ticket)) {
@@ -146,8 +154,8 @@ bool IsWithinTime(datetime start_time, datetime end_time){
 }
 
 //+------------------------------------------------------------------+
-bool IsNewPosition(ulong &saved_ticket)
-{// assumes there's one position open on the chart (Rule 3).
+bool IsNewPosition(ulong &saved_ticket){
+    // assumes there's one position open on the chart (Rule 3).
     if (PositionSelect(_Symbol))
     {
         ulong open_ticket = PositionGetInteger(POSITION_TICKET);

@@ -10,21 +10,16 @@
 #include  "ExitManager.mqh"
 
 //+------------------------------------------------------------------+
-void HandleNewPosition(CTrade &trade_obj, GridBase &base, GridInfo &grid)
-{
+void HandleNewPosition(CTrade &trade_obj, GridBase &base, GridInfo &grid){
+    // Validate
     if (!PositionSelect(_Symbol)) return;
     if (!IsNewPosition(base.ticket)) return;
+    
+    // Update GridBase
     ulong ticket = PositionGetInteger(POSITION_TICKET);
+    base.UpdateGridBase(ticket, grid);
 
-    // update GridBase
-    base.UpdateGridBase(ticket);
-    if (StringFind(base.name, EA_RECOVERY_TAG) != -1)
-        base.volume_index ++;
-        // IF base.volume_index + 1 not in progression_sequence, print game over error, remove expert.
-    else 
-      base.volume_index = 0;
-
-    // Update grid nodes
+    // Replace grid nodes
     DeleteAllPending(trade_obj, _Symbol);
     PlaceRecoveryNode(trade_obj, grid, base);
     PlaceContinuationNode(trade_obj, ticket, grid);

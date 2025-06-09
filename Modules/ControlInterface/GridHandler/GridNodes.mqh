@@ -93,8 +93,8 @@ GridNode AssertRecoveryNode(GridNode &node, const GridInfo &grid, const GridBase
         int reference_volume_index = base.volume_index;
         if (reference_volume_index + 1 < ArraySize(grid.progression_sequence)) {
             node.volume = grid.progression_sequence[reference_volume_index + 1];
-        } else {
-            node.volume = grid.progression_sequence[0]; // Reset progression Cycle 
+        } else { // Reset progression Cycle 
+            node.volume = grid.progression_sequence[0]; 
         }
 
         node.type = (reference_type == POSITION_TYPE_SELL) ? ORDER_TYPE_BUY_STOP : ORDER_TYPE_SELL_STOP;
