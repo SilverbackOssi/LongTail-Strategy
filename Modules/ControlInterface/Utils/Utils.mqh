@@ -10,7 +10,7 @@
 #include  "SequenceBuilder.mqh"
 //+------------------------------------------------------------------+
 
-// --- Defaults ---
+// --- LTS Defaults ---
 #define         NULL_BASE_NAME "null base"
 const string    EA_TAG = "LongTailsScalper";
 const string    EA_RECOVERY_TAG = "Recovery";
@@ -19,6 +19,7 @@ const int       EA_MAGIC = 405897;
 const ulong     EA_DEVIATION = EA_MAGIC;
 const int       SESSION_RUNNING = 100;
 const int       SESSION_OVER = 101;
+                // Asian session as default session, 1am - 10am WAT
 const datetime  default_time_start = StringToTime("01:00");
 const datetime  default_time_end = StringToTime("10:00");
       bool      USE_SESSION = false;
@@ -100,7 +101,7 @@ struct GridBase{
         open_price = PositionGetDouble(POSITION_PRICE_OPEN);
         volume = PositionGetDouble(POSITION_VOLUME);
         // update volume index
-        if (StringFind(base.name, EA_RECOVERY_TAG) != -1)
+        if (StringFind(name, EA_RECOVERY_TAG) != -1)
             if (volume_index + 1 < ArraySize(grid.progression_sequence))
                 volume_index ++; // or print game over error, remove expert.
             else{
@@ -324,17 +325,14 @@ void CleanupCurrentSymbol( CTrade &trader, const string sym = "")
     string current_sym = (sym == "") ? _Symbol : sym;
 
    // Close all open positions for the specified symbol
-   for (int i = PositionsTotal() - 1; i >= 0; i--)
-   {
-      if (PositionGetSymbol(i) == current_sym)
-      {
+   for (int i = PositionsTotal() - 1; i >= 0; i--){
+      if (PositionGetSymbol(i) == current_sym){
          if (trader.PositionClose(PositionGetInteger(POSITION_TICKET)))
             PrintFormat("CleanupCurrentSymbol: Closed position on %s", current_sym);
          else
             PrintFormat("CleanupCurrentSymbol: Failed to close position on %s. Error: %d", current_sym, GetLastError());
         int retries = 10; // Retry up to 10 times
-        while (PositionSelect(current_sym) && retries > 0)
-        {
+        while (PositionSelect(current_sym) && retries > 0){
             Sleep(100); // Check every 100ms
             retries--;
         }

@@ -17,36 +17,14 @@ void EnforceCoreRules(CTrade &trader, GridInfo &grid, GridBase &base)
 {
     int max_allowed_positions = MAX_POSITIONS;
     int max_allowed_orders = MAX_ORDERS;
-    
+
     NoInterferenceOnPos(trader);
     NoInterferenceOnOrders(trader);
     EnforceExits(grid, trader);
 
     EnforceMaxOrders(trader,max_allowed_orders);
     EnforeMaxPosition(trader,max_allowed_positions);
-    //EnforceGridPlacementAccuracy(blah);
-}
-
-//+------------------------------------------------------------------+
-
-/*
-Check if orders are priced correctly(or deleted), relative to an open position.
-Moves them if otherwise.
-Handles only position based nodes.
-Assumes other rules have been called.
-*/
-void EnforceGridPlacementAccuracy(GridInfo &grid, CTrade &trader){
-    if (PositionSelect(_Symbol)){
-        // get the base details by selecting open position
-        ulong base_ticket = PositionGetTicket(0);
-        double base_open = PositionGetDouble(POSITION_PRICE_OPEN);
-        long base_type = PositionGetInteger(POSITION_TYPE);
-
-        // calculate correct recovery node// open_price - grid.unit for buy position
-        // calculate correct continuation node// open_price + grid.target + grid.spread for buy position
-
-        // if not NodeExistsAtPrice, clear corresponding node and call place corresponding
-    }
+    //CheckGridPlacementAccuracy(blah);
 }
 //+------------------------------------------------------------------+
 
@@ -54,21 +32,22 @@ void EnforceGridPlacementAccuracy(GridInfo &grid, CTrade &trader){
 Closes any position not placed by the EA.
 Does not replace closed positions.
 */
-void NoInterferenceOnPos(CTrade &trader)
-{
-    for (int i = PositionsTotal() - 1; i >= 0; i--)
-    {
+void NoInterferenceOnPos(CTrade &trader){
+    for (int i = PositionsTotal() - 1; i >= 0; i--){
         string symbol = PositionGetSymbol(i);
-        if (symbol == _Symbol)
-        {
+        if (symbol == _Symbol){
             string comment = PositionGetString(POSITION_COMMENT);
             ulong ticket = PositionGetInteger(POSITION_TICKET);
-            if (StringFind(comment, EA_TAG) == -1) // EA_TAG not found in comment
-            {
+            if (StringFind(comment, EA_TAG) == -1){
+                // EA_TAG not found in comment
                 if (!trader.PositionClose(ticket))
                     Print(__FUNCTION__, " - Error: Failed to close foreign position with ticket: ", ticket);
                 else
                     Print(__FUNCTION__, " - Closed foreign position with ticket: ", ticket);
+                int retries = 10; // Retry up to 10 times (10* 100ms = 1s)
+                while (PositionSelectByTicket(ticket) && retries > 0){
+                    retries--; Sleep(100); // Check every 100ms
+                }
             }
         }
     }
@@ -80,9 +59,7 @@ Deletes any order not placed by the EA.
 Does not replace deleted orders.
 */
 void NoInterferenceOnOrders(CTrade &trader){
-    for (int i = OrdersTotal() - 1; i >= 0; i--)
-    {
-        
+    for (int i = OrdersTotal() - 1; i >= 0; i--){
         ulong order_ticket = OrderGetTicket(i);
         if (order_ticket == 0) continue;
         if (OrderGetString(ORDER_SYMBOL) != _Symbol) continue;
@@ -95,6 +72,10 @@ void NoInterferenceOnOrders(CTrade &trader){
                 Print(__FUNCTION__, " - Error: Failed to delete foreign order with ticket: ", ticket);
             else
                 Print(__FUNCTION__, " - Deleted foreign order with ticket: ", ticket);
+            int retries = 10; // Retry up to 10 times (10* 100ms = 1s)
+            while (OrderSelect(ticket) && retries > 0){
+                retries--; Sleep(100); // Check every 100ms
+            }
         }
     }
 }
@@ -150,20 +131,21 @@ Ensures there is only required no of open position in the chart.
 Closes all, except the last opened position(s).
 */
 void EnforeMaxPosition(CTrade &trader, int max_pos){
-    if (PositionsTotal() > max_pos)
-    {
+    if (PositionsTotal() > max_pos){
         Print(__FUNCTION__, " - Fatal: More than ", max_pos, " position open. Closing older");
 
         // Close all positions except the most recent one. Accessed by index.
-        for (int i = PositionsTotal() - 1; i > (max_pos-1); i--)
-        {
-            if (PositionGetTicket(i-max_pos))
-            {
+        for (int i = PositionsTotal() - 1; i > (max_pos-1); i--){
+            if (PositionGetTicket(i-max_pos)){
                 ulong ticket = PositionGetInteger(POSITION_TICKET);
                 if (!trader.PositionClose(ticket))
                     Print(__FUNCTION__, " - Error: Failed to close excess position with ticket: ", ticket);
                 else
                     Print(__FUNCTION__, " - Closed excess position with ticket: ", ticket);
+                int retries = 10; // Retry up to 10 times (10* 100ms = 1s)
+                while (PositionSelectByTicket(ticket) && retries > 0){
+                    retries--; Sleep(100); // Check every 100ms
+                }
             }
         }
     }
@@ -176,26 +158,49 @@ Closes all, except the last opened pending order(s).
 */
 void EnforceMaxOrders(CTrade &trader, int max_pending){
     // Check orders excess
-    if (OrdersTotal() > max_pending)
-    {
-        Print(__FUNCTION__, " - Fatal error: More than ", max_pending, " orders open. Closing older");
+    if (OrdersTotal() > max_pending){
+        Print(__FUNCTION__, " - Fatal error: More than ", max_pending, " orders open. Closing older orders..");
 
         // Close all orders except the last two. Access by index.
-        for (int i = OrdersTotal() - 1; i > (max_pending-1); i--)
-        {
-            if (OrderGetTicket(i-max_pending))
-            {
+        for (int i = OrdersTotal() - 1; i > (max_pending-1); i--){
+            if (OrderGetTicket(i-max_pending)){
                 ulong ticket = OrderGetInteger(ORDER_TICKET);
                 if (!trader.OrderDelete(ticket))
                     Print(__FUNCTION__, " - Error: Failed to delete excess order with ticket: ", ticket);
                 else
                     Print(__FUNCTION__, " - Deleted excess order with ticket: ", ticket);
+                int retries = 10; // Retry up to 10 times (10* 100ms = 1s)
+                while (OrderSelect(ticket) && retries > 0){
+                    retries--; Sleep(100); // Check every 100ms
+                }
             }
         }
     }
 }
 //+------------------------------------------------------------------+
 
+/*
+Check if orders are priced correctly(or deleted), relative to an open position.
+Alert, if otherwise.
+Handles only position based nodes.
+Assumes other rules have been called.
+*/
+void CheckGridPlacementAccuracy(GridInfo &grid, CTrade &trader){
+    if (PositionSelect(_Symbol)){
+        // get the base details by selecting open position
+        ulong base_ticket = PositionGetTicket(0);
+        double base_open = PositionGetDouble(POSITION_PRICE_OPEN);
+        long base_type = PositionGetInteger(POSITION_TYPE);
+
+        // calculate correct recovery node// open_price - grid.unit for buy position
+        // calculate correct continuation node// open_price + grid.target + grid.spread for buy position
+
+        // if not NodeExistsAtPrice, clear corresponding node and call place corresponding
+    }
+}
+//+------------------------------------------------------------------+
+
+//+------------------------------------------------------------------+
 //+------------------------------------------------------------------+
 //XXX: Implement remote stopping of the bot; use strange order like buystoplimit, moving on, open communication via telegram
 //XXX: Check if request to stop bot first.
