@@ -3,11 +3,12 @@
 //|                                                                  |
 //| This indicator identifies liquidity zones based on the highs and |
 //| lows of the previous day, week, month, and year. It draws lines, |
-//| adds labels, plays alerts on crosses, and shows a dashboard.     |
+//| adds labels, uses the built-in Alert function for notifications, |
+//| and shows a dashboard.                                          |
 //+------------------------------------------------------------------+
 
-#property copyright "Your Name"
-#property link      "https://www.example.com"
+#property copyright "Anyim Ossi."
+#property link      "anyimossi.dev@gmail.com"
 #property version   "1.00"
 #property indicator_chart_window
 #property indicator_buffers 0
@@ -36,7 +37,7 @@ input ENUM_LINE_STYLE YearLineStyle = STYLE_SOLID; // Year Line Style
 input int YearLineWidth = 1;                // Year Line Width
 input bool ShowLabels = true;               // Show Text Labels
 input bool EnableAlerts = true;             // Enable Sound Alerts
-input string AlertSoundFile = "alert.wav";  // Alert Sound File (place in MT5/Sounds folder)
+//input string AlertSoundFile = "alert.wav";  // Alert Sound File (place in MT5/Sounds folder)
 
 //--- Global Variables
 double day_high, day_low, week_high, week_low, month_high, month_low, year_high, year_low;
@@ -367,12 +368,12 @@ int OnCalculate(const int rates_total,
       {
          if(((close[1] < day_high && bid > day_high) || (close[1] > day_high && bid < day_high)) && !day_high_alerted)
          {
-            PlaySound(AlertSoundFile);
+            Alert("Price crossed Previous Day High");
             day_high_alerted = true;
          }
          if(((close[1] < day_low && bid > day_low) || (close[1] > day_low && bid < day_low)) && !day_low_alerted)
          {
-            PlaySound(AlertSoundFile);
+            Alert("Price crossed Previous Day Low");
             day_low_alerted = true;
          }
       }
@@ -380,12 +381,12 @@ int OnCalculate(const int rates_total,
       {
          if(((close[1] < week_high && bid > week_high) || (close[1] > week_high && bid < week_high)) && !week_high_alerted)
          {
-            PlaySound(AlertSoundFile);
+            Alert("Price crossed Previous Week High");
             week_high_alerted = true;
          }
          if(((close[1] < week_low && bid > week_low) || (close[1] > week_low && bid < week_low)) && !week_low_alerted)
          {
-            PlaySound(AlertSoundFile);
+            Alert("Price crossed Previous Week Low");
             week_low_alerted = true;
          }
       }
@@ -393,12 +394,12 @@ int OnCalculate(const int rates_total,
       {
          if(((close[1] < month_high && bid > month_high) || (close[1] > month_high && bid < month_high)) && !month_high_alerted)
          {
-            PlaySound(AlertSoundFile);
+            Alert("Price crossed Previous Month High");
             month_high_alerted = true;
          }
          if(((close[1] < month_low && bid > month_low) || (close[1] > month_low && bid < month_low)) && !month_low_alerted)
          {
-            PlaySound(AlertSoundFile);
+            Alert("Price crossed Previous Month Low");
             month_low_alerted = true;
          }
       }
@@ -406,12 +407,12 @@ int OnCalculate(const int rates_total,
       {
          if(((close[1] < year_high && bid > year_high) || (close[1] > year_high && bid < year_high)) && !year_high_alerted)
          {
-            PlaySound(AlertSoundFile);
+            Alert("Price crossed Previous Year High");
             year_high_alerted = true;
          }
          if(((close[1] < year_low && bid > year_low) || (close[1] > year_low && bid < year_low)) && !year_low_alerted)
          {
-            PlaySound(AlertSoundFile);
+            Alert("Price crossed Previous Year Low");
             year_low_alerted = true;
          }
       }
@@ -428,6 +429,6 @@ int OnCalculate(const int rates_total,
 // 2. Compile the indicator in MetaEditor.
 // 3. Attach the indicator to any chart in MetaTrader 5.
 // 4. Customize settings via the Inputs tab (e.g., toggle zones, change colors).
-// 5. For alerts, place your custom .wav file (e.g., "alert.wav") in the MT5/Sounds folder.
+// 5. The built-in Alert function will trigger a sound and message when price crosses a zone.
 // 6. The dashboard displays zone values in the top-left corner of the chart.
 // Note: Ensure sufficient historical data is loaded for accurate year zone calculations.
