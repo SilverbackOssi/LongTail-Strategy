@@ -23,18 +23,19 @@ void HandleSessionEnd(CTrade &trader, GridInfo &grid){
   ClearPostSessionRecoveryNode(trader, grid);
 }
 //+------------------------------------------------------------------+
-void StartSession(CTrade &trader,GridBase &base, const double &progression_sequence[], const string ea_tag){ 
-  /* Starts a trading session*/
+/* 
+Starts a trading session
+*/
+void StartSession(CTrade &trader,GridBase &base, GridInfo &grid){ 
   if (!IsEmptyChart())
-    return; // Progression cycle ongoing: Proceeding to manage cycle.
+    return; // Progression cycle ongoing: Proceed to manage cycle.
   else{
       Print("Starting Trading session within trading time. Current time: ", TimeCurrent());
       
-      double order_volume = progression_sequence[0];
+      double order_volume = grid.progression_sequence[0];
       ulong ticket = OpenShort(order_volume, trader);
       if (ticket){
-        base.UpdateGridBase(ticket);
-        base.volume_index = 0;
+        base.UpdateGridBase(ticket, grid);
         Print(__FUNCTION__, ": Started trading session with short at market price.");
       }else
           Print(__FUNCTION__, ": Failed to start new session with short position at market price.");
