@@ -13,6 +13,7 @@
 // --- LTS Defaults ---
 #define         NULL_BASE_NAME "null base"
 const string    EA_TAG = "LongTailsScalper";
+const string    EA_START_TAG = "Session Start";
 const string    EA_RECOVERY_TAG = "Recovery";
 const string    EA_CONTINUATION_TAG = "Continuation";
 const int       EA_MAGIC = 405897;
@@ -110,7 +111,8 @@ struct GridBase{
             }
         else {
             volume_index = 0;
-            grid.won_cycle_count++;
+            if (StringFind(name, EA_START_TAG) ==-1)
+                grid.won_cycle_count++;
         }
     } else {
         Print("Failed to update base, could not find position with ticket: ", ticket);
@@ -131,6 +133,33 @@ struct GridBase{
 
 };
 
+//+------------------------------------------------------------------+
+//| EA Setup Helper                                                 |
+//+------------------------------------------------------------------+
+bool PerformSanityChecks(){
+    // --- Sanity Checks ---
+    if (!TerminalInfoInteger(TERMINAL_TRADE_ALLOWED) || !MQLInfoInteger(MQL_TRADE_ALLOWED)){
+        Alert("ERROR: Automated trading is not enabled. Please enable 'Allow automated trading' in Terminal options and EA properties.");
+        return false;
+    }
+    if (AccountInfoInteger(ACCOUNT_TRADE_MODE) == ACCOUNT_TRADE_MODE_REAL){
+        Print("WARNING: Running EA on a REAL account! Ensure this is intended and the symbol/volume are safe.");
+        //ExpertRemove(); 
+    }
+    if (SymbolInfoInteger(_Symbol, SYMBOL_TRADE_MODE) == SYMBOL_TRADE_MODE_DISABLED){
+        Alert("ERROR: The current symbol (", _Symbol, ") is not tradable. Please attach the script to a tradable symbol chart.");
+        return false;
+    }
+    if (SymbolInfoDouble(_Symbol, SYMBOL_VOLUME_MIN) == 0 && SymbolInfoDouble(_Symbol, SYMBOL_VOLUME_STEP) == 0){
+        // some symbols (like XAUUSD on some brokers) might have 0 min_vol but allow 0.01
+        PrintFormat("WARNING: Symbol %s reports SYMBOL_VOLUME_MIN as 0. Trades might use a default 0.01 volume.", _Symbol);
+    }
+    double point_val = SymbolInfoDouble(_Symbol, SYMBOL_POINT);
+    if (point_val == 0) {
+        PrintFormat("WARNING: Symbol %s reports SYMBOL_POINT as 0. Price calculations might be affected. Using a fallback.", _Symbol);
+     }
+    return true;
+}
 
 //+------------------------------------------------------------------+
 //| Assertion Helpers                                                |
@@ -267,7 +296,7 @@ ulong NodeExistsAtPrice(double order_price){
 //+------------------------------------------------------------------+
 ulong OpenShort(double deal_volume, CTrade &trader) {
     // Define trade parameters
-    string comment = EA_TAG + " Session Start";
+    string comment = EA_TAG + " "+EA_START_TAG;
 
     // Attempt to execute a sell order
     if (trader.Sell(deal_volume, _Symbol, 0, 0, 0, comment)) {
@@ -284,7 +313,7 @@ ulong OpenShort(double deal_volume, CTrade &trader) {
 //+------------------------------------------------------------------+
 ulong OpenLong(double deal_volume, CTrade &trader) {
     // Define trade parameters
-    string comment = EA_TAG + " Session Start";
+    string comment = EA_TAG + " "+ EA_START_TAG;
 
     // Attempt to execute a buy order
     if (trader.Buy(deal_volume, _Symbol, 0, 0, 0, comment)) {
