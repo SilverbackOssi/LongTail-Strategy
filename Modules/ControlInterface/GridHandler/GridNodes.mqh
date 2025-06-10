@@ -111,7 +111,7 @@ GridNode AssertRecoveryNode(GridNode &node, const GridInfo &grid, const GridBase
         node.volume = reference_volume;
         // node type must be opposite the reference type
         node.type = (reference_type==ORDER_TYPE_BUY_STOP)?  ORDER_TYPE_SELL_STOP : ORDER_TYPE_BUY_STOP;
-        node.price = reference_price - (grid.unit + grid.spread);
+        node.price = reference_price + ((reference_type==ORDER_TYPE_BUY_STOP)? -(grid.unit + grid.spread):(grid.unit + grid.spread));
     }
     return node;
 }
