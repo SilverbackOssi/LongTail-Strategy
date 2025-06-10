@@ -66,6 +66,10 @@ void HandleGridGap(CTrade &trade_obj, GridInfo &grid, GridBase &base) {
         //place recovery node
         GridBase null_base; null_base.UpdateOrderAsBase(continuation_node_ticket);
         PlaceRecoveryNode(trade_obj, grid, null_base);
+    }else {
+      Print(__FUNCTION__, " FATAL- Unexpected gap encountered, clearing all nodes");
+      DeleteAllPending(trade_obj,_Symbol);
+      Alert()
     }
 }
 

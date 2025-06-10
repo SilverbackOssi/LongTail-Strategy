@@ -245,14 +245,15 @@ void ClearNodeExceptRecovery(CTrade &trader){
     if (order_ticket == 0) continue;
     if (OrderGetString(ORDER_SYMBOL) != _Symbol) continue;
     string comment = OrderGetString(ORDER_COMMENT);
+    ENUM_ORDER_TYPE type = (ENUM_ORDER_TYPE)OrderGetInteger(ORDER_TYPE);
 
     // Skip recovery nodes
     if (StringFind(comment, "Recovery") != -1) continue;
 
     if (trader.OrderDelete(order_ticket))
-      Print(__FUNCTION__, ": Deleted order with ticket: ", order_ticket, " and comment: ", comment);
+      Print(__FUNCTION__, ": Deleted ", EnumToString(type) ," order with ticket: ", order_ticket, " and comment: ", comment);
     else
-      Print(__FUNCTION__, ": Failed to delete order with ticket: ", order_ticket, " and comment: ", comment);
+      Print(__FUNCTION__, ": Failed to delete ", EnumToString(type) ," order with ticket: ", order_ticket, " and comment: ", comment);
   }
 }
 
@@ -263,14 +264,15 @@ void ClearRecoveryNodes(CTrade &trader){
         if (order_ticket == 0) continue;
         if (OrderGetString(ORDER_SYMBOL) != _Symbol) continue;
         string comment = OrderGetString(ORDER_COMMENT);
+        ENUM_ORDER_TYPE type = (ENUM_ORDER_TYPE)OrderGetInteger(ORDER_TYPE);
 
         // Only delete recovery nodes
         if (StringFind(comment, "Recovery") == -1) continue;
 
         if (trader.OrderDelete(order_ticket))
-            Print(__FUNCTION__, ": Deleted recovery order with ticket: ", order_ticket, " and comment: ", comment);
+            Print(__FUNCTION__, ": Deleted ", EnumToString(type) ," recovery order with ticket: ", order_ticket, " and comment: ", comment);
         else
-            Print(__FUNCTION__, ": Failed to delete recovery order with ticket: ", order_ticket, " and comment: ", comment);
+            Print(__FUNCTION__, ": Failed to delete ", EnumToString(type) ," recovery order with ticket: ", order_ticket, " and comment: ", comment);
     }
 }
 
