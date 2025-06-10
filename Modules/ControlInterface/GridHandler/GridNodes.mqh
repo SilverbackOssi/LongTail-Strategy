@@ -150,7 +150,7 @@ ulong IsRecoveryGap(const GridInfo &grid, CTrade &trade_obj){
 
 //+------------------------------------------------------------------+
 ulong IsContinuationGap(const GridInfo &grid, CTrade &trade_obj){
-    if (PositionSelect(_Symbol) || SymbolOrdersTotal() != 2) return 0;
+    if (PositionSelect(_Symbol) || SymbolOrdersTotal() == 0) return 0;
 
     // Get continuation node
     ulong continuation_node_ticket = 0;
