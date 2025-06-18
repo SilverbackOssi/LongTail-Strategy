@@ -13,10 +13,6 @@ CTrade trade;
 //+------------------------------------------------------------------+
 
 class LTSControl(){
-public:// XXX: Dont encapsulate, allow full scope for this project
-    //private sequence
-    //predefined sequenceLength
-
     // initialize GridInfo Grid, and GridBase Base
 
     void start(){
@@ -29,8 +25,7 @@ public:// XXX: Dont encapsulate, allow full scope for this project
         // start Grid
         if (use_trading_session && !IsWithinTradingTime()) return init succesful; // Handles placing EA on chart, outside trading time
         
-        /*if (!IsEmptyChart) // Prod
-            {
+        /*if (!IsEmptyChart) { // Prod
                 Print("Failed to start grid, please clear all orders and close all positions on the current chart");
                 return init error, error message "unable to start grid";
             }
