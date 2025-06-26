@@ -69,7 +69,7 @@ struct GridInfo{
         if (!use_session) session_status = SESSION_RUNNING;
     }
 
-    void CheckNewBalance(int percentage_target = 50){
+    void CheckBalanceTarget(int percentage_target = 50){
         RebuildSequence(multiplier, progression_sequence, tracked_balance, percentage_target);
     }
 };
