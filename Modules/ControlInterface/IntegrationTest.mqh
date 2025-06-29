@@ -9,6 +9,7 @@ Sequence length is based on 10% of account balance
 */
 
 #include  <Ossi\LongTails\SessionManager.mqh>
+#include  <Ossi\LongTails\StrictRuleManager.mqh>
 
 //--- Global Grid Variables ---
 CTrade trade;
@@ -16,7 +17,7 @@ GridInfo Grid;
 GridBase Base;
 
 // --- Input variables ---
-input int risk_reward = 3;            // Risk To Reward Ratio
+input int risk_reward_ratio = 3;            // Risk To Reward Ratio
 input group "=== Session Management ==="
 input bool use_start_stop = true;    // Use Timed Entry?
 input group "Time To Start"
@@ -27,7 +28,7 @@ input int time_to_end_hour   = 18;   // Hour to end (0-23)
 input int time_to_end_min    = 30;   // Minute to end (0-59)
 
 double unit = 2.0;
-int LTSMultiplier = risk_reward;
+int LTSMultiplier = risk_reward_ratio;
 bool use_trading_session = use_start_stop;
 
 string start = StringFormat("%02d:%02d", time_to_start_hour, time_to_start_min);
@@ -96,6 +97,26 @@ void OnDeinit(const int reason)
 //+------------------------------------------------------------------+
 void OnTick()
   {
+    // Skip Irrelevant Tick
+    if ( IsEmptyChart() && Grid.use_session && Grid.session_status == SESSION_OVER) return;
+    if (Grid.use_session==false) AntiMidnightSlip(trade, Grid);
+
+    // Ensure Behavior
+    //EnforceCoreRules(trade, Grid, Base);
+
+    // Track grid motion
+    if (IsNewPosition(Base.ticket)) 
+        HandleNewPosition(trade, Base, Grid);   
+    HandleGridGap(trade, Grid, Base);
+
+    // Track Trading Session
+    if (Grid.use_session){
+        UpdateSesionStatus(Grid);
+        if (Grid.session_status == SESSION_OVER) 
+            HandleSessionEnd(trade, Grid);
+        else StartSession(trade, Base, Grid);
+  
+    }
 //---
   }
 //+------------------------------------------------------------------+

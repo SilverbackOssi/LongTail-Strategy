@@ -69,7 +69,6 @@ void HandleGridGap(CTrade &trade_obj, GridInfo &grid, GridBase &base) {
     }else {
       Print(__FUNCTION__, " FATAL- Unexpected gap encountered, clearing all nodes");
       DeleteAllPending(trade_obj,_Symbol);
-      Alert()
     }
 }
 
