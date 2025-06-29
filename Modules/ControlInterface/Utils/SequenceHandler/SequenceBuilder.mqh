@@ -35,7 +35,7 @@ double GetMinimumTerm()
    {
     // Minimum term represents 1% of the account balance as per grid size
     double symbol_min_volume = SymbolInfoDouble(_Symbol, SYMBOL_VOLUME_MIN);
-    double account_bal = AccountInfoDouble(ACCOUNT_BALANCE); Print("DEBUG- account balance: ", account_bal);
+    double account_bal = AccountInfoDouble(ACCOUNT_BALANCE);
 
     double min_term_cash = 0.001 * AccountInfoDouble(ACCOUNT_BALANCE);// $ = 0.1% of balance
     
@@ -86,20 +86,15 @@ void BuildSequence(double reward_multiplier, double &progression_sequence[])
       
       // Check if adding current term would exceed account balance
       double potential_sequence_cash = (ArraySum(progression_sequence) + current_term) * target_points;
-      if(potential_sequence_cash > (0.1 * account_balance)) // risk 10% //XXX: Allow user set risk appetite
-         {
-            Print("Sequence Size: ", current_size);
+      if(potential_sequence_cash > (0.1 * account_balance)) // risk 10% 
             break;
-         }
+         
       
       // Add current term to sequence
       current_size++;
       ArrayResize(progression_sequence, current_size);
       progression_sequence[current_size - 1] = current_term;
    }
-   
-   Print("DEBUG- Current progression: ");
-   ArrayPrint(progression_sequence);
 }
   
 //+------------------------------------------------------------------+
