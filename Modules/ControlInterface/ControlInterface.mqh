@@ -57,7 +57,7 @@ class LTSControl(){
         
         // Track Trading Session
         if (use_trading_session){
-            UpdateSesionStatus(Grid);
+            UpdateSessionStatus(Grid);
             if (Grid.session_status == SESSION_OVER) 
                 HandleSessionEnd(trade, Grid);
             else StartSession(sequence, EA_TAG);
