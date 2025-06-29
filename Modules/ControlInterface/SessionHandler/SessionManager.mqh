@@ -6,7 +6,7 @@
 #include  <Ossi\LongTails\Utils.mqh>
 
 //+------------------------------------------------------------------+
-void UpdateSesionStatus(GridInfo &grid){
+void UpdateSessionStatus(GridInfo &grid){
 	// XXX: possible logic to also update session based on account balance increament target alongside current logic 
   if (IsWithinTime(grid.session_time_start, grid.session_time_end))
     grid.session_status = SESSION_RUNNING;
@@ -43,7 +43,7 @@ void StartSession(CTrade &trader,GridBase &base, GridInfo &grid){
 }
 //+------------------------------------------------------------------+
 void ClearPostSessionRecoveryNode(CTrade &trader, GridInfo &grid){
-    UpdateSesionStatus(grid);
+    UpdateSessionStatus(grid);
     // One recovery node lags after session ends and cycle ends
     printf("DEBUG - ENTERED");
     if (!grid.use_session || grid.session_status != SESSION_OVER)  return; // user must allow use session and session is over
