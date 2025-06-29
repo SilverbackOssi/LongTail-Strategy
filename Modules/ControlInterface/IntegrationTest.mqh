@@ -8,8 +8,8 @@
 Sequence length is based on 10% of account balance
 */
 
-#include  <Ossi\LongTails\SessionManager.mqh>
-#include  <Ossi\LongTails\StrictRuleManager.mqh>
+#include  <SAHeaders\LongTails\SessionManager.mqh>
+#include  <SAHeaders\LongTails\StrictRuleManager.mqh>
 
 //--- Global Grid Variables ---
 CTrade trade;
@@ -60,14 +60,14 @@ int OnInit(){
       }
 
     // --- Initialize CTrade Object---
-    Print("--- Initializing Trade Object ---");
+    Print("--- Initializing Trade Object ---\n");
     trade.SetExpertMagicNumber(EA_MAGIC);         // Although LTS EA relies on comment
     trade.SetTypeFillingBySymbol(_Symbol); 
     trade.SetDeviationInPoints(EA_DEVIATION);      // Allow some slippage
     trade.SetAsyncMode(false); 
 
     // --- Initialize Grid ---
-    Print("--- Initializing LTS Grid Object ---");
+    Print("--- Initializing LTS Grid Object ---\n");
     Grid.Init(unit, LTSMultiplier, use_trading_session, time_to_start, time_to_end);
 
 
@@ -75,12 +75,12 @@ int OnInit(){
     if (Grid.use_session && !IsWithinTime(Grid.session_time_start, Grid.session_time_end))
       return(INIT_SUCCEEDED);                     // Handles placing EA on chart outside trading time    
     
-    Print("--- Starting LTS Grid Session ---");
+    Print("--- Starting LTS Grid Session ---\n");
     StartSession(trade, Base, Grid);
     if (PositionSelectByTicket(Base.ticket)) 
-      Print("--- Init Successful. Started Trading Session ---");
+      Print("--- Init Successful. Started Trading Session ---\n");
     else {
-      Print("--- Init Failed. Unable to find session ticket ---");
+      Print("--- Init Failed. Unable to find session ticket ---\n");
       return (INIT_FAILED);
     }
 
@@ -91,7 +91,10 @@ int OnInit(){
 void OnDeinit(const int reason)
   {
 //---
-   
+   Print("___Exiting EA...");
+  // Log stuff
+  // profit or loss
+  // Report
   }
 
 //+------------------------------------------------------------------+
@@ -102,7 +105,7 @@ void OnTick()
     if (Grid.use_session==false) AntiMidnightSlip(trade, Grid);
 
     // Ensure Behavior
-    //EnforceCoreRules(trade, Grid, Base);
+    EnforceCoreRules(trade, Grid, Base);
 
     // Track grid motion
     if (IsNewPosition(Base.ticket)) 

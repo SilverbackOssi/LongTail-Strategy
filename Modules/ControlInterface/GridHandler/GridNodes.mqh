@@ -1,5 +1,6 @@
 
-#include  <Ossi\LongTails\Utils.mqh>
+#include  "Utils.mqh"
+
 //+------------------------------------------------------------------+
 
 void PlaceContinuationNode(CTrade &trader, ulong reference_ticket, const GridInfo &grid){

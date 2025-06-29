@@ -3,7 +3,7 @@
 //|                                      Copyright 2025, Anyim Ossi. |
 //|                                          anyimossi.dev@gmail.com |
 //+------------------------------------------------------------------+
-#include  <Ossi\LongTails\Utils.mqh>
+#include  "Utils.mqh"
 
 //+------------------------------------------------------------------+
 void UpdateSessionStatus(GridInfo &grid){

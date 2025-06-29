@@ -7,7 +7,6 @@
 #property link      "anyimossi.dev@gmail.com"
 
 #include  "GridNodes.mqh"
-#include  "ExitManager.mqh"
 
 //+------------------------------------------------------------------+
 void HandleNewPosition(CTrade &trade_obj, GridBase &base, GridInfo &grid){
