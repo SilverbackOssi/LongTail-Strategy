@@ -26,7 +26,7 @@ void HandleSessionEnd(CTrade &trader, GridInfo &grid){
 /* 
 Starts a trading session
 */
-void StartSession(CTrade &trader,GridBase &base, GridInfo &grid){ 
+void StartSession(CTrade &trader, GridInfo &grid){ 
   if (!IsEmptyChart())
     return; // Progression cycle ongoing: Proceed to manage cycle.
   else{
@@ -35,8 +35,7 @@ void StartSession(CTrade &trader,GridBase &base, GridInfo &grid){
       double order_volume = grid.progression_sequence[0];
       ulong ticket = OpenShort(order_volume, trader);
       if (ticket){
-        base.UpdateGridBase(ticket, grid);
-        Print(__FUNCTION__, ": Started trading session with short at market price.");
+        Print(__FUNCTION__, ": Started trading session with short at market price.\n");
       }else
           Print(__FUNCTION__, ": Failed to start new session with short position at market price.");
     }  

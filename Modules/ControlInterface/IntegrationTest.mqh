@@ -87,7 +87,7 @@ int OnInit(){
       return(INIT_SUCCEEDED);                     // Handles placing EA on chart outside trading time
       }
     
-    StartSession(trade, Base, Grid);
+    StartSession(trade, Grid);
     if (PositionSelectByTicket(Base.ticket)) 
       Print("--- Init Successful. Started Trading Session ---\n");
     else {
@@ -111,26 +111,29 @@ void OnDeinit(const int reason)
 //+------------------------------------------------------------------+
 void OnTick()
   {
-    // Skip Irrelevant Tick
-    if ( IsEmptyChart() && Grid.use_session && Grid.session_status == SESSION_OVER) return;
-    if (Grid.use_session==false) AntiMidnightSlip(trade, Grid);
-
     // Ensure Behavior
     EnforceCoreRules(trade, Grid, Base);
+    
+    // Update Session Status based on time
+    if (Grid.use_session) UpdateSessionStatus(Grid);
+    // Avoid Midnight Slippage       
+    AntiMidnightSlip(trade, Grid); // updates sessions status
+
+    // Skip Irrelevant Tick
+    if ( IsEmptyChart()  && Grid.session_status == SESSION_OVER){
+       Print("--- Skipping Irrelevant tick ---\n");
+       return;
+       }
 
     // Track grid motion
-    if (IsNewPosition(Base.ticket)) 
-        HandleNewPosition(trade, Base, Grid);   
+    HandleNewPosition(trade, Base, Grid);   
     HandleGridGap(trade, Grid, Base);
 
     // Track Trading Session
-    if (Grid.use_session){
-        UpdateSessionStatus(Grid);
-        if (Grid.session_status == SESSION_OVER) 
-            HandleSessionEnd(trade, Grid);
-        else StartSession(trade, Base, Grid);
-  
-    }
+    if (Grid.session_status == SESSION_OVER) 
+         HandleSessionEnd(trade, Grid);
+    else StartSession(trade, Grid);
+
 //---
   }
 //+------------------------------------------------------------------+
