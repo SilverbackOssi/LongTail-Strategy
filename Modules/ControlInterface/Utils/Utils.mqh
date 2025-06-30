@@ -78,12 +78,13 @@ struct GridInfo{
         Print("Grid unit = ", unit);
         Print("Grid spread = ", spread);
         Print("Grid multiplier = ", multiplier);
-        Print("Using Session : ", Grid.use_session);
+        Print("Using Session : ", use_session);
         // Print session status, start time, end time
         Print("User ACCOUNT BALANCE = ", tracked_balance);
 
         Print("Grid Progression Sequence = ");
         ArrayPrint(progression_sequence);
+        Print("Sequence Length = ", ArraySize(progression_sequence), "\n");
     }
 
 };

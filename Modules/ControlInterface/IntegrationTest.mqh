@@ -17,7 +17,9 @@ GridInfo Grid;
 GridBase Base;
 
 // --- Input variables ---
+input group "=== Risk Management ==="
 input int risk_reward_ratio = 3;            // Risk To Reward Ratio
+
 input group "=== Session Management ==="
 input bool use_start_stop = true;    // Use Timed Entry?
 input group "Time To Start"
@@ -43,9 +45,10 @@ int OnInit(){
     Print("--- Starting LTS EA ---\n");
 
     Print("--- Performing Sanity Checks ---\n");
-    if (!PerformSanityChecks())
+    if (!PerformSanityChecks()){
+        Print("--- Failed Sanity Checks ---\n");
         return (INIT_FAILED);
-    else Print("--- Passed Sanity Checks ---\n");
+    }else Print("--- Success\n");
 
     // Warn Perform Chart Cleanup
     if (!IsEmptyChart()){
@@ -65,17 +68,25 @@ int OnInit(){
     trade.SetTypeFillingBySymbol(_Symbol); 
     trade.SetDeviationInPoints(EA_DEVIATION);      // Allow some slippage
     trade.SetAsyncMode(false); 
+    Print("--- Success\n");
 
     // --- Initialize Grid ---
     Print("--- Initializing LTS Grid Object ---\n");
     Grid.Init(unit, LTSMultiplier, use_trading_session, time_to_start, time_to_end);
-
-
-    // --- Start Grid ---
-    if (Grid.use_session && !IsWithinTime(Grid.session_time_start, Grid.session_time_end))
-      return(INIT_SUCCEEDED);                     // Handles placing EA on chart outside trading time    
+    // Spill Grid Starting State
+    Grid.Spill();
+    Print("--- Success\n");
     
+    // --- Start Grid ---
     Print("--- Starting LTS Grid Session ---\n");
+    if (Grid.use_session && !IsWithinTime(Grid.session_time_start, Grid.session_time_end)){
+      Print("Currently outside trading session. Trading will start at defined time.\n",
+               "Set 'use_session' to false to trade 24/7.\n");
+      Print("--- LTS EA Init Successful ---\n");
+      Print("--- Waiting for Session Time ---\n");               
+      return(INIT_SUCCEEDED);                     // Handles placing EA on chart outside trading time
+      }
+    
     StartSession(trade, Base, Grid);
     if (PositionSelectByTicket(Base.ticket)) 
       Print("--- Init Successful. Started Trading Session ---\n");
